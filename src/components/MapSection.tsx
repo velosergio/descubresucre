@@ -1,28 +1,6 @@
-import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { MapPin, X, Navigation, Palmtree, UtensilsCrossed, Landmark, Waves } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-// Fix default marker icon issue with bundlers
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
-
-const createCustomIcon = (color: string) =>
-  L.divIcon({
-    className: "custom-marker",
-    html: `<div style="background:${color};width:32px;height:32px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-    </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
+import { useState } from "react";
+import { MapPin, Navigation, Waves, Landmark, TreePine, UtensilsCrossed } from "lucide-react";
+import { motion } from "framer-motion";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -37,45 +15,37 @@ interface Destination {
 }
 
 const destinations: Destination[] = [
-  { id: 1, name: "Playa Blanca, Tolú", lat: 9.5256, lng: -75.5811, category: "playas", description: "Arena blanca y aguas cristalinas del Golfo de Morrosquillo, perfecta para el descanso y los deportes acuáticos.", color: "hsl(174, 62%, 35%)" },
-  { id: 2, name: "Islas de San Bernardo", lat: 9.7667, lng: -75.8833, category: "playas", description: "Archipiélago paradisíaco con aguas turquesas, arrecifes de coral y la famosa isla artificial de Santa Cruz del Islote.", color: "hsl(174, 62%, 35%)" },
-  { id: 3, name: "Coveñas", lat: 9.4033, lng: -75.6847, category: "playas", description: "Destino costero con playas tranquilas, manglares y una rica oferta gastronómica de mariscos.", color: "hsl(174, 62%, 35%)" },
-  { id: 4, name: "Sincelejo – Centro Histórico", lat: 9.3047, lng: -75.3953, category: "cultura", description: "Capital del departamento, sede de las famosas Fiestas en Corralejas y del patrimonio sabanero.", color: "hsl(28, 85%, 55%)" },
-  { id: 5, name: "San Juan de Betulia", lat: 9.35, lng: -75.24, category: "cultura", description: "Municipio de tradiciones ganaderas y festivales folclóricos de la sabana sucreña.", color: "hsl(28, 85%, 55%)" },
-  { id: 6, name: "Reserva Natural Ciénaga de la Caimanera", lat: 9.4778, lng: -75.6083, category: "naturaleza", description: "Ecosistema de manglar y ciénaga con avistamiento de aves, caimanes y flora tropical única.", color: "hsl(120, 40%, 40%)" },
-  { id: 7, name: "Serranía de San Jacinto", lat: 9.8167, lng: -75.1167, category: "naturaleza", description: "Montañas de los Montes de María con bosques secos, cascadas y senderos ecológicos.", color: "hsl(120, 40%, 40%)" },
-  { id: 8, name: "Tolú – Zona Gastronómica", lat: 9.5311, lng: -75.5722, category: "gastronomía", description: "Ceviche de camarón, arroz con coco, patacón con queso y cocadas: los sabores del Caribe colombiano.", color: "hsl(5, 72%, 60%)" },
-  { id: 9, name: "Ovejas", lat: 9.5333, lng: -75.2333, category: "cultura", description: "Cuna del Festival Nacional de Gaitas, patrimonio musical de Colombia y tradición oral sabanera.", color: "hsl(28, 85%, 55%)" },
-  { id: 10, name: "San Onofre", lat: 9.7333, lng: -75.5333, category: "playas", description: "Playas vírgenes de Rincón del Mar y rica herencia afrocolombiana con música de bullerengue.", color: "hsl(174, 62%, 35%)" },
+  { id: 1, name: "Playa Blanca, Tolú", lat: 9.5256, lng: -75.5811, category: "playas", description: "Arena blanca y aguas cristalinas del Golfo de Morrosquillo.", color: "hsl(174, 62%, 35%)" },
+  { id: 2, name: "Islas de San Bernardo", lat: 9.7667, lng: -75.8833, category: "playas", description: "Archipiélago paradisíaco con aguas turquesas y arrecifes de coral.", color: "hsl(174, 62%, 35%)" },
+  { id: 3, name: "Coveñas", lat: 9.4033, lng: -75.6847, category: "playas", description: "Playas tranquilas, manglares y rica oferta gastronómica.", color: "hsl(174, 62%, 35%)" },
+  { id: 4, name: "Sincelejo – Centro Histórico", lat: 9.3047, lng: -75.3953, category: "cultura", description: "Capital del departamento, sede de las Fiestas en Corralejas.", color: "hsl(28, 85%, 55%)" },
+  { id: 5, name: "San Juan de Betulia", lat: 9.35, lng: -75.24, category: "cultura", description: "Tradiciones ganaderas y festivales folclóricos de la sabana.", color: "hsl(28, 85%, 55%)" },
+  { id: 6, name: "Ciénaga de la Caimanera", lat: 9.4778, lng: -75.6083, category: "naturaleza", description: "Ecosistema de manglar con avistamiento de aves y caimanes.", color: "hsl(120, 40%, 40%)" },
+  { id: 7, name: "Serranía de San Jacinto", lat: 9.8167, lng: -75.1167, category: "naturaleza", description: "Bosques secos, cascadas y senderos ecológicos.", color: "hsl(120, 40%, 40%)" },
+  { id: 8, name: "Tolú – Zona Gastronómica", lat: 9.5311, lng: -75.5722, category: "gastronomía", description: "Ceviche, arroz con coco, patacón y cocadas del Caribe.", color: "hsl(5, 72%, 60%)" },
+  { id: 9, name: "Ovejas", lat: 9.5333, lng: -75.2333, category: "cultura", description: "Cuna del Festival Nacional de Gaitas.", color: "hsl(28, 85%, 55%)" },
+  { id: 10, name: "San Onofre", lat: 9.7333, lng: -75.5333, category: "playas", description: "Playas vírgenes de Rincón del Mar y herencia afrocolombiana.", color: "hsl(174, 62%, 35%)" },
 ];
 
 const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
   { key: "all", label: "Todos", icon: <MapPin className="w-4 h-4" /> },
   { key: "playas", label: "Playas", icon: <Waves className="w-4 h-4" /> },
   { key: "cultura", label: "Cultura", icon: <Landmark className="w-4 h-4" /> },
-  { key: "naturaleza", label: "Naturaleza", icon: <Palmtree className="w-4 h-4" /> },
+  { key: "naturaleza", label: "Naturaleza", icon: <TreePine className="w-4 h-4" /> },
   { key: "gastronomía", label: "Gastronomía", icon: <UtensilsCrossed className="w-4 h-4" /> },
 ];
-
-function FlyTo({ lat, lng }: { lat: number; lng: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo([lat, lng], 12, { duration: 1.2 });
-  }, [lat, lng, map]);
-  return null;
-}
 
 const MapSection = () => {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
-  const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number } | null>(null);
 
   const filtered = activeCategory === "all" ? destinations : destinations.filter((d) => d.category === activeCategory);
 
-  const handleMarkerClick = (dest: Destination) => {
-    setSelectedDest(dest);
-    setFlyTarget({ lat: dest.lat, lng: dest.lng });
-  };
+  const mapCenter = selectedDest
+    ? { lat: selectedDest.lat, lng: selectedDest.lng, zoom: 12 }
+    : { lat: 9.45, lng: -75.5, zoom: 9 };
+
+  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${mapCenter.lng - 0.5}%2C${mapCenter.lat - 0.3}%2C${mapCenter.lng + 0.5}%2C${mapCenter.lat + 0.3}&layer=mapnik&marker=${mapCenter.lat}%2C${mapCenter.lng}`;
 
   return (
     <section id="mapa" className="section-padding bg-muted/50">
@@ -101,7 +71,6 @@ const MapSection = () => {
               onClick={() => {
                 setActiveCategory(cat.key);
                 setSelectedDest(null);
-                setFlyTarget(null);
               }}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-body font-medium transition-all ${
                 activeCategory === cat.key
@@ -118,32 +87,16 @@ const MapSection = () => {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Map */}
           <div className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border" style={{ height: 500 }}>
-            <MapContainer
-              center={[9.45, -75.5]}
-              zoom={9}
-              scrollWheelZoom={true}
-              style={{ height: "100%", width: "100%" }}
-              className="z-0"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              {flyTarget && <FlyTo lat={flyTarget.lat} lng={flyTarget.lng} />}
-              {filtered.map((dest) => (
-                <Marker
-                  key={dest.id}
-                  position={[dest.lat, dest.lng]}
-                  icon={createCustomIcon(dest.color)}
-                  eventHandlers={{ click: () => handleMarkerClick(dest) }}
-                >
-                  <Popup>
-                    <strong className="text-sm">{dest.name}</strong>
-                    <p className="text-xs mt-1 text-gray-600">{dest.description}</p>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
+            <iframe
+              key={`${mapCenter.lat}-${mapCenter.lng}`}
+              width="100%"
+              height="100%"
+              src={mapSrc}
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              title="Mapa de Sucre"
+            />
           </div>
 
           {/* Destination list */}
@@ -152,7 +105,7 @@ const MapSection = () => {
               <motion.button
                 key={dest.id}
                 layout
-                onClick={() => handleMarkerClick(dest)}
+                onClick={() => setSelectedDest(dest)}
                 className={`w-full text-left p-4 rounded-xl border transition-all font-body ${
                   selectedDest?.id === dest.id
                     ? "bg-primary/10 border-primary shadow-md"
