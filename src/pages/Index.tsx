@@ -7,6 +7,7 @@ import ActivitiesSection from "@/components/ActivitiesSection";
 import EventsSection from "@/components/EventsSection";
 import CulturalAgenda from "@/components/CulturalAgenda";
 import ConvocatoriasSection from "@/components/ConvocatoriasSection";
+import MapSection from "@/components/MapSection";
 import Footer from "@/components/Footer";
 import ChatModal from "@/components/ChatModal";
 
