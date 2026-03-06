@@ -27,6 +27,7 @@ const Index = () => {
       <ActivitiesSection />
       <EventsSection />
       <CulturalAgenda />
+      <MapSection />
       <ConvocatoriasSection />
       <Footer />
 
