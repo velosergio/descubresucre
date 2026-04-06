@@ -1,0 +1,27 @@
+# Dependencias y artefactos locales
+node_modules
+.next
+out
+
+# Git y editor
+.git
+.gitignore
+.cursor
+.vscode
+.idea
+
+# Entorno (inyecta variables en runtime con -e o --env-file)
+.env
+.env.*
+!.env.example
+
+# Documentación y tests (no necesarios para la imagen)
+*.md
+coverage
+.vitest
+
+# Logs y misc
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
