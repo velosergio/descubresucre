@@ -4,19 +4,17 @@ Aplicacion web de turismo para el departamento de Sucre, Colombia. Presenta dest
 
 ## Stack tecnologico
 
-- React 19 + TypeScript
-- Vite 8
+- Next.js 16 (App Router) + React 19 + TypeScript
 - Tailwind CSS + componentes `shadcn/ui` (Radix UI)
 - Framer Motion (animaciones)
-- React Router DOM
 - TanStack React Query (proveedor global listo para consumo de APIs)
 - Vitest + Testing Library (tests)
 
 ## Arquitectura del proyecto
 
-- Enrutado principal:
-  - `/` -> pagina de inicio (`Index`)
-  - `*` -> pagina `NotFound`
+- Enrutado (App Router):
+  - `/` → inicio (`src/app/page.tsx` + `HomePage`)
+  - rutas no definidas → `src/app/not-found.tsx`
 - La home se compone de secciones:
   - `HeroSection`
   - `PromoCards`
@@ -37,7 +35,7 @@ src/
   components/ui/   # Componentes UI reutilizables (shadcn)
   hooks/           # Hooks compartidos
   lib/             # Utilidades
-  pages/           # Paginas del router
+  app/             # Rutas y layout (Next.js App Router)
   test/            # Setup y pruebas
 ```
 
@@ -53,15 +51,15 @@ npm install
 npm run dev
 ```
 
-La app quedara disponible en la URL local que entregue Vite (por defecto suele ser `http://localhost:5173`).
+La app queda en `http://localhost:3000` por defecto (`next dev`).
 
 ## Scripts disponibles
 
-- `npm run dev`: inicia servidor de desarrollo
-- `npm run build`: genera build de produccion
-- `npm run build:dev`: build en modo development
-- `npm run preview`: sirve el build localmente
-- `npm run lint`: ejecuta ESLint
+- `npm run dev`: servidor de desarrollo (Next.js)
+- `npm run build`: build de produccion
+- `npm run start`: servidor de produccion (tras `build`)
+- `npm run preview`: alias de `next start`
+- `npm run lint`: **ESLint CLI** (`eslint .`). No uses `next lint` (deprecado en Next 16+).
 - `npm run test`: corre pruebas una vez
 - `npm run test:watch`: corre pruebas en modo observacion
 
@@ -82,7 +80,7 @@ npm run test
 
 ## Despliegue
 
-Genera el build y publica la carpeta de salida de Vite (`dist/`) en tu proveedor favorito:
+Build con salida `standalone` para contenedores (ver `Dockerfile`):
 
 ```bash
 npm run build

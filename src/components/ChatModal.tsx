@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { X, Send, Bot, User } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import * as m from "framer-motion/m";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
+  id: string;
   role: "user" | "assistant";
   content: string;
 }
@@ -14,6 +16,8 @@ interface ChatModalProps {
   initialMessage?: string;
 }
 
+/** Reservado para prompt de sistema al conectar API real. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- constante de dominio para integración futura
 const SUCRE_SYSTEM = `Eres un asistente turístico experto en el departamento de Sucre, Colombia. Respondes de manera amable, entusiasta y concisa sobre destinos, playas (Tolú, Coveñas, San Onofre, Islas de San Bernardo), gastronomía caribeña, festivales (Fiestas del 20 de Enero, Festival del Burro), cultura, naturaleza, manglares, y recomendaciones de viaje. Si no sabes algo, sugiere contactar la oficina de turismo de Sucre.`;
 
 const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
@@ -31,7 +35,7 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
 
   const handleSend = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
-    const userMsg: Message = { role: "user", content: text.trim() };
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
@@ -56,14 +60,16 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
       }
     }
 
-    setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "assistant", content: response }]);
     setIsLoading(false);
   }, [isLoading]);
 
   useEffect(() => {
     if (isOpen && initialMessage && !processedInitial.current) {
       processedInitial.current = true;
-      handleSend(initialMessage);
+      queueMicrotask(() => {
+        void handleSend(initialMessage);
+      });
     }
     if (!isOpen) {
       processedInitial.current = false;
@@ -78,14 +84,14 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-foreground/40 backdrop-blur-sm"
           onClick={onClose}
         >
-          <motion.div
+          <m.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
@@ -118,8 +124,8 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
                   <p className="text-sm mt-1">Pregúntame lo que quieras 🌴</p>
                 </div>
               )}
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}>
                   {msg.role === "assistant" && (
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
                       <Bot className="w-4 h-4 text-primary" />
@@ -181,8 +187,8 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

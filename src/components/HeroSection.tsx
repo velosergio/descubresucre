@@ -1,6 +1,7 @@
 import { useState } from "react";
+import Image from "next/image";
 import { Send, MapPin, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import * as m from "framer-motion/m";
 import heroImg from "@/assets/hero-sucre.jpg";
 
 interface HeroSectionProps {
@@ -25,15 +26,18 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <img
+      <Image
         src={heroImg}
         alt="Vista aérea del departamento de Sucre, Colombia"
-        className="absolute inset-0 w-full h-full object-cover"
+        fill
+        className="object-cover"
+        sizes="100vw"
+        priority
       />
       <div className="absolute inset-0 gradient-hero" />
 
       <div className="relative z-10 w-full max-w-4xl mx-auto px-4 text-center">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -54,9 +58,9 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
             Playas paradisíacas, cultura vibrante y sabores inolvidables te
             esperan. Pregúntale a nuestro asistente todo lo que quieras saber.
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.form
+        <m.form
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -78,9 +82,9 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
               <Send className="w-5 h-5" />
             </button>
           </div>
-        </motion.form>
+        </m.form>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.6 }}
@@ -95,7 +99,7 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
               {s}
             </button>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

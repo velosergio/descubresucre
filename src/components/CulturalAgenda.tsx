@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import * as m from "framer-motion/m";
 import { Music, Theater, Paintbrush, BookOpen } from "lucide-react";
 
 const agendaItems = [
@@ -23,7 +23,7 @@ const CulturalAgenda = () => {
   return (
     <section className="section-padding bg-muted">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -35,12 +35,12 @@ const CulturalAgenda = () => {
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             Actividades culturales, festivales y presentaciones de este mes
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {agendaItems.map((item, i) => (
-            <motion.div
-              key={i}
+            <m.div
+              key={`${item.day}-${item.month}-${item.title}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -60,7 +60,7 @@ const CulturalAgenda = () => {
                   <p className="text-xs text-muted-foreground font-body mt-1">{item.location}</p>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

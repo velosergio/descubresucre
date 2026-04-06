@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import * as m from "framer-motion/m";
 import { Megaphone, Clock, Users, ArrowRight } from "lucide-react";
 
 const convocatorias = [
@@ -43,7 +43,7 @@ const ConvocatoriasSection = () => {
   return (
     <section className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -59,11 +59,11 @@ const ConvocatoriasSection = () => {
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             Participa en las oportunidades culturales y turísticas del departamento
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {convocatorias.map((conv, i) => (
-            <motion.div
+            <m.div
               key={conv.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ const ConvocatoriasSection = () => {
                   Más información <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

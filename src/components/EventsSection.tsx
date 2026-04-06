@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import Image from "next/image";
+import * as m from "framer-motion/m";
 import { Calendar, MapPin } from "lucide-react";
 import festivalImg from "@/assets/festival-sucre.jpg";
 import culturaImg from "@/assets/cultura-sucre.jpg";
@@ -40,7 +41,7 @@ const EventsSection = () => {
   return (
     <section className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -52,11 +53,11 @@ const EventsSection = () => {
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             No te pierdas los eventos más importantes del departamento
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {events.map((ev, i) => (
-            <motion.div
+            <m.div
               key={ev.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -64,8 +65,14 @@ const EventsSection = () => {
               transition={{ delay: i * 0.1 }}
               className="bg-card rounded-2xl overflow-hidden shadow-sm card-hover flex flex-col sm:flex-row"
             >
-              <div className="sm:w-48 h-48 sm:h-auto shrink-0">
-                <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" loading="lazy" />
+              <div className="relative h-48 w-full shrink-0 overflow-hidden sm:h-auto sm:w-48 sm:self-stretch sm:min-h-[12rem]">
+                <Image
+                  src={ev.image}
+                  alt={ev.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, 192px"
+                />
               </div>
               <div className="p-5 flex flex-col justify-center">
                 <h3 className="font-display font-bold text-lg text-foreground mb-2">{ev.title}</h3>
@@ -79,7 +86,7 @@ const EventsSection = () => {
                 </div>
                 <p className="text-muted-foreground font-body text-sm">{ev.description}</p>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

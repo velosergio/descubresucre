@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import Image from "next/image";
+import * as m from "framer-motion/m";
 import { ArrowRight } from "lucide-react";
 import playaImg from "@/assets/playa-tolu.jpg";
 import festivalImg from "@/assets/festival-sucre.jpg";
@@ -26,7 +27,7 @@ const PromoCards = () => {
   return (
     <section className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -38,11 +39,11 @@ const PromoCards = () => {
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             Explora los rincones más fascinantes del departamento de Sucre
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {destinations.map((dest, i) => (
-            <motion.div
+            <m.div
               key={dest.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -50,11 +51,12 @@ const PromoCards = () => {
               transition={{ delay: i * 0.15 }}
               className="group relative rounded-2xl overflow-hidden aspect-[3/4] card-hover cursor-pointer"
             >
-              <img
+              <Image
                 src={dest.image}
                 alt={dest.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                loading="lazy"
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                sizes="(max-width: 768px) 100vw, 33vw"
               />
               <div className="absolute inset-0 gradient-card-overlay" />
               <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -64,7 +66,7 @@ const PromoCards = () => {
                   Explorar <ArrowRight className="w-4 h-4" />
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

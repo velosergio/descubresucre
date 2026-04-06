@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import Image from "next/image";
+import * as m from "framer-motion/m";
 import { Waves, Palette, UtensilsCrossed, TreePine, Heart } from "lucide-react";
 import playaImg from "@/assets/playa-tolu.jpg";
 import culturaImg from "@/assets/cultura-sucre.jpg";
@@ -18,7 +19,7 @@ const ActivitiesSection = () => {
   return (
     <section className="section-padding bg-muted">
       <div className="max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -30,11 +31,11 @@ const ActivitiesSection = () => {
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             Actividades para todos los gustos en el corazón del Caribe colombiano
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {activities.map((act, i) => (
-            <motion.div
+            <m.div
               key={act.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -43,7 +44,13 @@ const ActivitiesSection = () => {
               className="group relative bg-card rounded-2xl overflow-hidden card-hover cursor-pointer"
             >
               <div className="aspect-square relative">
-                <img src={act.image} alt={act.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <Image
+                  src={act.image}
+                  alt={act.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                />
                 <div className="absolute inset-0 bg-foreground/30 group-hover:bg-foreground/50 transition-colors" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-primary-foreground">
                   <act.icon className="w-10 h-10 mb-3" />
@@ -51,7 +58,7 @@ const ActivitiesSection = () => {
                   <p className="text-xs text-primary-foreground/70 text-center px-4 mt-1 font-body">{act.desc}</p>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MapPin, Navigation, Waves, Landmark, TreePine, UtensilsCrossed } from "lucide-react";
-import { motion } from "framer-motion";
+import * as m from "framer-motion/m";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -102,7 +102,7 @@ const MapSection = () => {
           {/* Destination list */}
           <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
             {filtered.map((dest) => (
-              <motion.button
+              <m.button
                 key={dest.id}
                 layout
                 onClick={() => setSelectedDest(dest)}
@@ -123,7 +123,7 @@ const MapSection = () => {
                     <span className="inline-block mt-2 text-xs font-medium text-primary capitalize">{dest.category}</span>
                   </div>
                 </div>
-              </motion.button>
+              </m.button>
             ))}
           </div>
         </div>

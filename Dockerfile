@@ -7,17 +7,22 @@ COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
 
 COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM nginx:alpine AS runner
+FROM node:24-alpine AS runner
+WORKDIR /app
 
-# Actualiza paquetes base para incorporar parches de seguridad disponibles
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
 RUN apk update && apk upgrade --no-cache
 
-# Servir archivos estáticos de Vite
-COPY --from=builder /app/dist /usr/share/nginx/html
-RUN rm /etc/nginx/conf.d/default.conf
-RUN printf "server {\n  listen 80;\n  server_name _;\n\n  root /usr/share/nginx/html;\n  index index.html;\n\n  location / {\n    try_files \$uri \$uri/ /index.html;\n  }\n\n  location = /50x.html {\n    root /usr/share/nginx/html;\n  }\n}\n" > /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+CMD ["node", "server.js"]
