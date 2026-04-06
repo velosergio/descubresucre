@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { X, Send, Bot, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -29,21 +29,10 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
     }
   }, [messages]);
 
-  useEffect(() => {
-    if (isOpen && initialMessage && !processedInitial.current) {
-      processedInitial.current = true;
-      handleSend(initialMessage);
-    }
-    if (!isOpen) {
-      processedInitial.current = false;
-    }
-  }, [isOpen, initialMessage]);
-
-  const handleSend = async (text: string) => {
+  const handleSend = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
     const userMsg: Message = { role: "user", content: text.trim() };
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
 
@@ -69,7 +58,17 @@ const ChatModal = ({ isOpen, onClose, initialMessage }: ChatModalProps) => {
 
     setMessages((prev) => [...prev, { role: "assistant", content: response }]);
     setIsLoading(false);
-  };
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (isOpen && initialMessage && !processedInitial.current) {
+      processedInitial.current = true;
+      handleSend(initialMessage);
+    }
+    if (!isOpen) {
+      processedInitial.current = false;
+    }
+  }, [isOpen, initialMessage, handleSend]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

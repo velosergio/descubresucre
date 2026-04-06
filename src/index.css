@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.ts";
 
 @layer base {
   :root {
@@ -59,11 +57,12 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground font-body;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: var(--font-body);
   }
 
@@ -74,7 +73,20 @@
 
 @layer components {
   .section-padding {
-    @apply px-4 py-16 md:px-8 lg:px-16 lg:py-24;
+    padding: 4rem 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-padding {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding: 6rem 4rem;
+    }
   }
 
   .gradient-hero {
@@ -100,7 +112,9 @@
   }
 
   .card-hover {
-    @apply transition-all duration-500 ease-out;
+    transition-property: all;
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;
   }
 
   .card-hover:hover {

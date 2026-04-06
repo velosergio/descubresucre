@@ -1,73 +1,89 @@
-# Welcome to your Lovable project
+# Descubre Sucre
 
-## Project info
+Aplicacion web de turismo para el departamento de Sucre, Colombia. Presenta destinos, actividades, agenda cultural, eventos, convocatorias y un chat guia para orientar al visitante.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Stack tecnologico
 
-## How can I edit this code?
+- React 19 + TypeScript
+- Vite 8
+- Tailwind CSS + componentes `shadcn/ui` (Radix UI)
+- Framer Motion (animaciones)
+- React Router DOM
+- TanStack React Query (proveedor global listo para consumo de APIs)
+- Vitest + Testing Library (tests)
 
-There are several ways of editing your application.
+## Arquitectura del proyecto
 
-**Use Lovable**
+- Enrutado principal:
+  - `/` -> pagina de inicio (`Index`)
+  - `*` -> pagina `NotFound`
+- La home se compone de secciones:
+  - `HeroSection`
+  - `PromoCards`
+  - `ActivitiesSection`
+  - `EventsSection`
+  - `CulturalAgenda`
+  - `MapSection`
+  - `ConvocatoriasSection`
+  - `Footer`
+  - `ChatModal`
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Estructura base:
 
-Changes made via Lovable will be committed automatically to this repo.
+```txt
+src/
+  assets/          # Imagenes y recursos visuales
+  components/      # Secciones y componentes de dominio
+  components/ui/   # Componentes UI reutilizables (shadcn)
+  hooks/           # Hooks compartidos
+  lib/             # Utilidades
+  pages/           # Paginas del router
+  test/            # Setup y pruebas
+```
 
-**Use your preferred IDE**
+## Requisitos
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js 20+ recomendado
+- npm
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Instalacion y ejecucion local
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+La app quedara disponible en la URL local que entregue Vite (por defecto suele ser `http://localhost:5173`).
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Scripts disponibles
 
-**Use GitHub Codespaces**
+- `npm run dev`: inicia servidor de desarrollo
+- `npm run build`: genera build de produccion
+- `npm run build:dev`: build en modo development
+- `npm run preview`: sirve el build localmente
+- `npm run lint`: ejecuta ESLint
+- `npm run test`: corre pruebas una vez
+- `npm run test:watch`: corre pruebas en modo observacion
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Pruebas y calidad
 
-## What technologies are used for this project?
+Para validar cambios antes de subirlos:
 
-This project is built with:
+```bash
+npm run lint
+npm run test
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Integraciones y notas tecnicas
 
-## How can I deploy this project?
+- El mapa usa `OpenStreetMap` embebido mediante `iframe`.
+- El chat de guia turistica es actualmente una simulacion local (respuestas predefinidas por palabras clave), no consume un backend de IA externo.
+- Hay proveedor de React Query configurado globalmente para futuras integraciones con API.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Despliegue
 
-## Can I connect a custom domain to my Lovable project?
+Genera el build y publica la carpeta de salida de Vite (`dist/`) en tu proveedor favorito:
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```bash
+npm run build
+```
