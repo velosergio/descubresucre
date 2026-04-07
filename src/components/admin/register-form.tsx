@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUserAction } from "@/lib/actions/register";
 import { Button } from "@/components/ui/button";
@@ -15,52 +15,96 @@ interface RegisterFormProps {
   googleEnabled: boolean;
 }
 
+interface RegisterFormState {
+  name: string;
+  email: string;
+  password: string;
+  error: string | null;
+  loading: boolean;
+}
+
+type RegisterFormAction =
+  | { type: "setName"; value: string }
+  | { type: "setEmail"; value: string }
+  | { type: "setPassword"; value: string }
+  | { type: "setError"; value: string | null }
+  | { type: "setLoading"; value: boolean };
+
+const INITIAL_FORM: RegisterFormState = {
+  name: "",
+  email: "",
+  password: "",
+  error: null,
+  loading: false,
+};
+
+function registerFormReducer(state: RegisterFormState, action: RegisterFormAction): RegisterFormState {
+  switch (action.type) {
+    case "setName":
+      return { ...state, name: action.value };
+    case "setEmail":
+      return { ...state, email: action.value };
+    case "setPassword":
+      return { ...state, password: action.value };
+    case "setError":
+      return { ...state, error: action.value };
+    case "setLoading":
+      return { ...state, loading: action.value };
+    default:
+      return state;
+  }
+}
+
 export function RegisterForm({ googleEnabled }: RegisterFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/cuenta/pendiente";
+  const [callbackUrl, setCallbackUrl] = useState("/cuenta/pendiente");
+  const [form, dispatch] = useReducer(registerFormReducer, INITIAL_FORM);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const current = new URLSearchParams(window.location.search).get("callbackUrl");
+    if (current) {
+      setCallbackUrl(current);
+    }
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    dispatch({ type: "setError", value: null });
+    dispatch({ type: "setLoading", value: true });
     try {
       const reg = await registerUserAction({
-        email,
-        name: name.trim() || undefined,
-        password,
+        email: form.email,
+        name: form.name.trim() || undefined,
+        password: form.password,
       });
       if (!reg.ok) {
-        setError(reg.error);
+        dispatch({ type: "setError", value: reg.error });
         return;
       }
 
       const res = await signIn("credentials", {
-        email,
-        password,
+        email: form.email,
+        password: form.password,
         redirect: false,
         callbackUrl,
       });
       if (res?.error) {
-        setError("Cuenta creada, pero no se pudo iniciar sesión. Entra desde el inicio de sesión.");
+        dispatch({
+          type: "setError",
+          value: "Cuenta creada, pero no se pudo iniciar sesión. Entra desde el inicio de sesión.",
+        });
         return;
       }
       router.push(callbackUrl);
       router.refresh();
     } finally {
-      setLoading(false);
+      dispatch({ type: "setLoading", value: false });
     }
   }
 
   async function onGoogle() {
-    setError(null);
-    setLoading(true);
+    dispatch({ type: "setError", value: null });
+    dispatch({ type: "setLoading", value: true });
     await signIn("google", { callbackUrl });
   }
 
@@ -74,9 +118,9 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
-          {error ? (
+          {form.error ? (
             <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{form.error}</AlertDescription>
             </Alert>
           ) : null}
           <div className="space-y-2">
@@ -86,8 +130,8 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
               name="name"
               type="text"
               autoComplete="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={form.name}
+              onChange={(e) => dispatch({ type: "setName", value: e.target.value })}
             />
           </div>
           <div className="space-y-2">
@@ -98,8 +142,8 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
               type="email"
               autoComplete="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.email}
+              onChange={(e) => dispatch({ type: "setEmail", value: e.target.value })}
             />
           </div>
           <div className="space-y-2">
@@ -111,18 +155,18 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
               autoComplete="new-password"
               required
               minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={(e) => dispatch({ type: "setPassword", value: e.target.value })}
             />
             <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Creando cuenta…" : "Registrarse"}
+          <Button type="submit" className="w-full" disabled={form.loading}>
+            {form.loading ? "Creando cuenta…" : "Registrarse"}
           </Button>
           {googleEnabled ? (
-            <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={() => void onGoogle()}>
+            <Button type="button" variant="outline" className="w-full" disabled={form.loading} onClick={() => void onGoogle()}>
               Continuar con Google
             </Button>
           ) : null}

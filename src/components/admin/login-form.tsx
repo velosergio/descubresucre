@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useReducer } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,41 +15,78 @@ interface LoginFormProps {
   googleEnabled: boolean;
 }
 
+interface LoginFormState {
+  email: string;
+  password: string;
+  error: string | null;
+  loading: boolean;
+}
+
+type LoginFormAction =
+  | { type: "setEmail"; value: string }
+  | { type: "setPassword"; value: string }
+  | { type: "setError"; value: string | null }
+  | { type: "setLoading"; value: boolean };
+
+const INITIAL_FORM: LoginFormState = {
+  email: "",
+  password: "",
+  error: null,
+  loading: false,
+};
+
+function loginFormReducer(state: LoginFormState, action: LoginFormAction): LoginFormState {
+  switch (action.type) {
+    case "setEmail":
+      return { ...state, email: action.value };
+    case "setPassword":
+      return { ...state, password: action.value };
+    case "setError":
+      return { ...state, error: action.value };
+    case "setLoading":
+      return { ...state, loading: action.value };
+    default:
+      return state;
+  }
+}
+
 export function LoginForm({ googleEnabled }: LoginFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin";
+  const [callbackUrl, setCallbackUrl] = useState("/admin");
+  const [form, dispatch] = useReducer(loginFormReducer, INITIAL_FORM);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const current = new URLSearchParams(window.location.search).get("callbackUrl");
+    if (current) {
+      setCallbackUrl(current);
+    }
+  }, []);
 
   async function onCredentials(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setLoading(true);
+    dispatch({ type: "setError", value: null });
+    dispatch({ type: "setLoading", value: true });
     try {
       const res = await signIn("credentials", {
-        email,
-        password,
+        email: form.email,
+        password: form.password,
         redirect: false,
         callbackUrl,
       });
       if (res?.error) {
-        setError("Credenciales incorrectas.");
+        dispatch({ type: "setError", value: "Credenciales incorrectas." });
         return;
       }
       router.push(callbackUrl);
       router.refresh();
     } finally {
-      setLoading(false);
+      dispatch({ type: "setLoading", value: false });
     }
   }
 
   async function onGoogle() {
-    setError(null);
-    setLoading(true);
+    dispatch({ type: "setError", value: null });
+    dispatch({ type: "setLoading", value: true });
     await signIn("google", { callbackUrl });
   }
 
@@ -60,9 +98,9 @@ export function LoginForm({ googleEnabled }: LoginFormProps) {
       </CardHeader>
       <form onSubmit={onCredentials}>
         <CardContent className="space-y-4">
-          {error ? (
+          {form.error ? (
             <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{form.error}</AlertDescription>
             </Alert>
           ) : null}
           <div className="space-y-2">
@@ -73,8 +111,8 @@ export function LoginForm({ googleEnabled }: LoginFormProps) {
               type="email"
               autoComplete="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.email}
+              onChange={(e) => dispatch({ type: "setEmail", value: e.target.value })}
             />
           </div>
           <div className="space-y-2">
@@ -85,17 +123,17 @@ export function LoginForm({ googleEnabled }: LoginFormProps) {
               type="password"
               autoComplete="current-password"
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={(e) => dispatch({ type: "setPassword", value: e.target.value })}
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Entrando…" : "Entrar"}
+          <Button type="submit" className="w-full" disabled={form.loading}>
+            {form.loading ? "Entrando…" : "Entrar"}
           </Button>
           {googleEnabled ? (
-            <Button type="button" variant="outline" className="w-full" disabled={loading} onClick={() => void onGoogle()}>
+            <Button type="button" variant="outline" className="w-full" disabled={form.loading} onClick={() => void onGoogle()}>
               Continuar con Google
             </Button>
           ) : null}

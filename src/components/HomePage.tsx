@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
 import HeroSection from "@/components/HeroSection";
 import PromoCards from "@/components/PromoCards";
@@ -11,49 +12,65 @@ import CulturalAgenda from "@/components/CulturalAgenda";
 import ConvocatoriasSection from "@/components/ConvocatoriasSection";
 import MapSection from "@/components/MapSection";
 import Footer from "@/components/Footer";
-import ChatModal from "@/components/ChatModal";
+import { ChatPanel } from "@/components/ChatPanel";
 
 export default function HomePage() {
-  const [chatOpen, setChatOpen] = useState(false);
-  const [initialMessage, setInitialMessage] = useState<string>();
+  const [view, setView] = useState<"landing" | "chat">("landing");
+  const [chatKey, setChatKey] = useState(0);
+  const [initialMessage, setInitialMessage] = useState<string | undefined>();
 
-  const handleChatMessage = (msg: string) => {
+  const openChat = (msg?: string) => {
+    setChatKey((k) => k + 1);
     setInitialMessage(msg);
-    setChatOpen(true);
+    setView("chat");
+  };
+
+  const closeChat = () => {
+    setView("landing");
+    setInitialMessage(undefined);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <HeroSection onChatMessage={handleChatMessage} />
-      <PromoCards />
-      <ActivitiesSection />
-      <EventsSection />
-      <CulturalAgenda />
-      <MapSection />
-      <ConvocatoriasSection />
-      <Footer />
+      <AnimatePresence mode="wait">
+        {view === "landing" ? (
+          <m.div
+            key="landing"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <HeroSection onChatMessage={(msg) => openChat(msg)} />
+            <PromoCards />
+            <ActivitiesSection />
+            <EventsSection />
+            <CulturalAgenda />
+            <MapSection />
+            <ConvocatoriasSection />
+            <Footer />
+          </m.div>
+        ) : null}
+      </AnimatePresence>
 
-      {!chatOpen && (
+      <AnimatePresence>
+        {view === "chat" ? (
+          <ChatPanel key={chatKey} onClose={closeChat} initialMessage={initialMessage} />
+        ) : null}
+      </AnimatePresence>
+
+      {view === "landing" && (
         <m.button
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1, type: "spring" }}
-          onClick={() => {
-            setInitialMessage(undefined);
-            setChatOpen(true);
-          }}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
+          transition={{ delay: 0.8, type: "spring" }}
+          type="button"
+          onClick={() => openChat(undefined)}
+          className="fixed right-6 bottom-6 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-colors hover:bg-primary/90"
           aria-label="Abrir chat"
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="size-6" />
         </m.button>
       )}
-
-      <ChatModal
-        isOpen={chatOpen}
-        onClose={() => setChatOpen(false)}
-        initialMessage={initialMessage}
-      />
     </div>
   );
 }

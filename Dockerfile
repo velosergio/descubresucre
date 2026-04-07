@@ -3,7 +3,12 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
+# `postinstall` → prisma generate: el esquema debe existir antes de `npm ci`. Sin `.env` en la imagen.
+ENV DATABASE_URL="mysql://build:build@127.0.0.1:3306/build"
+
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npm ci --legacy-peer-deps
 
 COPY . .

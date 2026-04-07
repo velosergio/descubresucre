@@ -71,3 +71,25 @@ model Role {
   name  String @unique
   users User[]
 }
+
+enum ChatJobStatus {
+  PENDING
+  DONE
+  ERROR
+}
+
+/// Fila única: id fijo "singleton". URL del webhook n8n solo en servidor.
+model ChatbotSettings {
+  id            String   @id @default("singleton")
+  n8nWebhookUrl String?  @db.Text
+  updatedAt     DateTime @updatedAt
+}
+
+model ChatJob {
+  id             String        @id @default(cuid())
+  status         ChatJobStatus @default(PENDING)
+  assistantReply String?       @db.Text
+  errorMessage   String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}

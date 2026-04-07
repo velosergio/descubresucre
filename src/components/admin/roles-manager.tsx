@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -27,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export interface RoleRow {
+interface RoleRow {
   id: string;
   name: string;
 }
@@ -136,10 +137,11 @@ export function RolesManager({ roles }: { roles: RoleRow[] }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editId ? "Editar rol" : "Nuevo rol"}</DialogTitle>
+            <DialogDescription>Define el nombre del rol para permisos del panel.</DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
             <Label htmlFor="role-name">Nombre</Label>
-            <Input id="role-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+            <Input id="role-name" value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>

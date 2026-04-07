@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Shield, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Settings, Shield, Users, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -27,6 +27,7 @@ const mainNav = [{ href: "/admin", label: "Resumen", icon: LayoutDashboard }];
 const adminNav = [
   { href: "/admin/users", label: "Usuarios", icon: Users },
   { href: "/admin/roles", label: "Roles", icon: Shield },
+  { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
 function isNavActive(pathname: string, href: string) {

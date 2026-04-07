@@ -13,7 +13,11 @@ dist-ssr
 .next
 *.local
 .env
+.env.test
 !.env.example
+coverage
+playwright-report
+test-results
 
 # Editor directories and files
 .vscode/*

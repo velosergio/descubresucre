@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export const getDbUserWithRoles = cache(async (userId: string) => {
+const getDbUserWithRoles = cache(async (userId: string) => {
   return prisma.user.findUnique({
     where: { id: userId },
     include: { roles: true },

@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${playfairDisplay.variable} ${dmSans.variable}`}
     >
-      <body className="antialiased">
+      <body suppressHydrationWarning className="antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

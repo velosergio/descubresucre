@@ -14,8 +14,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+/**
+ * En desarrollo no reutilizamos el singleton global: tras `prisma generate` o nuevos modelos,
+ * un cliente cacheado puede quedar sin delegados (p. ej. `chatbotSettings`) y falla con
+ * "Cannot read properties of undefined (reading 'findUnique')".
+ */
+export const prisma =
+  process.env.NODE_ENV === "production"
+    ? (globalForPrisma.prisma ??= createPrismaClient())
+    : createPrismaClient();

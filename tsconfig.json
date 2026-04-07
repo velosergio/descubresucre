@@ -27,6 +27,10 @@
         "./src/*"
       ]
     },
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ],
     "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
