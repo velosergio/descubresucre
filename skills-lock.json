@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "n8n": {
+      "source": "rawveg/skillsforge-marketplace",
+      "sourceType": "github",
+      "computedHash": "352d5fa4cbed3f28bc6522ff6e9e246f99437e1cfeac002f1d0118e54015550b"
+    },
     "nextjs-react-typescript": {
       "source": "mindrally/skills",
       "sourceType": "github",
