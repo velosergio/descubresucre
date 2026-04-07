@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
@@ -40,9 +39,6 @@
     --tropical-sand: 40 33% 97%;
     --tropical-deep: 210 25% 12%;
     --tropical-coral: 5 72% 60%;
-
-    --font-display: 'Playfair Display', serif;
-    --font-body: 'DM Sans', sans-serif;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;

@@ -10,6 +10,7 @@ const eslintConfig = [
       "node_modules/**",
       ".agents/**",
       "mcps/**",
+      "src/generated/**",
     ],
   },
   ...next,
