@@ -16,7 +16,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 FROM node:24-alpine AS runner
-WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -24,17 +23,20 @@ ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
 RUN apk update && apk upgrade --no-cache \
-  && apk add --no-cache openssl \
-  && npm install -g prisma@7.6.0
+  && apk add --no-cache openssl
 
+# Prisma fuera de /app: el standalone de Next no incluye el paquete `prisma`;
+# si cargamos prisma.config.ts desde /app, `import "prisma/config"` falla.
+WORKDIR /opt/prisma
+RUN npm install prisma@7.6.0 dotenv@17.4.1 --no-package-lock
+
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
+
+WORKDIR /app
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Migraciones en runtime (requiere DATABASE_URL del entorno, p. ej. EasyPanel)
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
-
 EXPOSE 3000
-CMD ["sh", "-c", "prisma migrate deploy && exec node server.js"]
+CMD ["sh", "-c", "cd /opt/prisma && ./node_modules/.bin/prisma migrate deploy && cd /app && exec node server.js"]
