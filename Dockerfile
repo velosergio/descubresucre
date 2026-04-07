@@ -23,11 +23,18 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
-RUN apk update && apk upgrade --no-cache
+RUN apk update && apk upgrade --no-cache \
+  && apk add --no-cache openssl \
+  && npm install -g prisma@7.6.0
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Migraciones en runtime (requiere DATABASE_URL del entorno, p. ej. EasyPanel)
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./
+COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
+
 EXPOSE 3000
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "prisma migrate deploy && exec node server.js"]
