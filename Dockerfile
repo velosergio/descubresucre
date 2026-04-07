@@ -38,13 +38,21 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# `npm run admin:create` en el contenedor (sin tsx; standalone no incluye prompts/dotenv)
+# `npm run admin:create` en el contenedor (sin tsx; standalone suele no incluir esto para el script)
 COPY --from=builder /app/scripts/create-admin.mjs ./scripts/create-admin.mjs
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
 COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
 COPY --from=builder /app/node_modules/prompts ./node_modules/prompts
 COPY --from=builder /app/node_modules/kleur ./node_modules/kleur
 COPY --from=builder /app/node_modules/sisteransi ./node_modules/sisteransi
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/mariadb ./node_modules/mariadb
+COPY --from=builder /app/node_modules/denque ./node_modules/denque
+COPY --from=builder /app/node_modules/iconv-lite ./node_modules/iconv-lite
+COPY --from=builder /app/node_modules/lru-cache ./node_modules/lru-cache
+COPY --from=builder /app/node_modules/bcrypt ./node_modules/bcrypt
+COPY --from=builder /app/node_modules/node-addon-api ./node_modules/node-addon-api
+COPY --from=builder /app/node_modules/node-gyp-build ./node_modules/node-gyp-build
 
 EXPOSE 3000
 CMD ["sh", "-c", "cd /opt/prisma && ./node_modules/.bin/prisma migrate deploy && cd /app && exec node server.js"]
