@@ -23,7 +23,7 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "admin:create": "tsx scripts/create-admin.ts",
+    "admin:create": "node scripts/create-admin.mjs",
     "postinstall": "prisma generate"
   },
   "prisma": {

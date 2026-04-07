@@ -1,15 +1,28 @@
 /**
  * Crea o actualiza un usuario con rol admin (y cuenta aprobada).
- * Ejecuta en terminal interactiva:
  *   npm run admin:create
+ * Usa Node puro (sin tsx) para poder ejecutarlo en la imagen Docker.
  */
-
 import "dotenv/config";
+import { createRequire } from "node:module";
 import bcrypt from "bcrypt";
 import prompts from "prompts";
-import { prisma } from "../src/lib/prisma";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-function isEmail(s: string) {
+const require = createRequire(import.meta.url);
+const { PrismaClient } = require("../src/generated/prisma/index.js");
+
+function createPrismaClient() {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL no está definida");
+  }
+  return new PrismaClient({ adapter: new PrismaMariaDb(url) });
+}
+
+const prisma = createPrismaClient();
+
+function isEmail(s) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
 }
 
