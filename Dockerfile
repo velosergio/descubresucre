@@ -49,6 +49,7 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/mariadb ./node_modules/mariadb
 COPY --from=builder /app/node_modules/denque ./node_modules/denque
 COPY --from=builder /app/node_modules/iconv-lite ./node_modules/iconv-lite
+COPY --from=builder /app/node_modules/safer-buffer ./node_modules/safer-buffer
 COPY --from=builder /app/node_modules/lru-cache ./node_modules/lru-cache
 COPY --from=builder /app/node_modules/bcrypt ./node_modules/bcrypt
 COPY --from=builder /app/node_modules/node-addon-api ./node_modules/node-addon-api
