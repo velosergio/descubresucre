@@ -27,6 +27,7 @@ El contenido principal está en la página de inicio: secciones de actividades, 
 ## Descubrimiento para sistemas automáticos
 
 - [Sitemap XML](${base}/sitemap.xml): Lista de URLs públicas pensada para buscadores y rastreadores.
+- [llm.txt](${base}/llm.txt): Instrucciones y límites para agentes de IA (comportamiento, fuentes y rutas sensibles).
 
 ## Optional
 
