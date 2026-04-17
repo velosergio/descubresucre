@@ -20,20 +20,20 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteOrigin()),
-  title: "Descubre Sucre",
-  description: "Descubre Sucre",
-  authors: [{ name: "Descubre Sucre" }],
+  title: "Sucre Vivo",
+  description: "Sucre Vivo",
+  authors: [{ name: "Sucre Vivo" }],
   openGraph: {
-    title: "Descubre Sucre",
-    description: "Descubre Sucre",
+    title: "Sucre Vivo",
+    description: "Sucre Vivo",
     type: "website",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@descubresucre",
-    title: "Descubre Sucre",
-    description: "Descubre Sucre",
+    site: "@sucrevivo",
+    title: "Sucre Vivo",
+    description: "Sucre Vivo",
     images: ["/og-image.png"],
   },
 };

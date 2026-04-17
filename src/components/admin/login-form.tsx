@@ -94,7 +94,7 @@ export function LoginForm({ googleEnabled }: LoginFormProps) {
     <Card className="w-full max-w-md border-border/80 shadow-lg">
       <CardHeader>
         <CardTitle className="font-display text-2xl">Acceso al panel</CardTitle>
-        <CardDescription>Inicia sesión para administrar Descubre Sucre.</CardDescription>
+        <CardDescription>Inicia sesión para administrar Sucre Vivo.</CardDescription>
       </CardHeader>
       <form onSubmit={onCredentials}>
         <CardContent className="space-y-4">

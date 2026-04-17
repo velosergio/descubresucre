@@ -12,7 +12,7 @@ function baseUrl(): string {
 export function GET() {
   const base = baseUrl();
 
-  const body = `# Descubre Sucre
+  const body = `# Sucre Vivo
 
 > Sitio informativo sobre turismo y cultura del departamento de Sucre, Colombia: playas del Golfo de Morrosquillo (Tolú, Coveñas, San Onofre, Islas de San Bernardo), capital Sincelejo, gastronomía caribeña, festivales (por ejemplo Fiestas del 20 de Enero, cultura Zenú y porro), naturaleza y manglares.
 

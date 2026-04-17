@@ -1,6 +1,8 @@
-# Descubre Sucre
+# Sucre Vivo
 
 Aplicación web de turismo para el departamento de Sucre, Colombia. Presenta destinos, actividades, agenda cultural, eventos, convocatorias y un asistente conversacional enlazado a **n8n** mediante webhooks asíncronos.
+
+Esta primera version se limita a Sincelejo, Tolú, Coveñas, Sampués y Morroa, sin embargo se desea expandir en proximas versiones a más destinos.
 
 ## Stack tecnológico
 
@@ -147,7 +149,7 @@ La suite está dividida por capas:
 ### Base de datos de pruebas (Prisma real)
 
 1. Crea un archivo `.env.test` (puedes copiar `.env.test.example`).
-2. Asegura que `TEST_DATABASE_URL` apunte a una base aislada (ej. `descubresucre_test`).
+2. Asegura que `TEST_DATABASE_URL` apunte a una base aislada (ej. `sucre_vivo_test`).
 3. Prepara schema+seed para tests:
 
 ```bash

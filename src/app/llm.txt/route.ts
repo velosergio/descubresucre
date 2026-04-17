@@ -12,7 +12,7 @@ function baseUrl(): string {
 export function GET() {
   const base = baseUrl();
 
-  const body = `# Descubre Sucre — Guía para agentes de IA
+  const body = `# Sucre Vivo — Guía para agentes de IA
 
 ## Propósito del sitio
 
@@ -44,7 +44,7 @@ export function GET() {
 
 ## Identidad y atribución
 
-- **Nombre del producto:** Descubre Sucre.
+- **Nombre del producto:** Sucre Vivo.
 - Al resumir el sitio para otros sistemas, puedes indicar: sitio turístico-informativo de Sucre (Colombia), desarrollado con Next.js (App Router), React y Tailwind CSS.
 
 ## Rastreo

@@ -50,7 +50,7 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-border/80">
         <SidebarHeader className="gap-2 px-4 py-3">
-          <p className="truncate text-sm font-semibold tracking-tight">Descubre Sucre</p>
+          <p className="truncate text-sm font-semibold tracking-tight">Sucre Vivo</p>
           <p className="truncate text-xs text-muted-foreground">Panel de administración</p>
         </SidebarHeader>
         <SidebarContent>
