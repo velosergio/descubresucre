@@ -38,6 +38,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Crear directorios para uploads - agregar nuevas carpetas de ser necesario
+RUN mkdir -p /app/public/uploads/hero/images \
+  /app/public/uploads/hero/video \
+  /app/public/uploads/gallery/images \
+  /app/public/uploads/gallery/video
+
 # `npm run admin:create` en el contenedor (sin tsx; standalone suele no incluir esto para el script)
 COPY --from=builder /app/scripts/create-admin.mjs ./scripts/create-admin.mjs
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
