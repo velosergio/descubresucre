@@ -5,6 +5,7 @@ import { getImperdiblesForHome } from "@/lib/get-imperdibles-home";
 import { getSiteOrigin } from "@/lib/site-url";
 
 const siteOrigin = getSiteOrigin();
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sucre Vivo | Turismo, cultura y experiencias en Sucre, Colombia",
