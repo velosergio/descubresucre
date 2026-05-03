@@ -93,3 +93,45 @@ model ChatJob {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }
+
+enum HeroMode {
+  IMAGE_DEFAULT
+  IMAGE_CUSTOM
+  VIDEO
+  CAROUSEL
+}
+
+enum HeroVideoSource {
+  UPLOAD
+  EXTERNAL_URL
+}
+
+/// Fila única: id fijo "singleton". Apariencia del hero en la home.
+model HeroAppearanceSettings {
+  id              String           @id @default("singleton")
+  heroMode        HeroMode         @default(IMAGE_DEFAULT)
+  heroImageUrl    String?          @db.VarChar(2048)
+  heroVideoUrl    String?          @db.VarChar(2048)
+  heroVideoSource HeroVideoSource?
+  carouselSlides  Json?
+  updatedAt       DateTime         @updatedAt
+}
+
+enum GalleryAssetKind {
+  IMAGE
+  VIDEO
+}
+
+/// Medios subidos desde la galería administrativa (reutilizables en el banner).
+model GalleryAsset {
+  id           String           @id @default(cuid())
+  kind         GalleryAssetKind
+  publicUrl    String           @unique @db.VarChar(2048)
+  mimeType     String?          @db.VarChar(128)
+  sizeBytes    Int?
+  originalName String?          @db.VarChar(512)
+  createdAt    DateTime         @default(now())
+
+  @@index([kind])
+  @@index([createdAt])
+}

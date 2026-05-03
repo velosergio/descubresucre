@@ -1,14 +1,114 @@
-import { useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Send, MapPin, Sparkles } from "lucide-react";
 import * as m from "framer-motion/m";
 import heroImg from "@/assets/hero-sucre.jpg";
+import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
   onChatMessage: (msg: string) => void;
+  heroConfig: ResolvedHeroConfig;
 }
 
-const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
+function slideImage(src: string, alt: string, priority: boolean, extra?: string) {
+  const isRemoteHttps = /^https:\/\//i.test(src);
+  if (isRemoteHttps || src.startsWith("http://localhost") || src.startsWith("http://127.0.0.1")) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- URLs HTTPS arbitrarias del admin
+      <img src={src} alt={alt} className={cn("absolute inset-0 size-full object-cover", extra)} />
+    );
+  }
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={cn("object-cover", extra)}
+      sizes="100vw"
+      priority={priority}
+      quality={priority ? 85 : 78}
+    />
+  );
+}
+
+const HeroBackground = ({ config }: { config: ResolvedHeroConfig }) => {
+  const [videoDead, setVideoDead] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (config.mode !== "CAROUSEL" || !carouselApi) return;
+    const id = window.setInterval(() => {
+      carouselApi.scrollNext();
+    }, 6000);
+    return () => window.clearInterval(id);
+  }, [carouselApi, config.mode]);
+
+  if (config.mode === "IMAGE_DEFAULT" || (config.mode === "VIDEO" && videoDead)) {
+    return (
+      <Image
+        src={heroImg}
+        alt="Vista aérea del departamento de Sucre, Colombia"
+        fill
+        className="object-cover"
+        sizes="100vw"
+        priority
+        quality={85}
+      />
+    );
+  }
+
+  if (config.mode === "IMAGE_CUSTOM") {
+    return slideImage(config.imageUrl, "Banner Sucre Vivo", true);
+  }
+
+  if (config.mode === "VIDEO") {
+    return (
+      <video
+        className="absolute inset-0 size-full object-cover"
+        src={config.videoUrl}
+        autoPlay
+        muted
+        playsInline
+        loop
+        onError={() => setVideoDead(true)}
+      />
+    );
+  }
+
+  if (config.mode === "CAROUSEL") {
+    return (
+      <Carousel opts={{ loop: true, align: "start" }} className="h-full w-full" setApi={setCarouselApi}>
+        <CarouselContent className="-ml-0 ml-0 h-screen">
+          {config.slides.map((s, i) => (
+            <CarouselItem key={`${s.url}-${i}`} className="basis-full pl-0">
+              <div className="relative min-h-screen w-full">
+                {slideImage(s.url, s.alt ?? "Sucre", i === 0)}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    );
+  }
+
+  return (
+    <Image
+      src={heroImg}
+      alt="Vista aérea del departamento de Sucre, Colombia"
+      fill
+      className="object-cover"
+      sizes="100vw"
+      priority
+      quality={85}
+    />
+  );
+};
+
+const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,38 +125,32 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <Image
-        src={heroImg}
-        alt="Vista aérea del departamento de Sucre, Colombia"
-        fill
-        className="object-cover"
-        sizes="100vw"
-        priority
-      />
-      <div className="absolute inset-0 gradient-hero" />
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <HeroBackground config={heroConfig} />
+      </div>
+      <div className="gradient-hero absolute inset-0 z-[1]" />
 
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 text-center">
+      <div className="relative z-10 mx-auto w-full max-w-4xl px-4 text-center">
         <m.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary-foreground/20 rounded-full px-4 py-2 mb-6">
-            <MapPin className="w-4 h-4 text-tropical-gold" />
-            <span className="text-primary-foreground/90 text-sm font-body font-medium">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary/20 px-4 py-2 backdrop-blur-sm">
+            <MapPin className="h-4 w-4 text-tropical-gold" />
+            <span className="font-body text-sm font-medium text-primary-foreground/90">
               Departamento de Sucre, Colombia
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold text-primary-foreground leading-tight mb-6">
-            Descubre la magia de{" "}
-            <span className="text-tropical-gold">Sucre</span>
+          <h1 className="font-display mb-6 text-4xl leading-tight font-bold text-primary-foreground sm:text-5xl md:text-7xl">
+            Descubre la magia de <span className="text-tropical-gold">Sucre</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-primary-foreground/80 font-body max-w-2xl mx-auto mb-10">
-            Playas paradisíacas, cultura vibrante y sabores inolvidables te
-            esperan. Pregúntale a nuestro asistente todo lo que quieras saber.
+          <p className="font-body mx-auto mb-10 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
+            Playas paradisíacas, cultura vibrante y sabores inolvidables te esperan. Pregúntale a nuestro asistente todo lo que quieras
+            saber.
           </p>
         </m.div>
 
@@ -65,21 +159,21 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative max-w-2xl mx-auto mb-6"
+          className="relative mx-auto mb-6 max-w-2xl"
         >
-          <div className="glass-input rounded-2xl flex items-center gap-2 p-2">
-            <Sparkles className="w-5 h-5 text-tropical-gold ml-3 shrink-0" />
+          <div className="glass-input flex items-center gap-2 rounded-2xl p-2">
+            <Sparkles className="ml-3 h-5 w-5 shrink-0 text-tropical-gold" />
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="¿Qué te gustaría descubrir sobre Sucre?"
-              className="flex-1 bg-transparent text-primary-foreground placeholder:text-primary-foreground/50 outline-none py-3 px-2 font-body"
+              className="font-body flex-1 bg-transparent px-2 py-3 text-primary-foreground outline-none placeholder:text-primary-foreground/50"
             />
             <button
               type="submit"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-3 transition-colors shrink-0"
+              className="shrink-0 rounded-xl bg-primary p-3 text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              <Send className="w-5 h-5" />
+              <Send className="h-5 w-5" />
             </button>
           </div>
         </m.form>
@@ -93,8 +187,9 @@ const HeroSection = ({ onChatMessage }: HeroSectionProps) => {
           {suggestions.map((s) => (
             <button
               key={s}
+              type="button"
               onClick={() => onChatMessage(s)}
-              className="text-sm text-primary-foreground/70 hover:text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 backdrop-blur-sm rounded-full px-4 py-2 transition-all font-body"
+              className="font-body rounded-full bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground/70 backdrop-blur-sm transition-all hover:bg-primary-foreground/20 hover:text-primary-foreground"
             >
               {s}
             </button>

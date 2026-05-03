@@ -31,3 +31,13 @@ test-results
 *.sw?
 
 /src/generated/prisma
+
+# Subidas locales del hero (mantener .gitkeep)
+/public/uploads/hero/images/*
+!/public/uploads/hero/images/.gitkeep
+/public/uploads/hero/video/*
+!/public/uploads/hero/video/.gitkeep
+/public/uploads/gallery/images/*
+!/public/uploads/gallery/images/.gitkeep
+/public/uploads/gallery/video/*
+!/public/uploads/gallery/video/.gitkeep

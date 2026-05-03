@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
+import { getResolvedHeroConfig } from "@/lib/get-resolved-hero-config";
 import { getSiteOrigin } from "@/lib/site-url";
 
 const siteOrigin = getSiteOrigin();
@@ -54,6 +55,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
-  return <HomePage />;
+export default async function Page() {
+  const heroConfig = await getResolvedHeroConfig();
+  return <HomePage heroConfig={heroConfig} />;
 }

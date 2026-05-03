@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useReducer } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,15 +51,9 @@ function loginFormReducer(state: LoginFormState, action: LoginFormAction): Login
 
 export function LoginForm({ googleEnabled }: LoginFormProps) {
   const router = useRouter();
-  const [callbackUrl, setCallbackUrl] = useState("/admin");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin";
   const [form, dispatch] = useReducer(loginFormReducer, INITIAL_FORM);
-
-  useEffect(() => {
-    const current = new URLSearchParams(window.location.search).get("callbackUrl");
-    if (current) {
-      setCallbackUrl(current);
-    }
-  }, []);
 
   async function onCredentials(e: React.FormEvent) {
     e.preventDefault();

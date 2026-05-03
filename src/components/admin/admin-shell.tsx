@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Settings, Shield, Users, LogOut } from "lucide-react";
+import { ImageIcon, Images, LayoutDashboard, LayoutGrid, Settings, Shield, Users, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,17 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 const mainNav = [{ href: "/admin", label: "Resumen", icon: LayoutDashboard }];
+
+const personalizarNav: {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+}[] = [
+  { href: "/admin/personalizar", label: "Vista general", icon: LayoutGrid, exact: true },
+  { href: "/admin/personalizar/galeria", label: "Galería", icon: Images },
+  { href: "/admin/personalizar/banner", label: "Banner principal", icon: ImageIcon },
+];
 
 const adminNav = [
   { href: "/admin/users", label: "Usuarios", icon: Users },
@@ -75,26 +86,50 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
             </SidebarGroupContent>
           </SidebarGroup>
           {isAdmin ? (
-            <SidebarGroup>
-              <SidebarGroupLabel>Administración</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {adminNav.map((item) => {
-                    const active = isNavActive(pathname, item.href);
-                    return (
-                      <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton asChild isActive={active}>
-                          <Link href={item.href}>
-                            <item.icon className="size-4" />
-                            <span>{item.label}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            <>
+              <SidebarGroup>
+                <SidebarGroupLabel>Personalizar</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {personalizarNav.map((item) => {
+                      const active = item.exact
+                        ? pathname === item.href || pathname === `${item.href}/`
+                        : isNavActive(pathname, item.href);
+                      return (
+                        <SidebarMenuItem key={item.href}>
+                          <SidebarMenuButton asChild isActive={active}>
+                            <Link href={item.href}>
+                              <item.icon className="size-4" />
+                              <span>{item.label}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+              <SidebarGroup>
+                <SidebarGroupLabel>Administración</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {adminNav.map((item) => {
+                      const active = isNavActive(pathname, item.href);
+                      return (
+                        <SidebarMenuItem key={item.href}>
+                          <SidebarMenuButton asChild isActive={active}>
+                            <Link href={item.href}>
+                              <item.icon className="size-4" />
+                              <span>{item.label}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </>
           ) : null}
         </SidebarContent>
         <SidebarFooter className="gap-2 border-t border-border/60 p-2">

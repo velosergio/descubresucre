@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useReducer } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { registerUserAction } from "@/lib/actions/register";
 import { Button } from "@/components/ui/button";
@@ -57,15 +57,9 @@ function registerFormReducer(state: RegisterFormState, action: RegisterFormActio
 
 export function RegisterForm({ googleEnabled }: RegisterFormProps) {
   const router = useRouter();
-  const [callbackUrl, setCallbackUrl] = useState("/cuenta/pendiente");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/cuenta/pendiente";
   const [form, dispatch] = useReducer(registerFormReducer, INITIAL_FORM);
-
-  useEffect(() => {
-    const current = new URLSearchParams(window.location.search).get("callbackUrl");
-    if (current) {
-      setCallbackUrl(current);
-    }
-  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -5,6 +5,7 @@ import { MessageCircle } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
 import HeroSection from "@/components/HeroSection";
+import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import PromoCards from "@/components/PromoCards";
 import ActivitiesSection from "@/components/ActivitiesSection";
 import EventsSection from "@/components/EventsSection";
@@ -14,7 +15,7 @@ import MapSection from "@/components/MapSection";
 import Footer from "@/components/Footer";
 import { ChatPanel } from "@/components/ChatPanel";
 
-export default function HomePage() {
+export default function HomePage({ heroConfig }: { heroConfig: ResolvedHeroConfig }) {
   const [view, setView] = useState<"landing" | "chat">("landing");
   const [chatKey, setChatKey] = useState(0);
   const [initialMessage, setInitialMessage] = useState<string | undefined>();
@@ -40,7 +41,7 @@ export default function HomePage() {
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
-            <HeroSection onChatMessage={(msg) => openChat(msg)} />
+            <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
             <PromoCards />
             <ActivitiesSection />
             <EventsSection />
