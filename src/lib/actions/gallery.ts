@@ -15,6 +15,7 @@ import {
   VIDEO_MIME_TO_EXT,
 } from "@/lib/upload-limits";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
+import { collectGalleryOrphanIds, mapExistingGalleryRowsToDTO } from "@/lib/gallery-assets";
 import { prisma } from "@/lib/prisma";
 
 export async function listGalleryAssetsAction(input?: { kind?: GalleryAssetKind }) {
@@ -26,14 +27,7 @@ export async function listGalleryAssetsAction(input?: { kind?: GalleryAssetKind 
       where: input?.kind ? { kind: input.kind } : undefined,
       orderBy: { createdAt: "desc" },
     });
-    const assets: GalleryAssetDTO[] = rows.map((r) => ({
-      id: r.id,
-      kind: r.kind,
-      publicUrl: r.publicUrl,
-      mimeType: r.mimeType,
-      originalName: r.originalName,
-      createdAt: r.createdAt.toISOString(),
-    }));
+    const assets: GalleryAssetDTO[] = await mapExistingGalleryRowsToDTO(rows);
     return { ok: true as const, assets };
   } catch (e) {
     console.error("listGalleryAssetsAction", e);
@@ -131,6 +125,42 @@ export async function uploadGalleryAssetAction(formData: FormData) {
   } catch (e) {
     console.error("uploadGalleryAssetAction", e);
     return { ok: false as const, error: "No se pudo guardar en la galería." };
+  }
+}
+
+export async function cleanupGalleryOrphansAction() {
+  const gate = await assertAdminAction();
+  if (!gate.ok) return { ok: false as const, error: gate.error };
+
+  try {
+    const rows = await prisma.galleryAsset.findMany({
+      select: {
+        id: true,
+        kind: true,
+        publicUrl: true,
+        mimeType: true,
+        originalName: true,
+        createdAt: true,
+      },
+    });
+
+    const orphanIds = await collectGalleryOrphanIds(rows);
+    if (orphanIds.length === 0) {
+      return { ok: true as const, removed: 0 };
+    }
+
+    const deleted = await prisma.galleryAsset.deleteMany({
+      where: { id: { in: orphanIds } },
+    });
+
+    revalidatePath("/admin/personalizar/galeria");
+    revalidatePath("/admin/personalizar/banner");
+    revalidatePath("/admin/personalizar/destinos-imperdibles");
+
+    return { ok: true as const, removed: deleted.count };
+  } catch (e) {
+    console.error("cleanupGalleryOrphansAction", e);
+    return { ok: false as const, error: "No se pudo limpiar la galería." };
   }
 }
 

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
+import { mapExistingGalleryRowsToDTO } from "@/lib/gallery-assets";
 import { GalleryAdminClient } from "@/components/admin/gallery-admin-client";
 
 export default async function AdminGaleriaPage() {
@@ -7,14 +8,7 @@ export default async function AdminGaleriaPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const initial: GalleryAssetDTO[] = rows.map((r) => ({
-    id: r.id,
-    kind: r.kind,
-    publicUrl: r.publicUrl,
-    mimeType: r.mimeType,
-    originalName: r.originalName,
-    createdAt: r.createdAt.toISOString(),
-  }));
+  const initial: GalleryAssetDTO[] = await mapExistingGalleryRowsToDTO(rows);
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">

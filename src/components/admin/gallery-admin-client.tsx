@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
-import { deleteGalleryAssetAction, uploadGalleryAssetAction } from "@/lib/actions/gallery";
+import { cleanupGalleryOrphansAction, deleteGalleryAssetAction, uploadGalleryAssetAction } from "@/lib/actions/gallery";
 
 export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) {
   const router = useRouter();
@@ -52,6 +52,19 @@ export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) 
     });
   }
 
+  function cleanupOrphans() {
+    startTransition(async () => {
+      const res = await cleanupGalleryOrphansAction();
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      if (res.removed === 0) toast.success("No se encontraron registros huérfanos.");
+      else toast.success(`Se eliminaron ${res.removed} registros huérfanos.`);
+      router.refresh();
+    });
+  }
+
   return (
     <>
       <div className="rounded-lg border border-border/80 p-4">
@@ -65,6 +78,11 @@ export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) 
           onChange={(e) => void onUpload(e.target.files?.[0] ?? null)}
         />
         <p className="mt-2 text-xs text-muted-foreground">JPEG, PNG, WebP hasta 12 MB; MP4/WebM hasta 80 MB.</p>
+        <div className="mt-3">
+          <Button type="button" variant="outline" disabled={pending} onClick={cleanupOrphans}>
+            Limpiar registros huérfanos
+          </Button>
+        </div>
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
