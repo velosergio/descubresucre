@@ -14,6 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 type Props = {
   payload: ImperdiblesHomePayload;
@@ -30,19 +31,19 @@ function DestinationCard({
   subtitle: string;
   cardImageUrl: string;
 }) {
-  const isLocalUpload = cardImageUrl.startsWith("/uploads/");
+  const cardSrc = toServedMediaUrl(cardImageUrl);
   return (
     <Link
       href={`/imperdibles/${slug}`}
       className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl card-hover"
     >
       <Image
-        src={cardImageUrl}
+        src={cardSrc}
         alt=""
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-110"
         sizes="(max-width: 768px) 100vw, 33vw"
-        unoptimized={isLocalUpload}
+        unoptimized
       />
       <div className="absolute inset-0 gradient-card-overlay" />
       <div className="absolute bottom-0 left-0 right-0 p-6">

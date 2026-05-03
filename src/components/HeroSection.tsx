@@ -8,6 +8,7 @@ import heroImg from "@/assets/hero-sucre.jpg";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 interface HeroSectionProps {
   onChatMessage: (msg: string) => void;
@@ -16,7 +17,7 @@ interface HeroSectionProps {
 
 function slideImage(src: string, alt: string, priority: boolean, extra?: string) {
   const isRemoteHttps = /^https:\/\//i.test(src);
-  const isLocalUpload = src.startsWith("/uploads/");
+  const servedSrc = toServedMediaUrl(src);
   if (isRemoteHttps || src.startsWith("http://localhost") || src.startsWith("http://127.0.0.1")) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- URLs HTTPS arbitrarias del admin
@@ -25,14 +26,14 @@ function slideImage(src: string, alt: string, priority: boolean, extra?: string)
   }
   return (
     <Image
-      src={src}
+      src={servedSrc}
       alt={alt}
       fill
       className={cn("object-cover", extra)}
       sizes="100vw"
       priority={priority}
       quality={priority ? 85 : 78}
-      unoptimized={isLocalUpload}
+      unoptimized
     />
   );
 }
@@ -68,10 +69,11 @@ const HeroBackground = ({ config }: { config: ResolvedHeroConfig }) => {
   }
 
   if (config.mode === "VIDEO") {
+    const servedVideo = toServedMediaUrl(config.videoUrl);
     return (
       <video
         className="absolute inset-0 size-full object-cover"
-        src={config.videoUrl}
+        src={servedVideo}
         autoPlay
         muted
         playsInline

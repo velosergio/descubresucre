@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
 import { listGalleryAssetsAction } from "@/lib/actions/gallery";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 export function GalleryPickerDialog({
   open,
@@ -58,7 +59,7 @@ export function GalleryPickerDialog({
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {assets.map((a) => {
-                const isLocalUpload = a.publicUrl.startsWith("/uploads/");
+                const src = toServedMediaUrl(a.publicUrl);
                 return (
                 <button
                   key={a.id}
@@ -70,7 +71,7 @@ export function GalleryPickerDialog({
                   }}
                 >
                   {a.kind === "IMAGE" ? (
-                    <Image src={a.publicUrl} alt="" fill className="object-cover" sizes="200px" unoptimized={isLocalUpload} />
+                    <Image src={src} alt="" fill className="object-cover" sizes="200px" unoptimized />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-muted">
                       <Film className="size-12 text-muted-foreground" />

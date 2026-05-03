@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getImperdibleBySlug } from "@/lib/get-imperdible-detail";
 import { getSiteOrigin } from "@/lib/site-url";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,7 +33,7 @@ export default async function ImperdibleDetailPage({ params }: Props) {
     mapsKey &&
     `https://www.google.com/maps/embed/v1/view?key=${encodeURIComponent(mapsKey)}&center=${dest.mapLat},${dest.mapLng}&zoom=${dest.mapZoom}`;
   const externalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dest.mapLat},${dest.mapLng}`)}`;
-  const isLocalUpload = dest.cardImageUrl.startsWith("/uploads/");
+  const cardSrc = toServedMediaUrl(dest.cardImageUrl);
 
   return (
     <article className="min-h-screen bg-background">
@@ -46,13 +47,13 @@ export default async function ImperdibleDetailPage({ params }: Props) {
           </Button>
           <div className="relative aspect-[21/9] max-h-[320px] w-full overflow-hidden rounded-xl border border-border/80">
             <Image
-              src={dest.cardImageUrl}
+              src={cardSrc}
               alt=""
               fill
               className="object-cover"
               sizes="(max-width: 896px) 100vw, 896px"
               priority
-              unoptimized={isLocalUpload}
+              unoptimized
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">

@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
 import { cleanupGalleryOrphansAction, deleteGalleryAssetAction, uploadGalleryAssetAction } from "@/lib/actions/gallery";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) {
   const router = useRouter();
@@ -118,12 +119,12 @@ function GalleryTile({
   onDelete: () => void;
   pending: boolean;
 }) {
-  const isLocalUpload = asset.publicUrl.startsWith("/uploads/");
+  const src = toServedMediaUrl(asset.publicUrl);
   return (
     <div className="overflow-hidden rounded-lg border border-border/80 bg-card shadow-sm">
       <div className="relative aspect-video bg-muted">
         {asset.kind === "IMAGE" ? (
-          <Image src={asset.publicUrl} alt="" fill className="object-cover" sizes="400px" unoptimized={isLocalUpload} />
+          <Image src={src} alt="" fill className="object-cover" sizes="400px" unoptimized />
         ) : (
           <div className="flex h-full items-center justify-center">
             <Film className="size-14 text-muted-foreground" />

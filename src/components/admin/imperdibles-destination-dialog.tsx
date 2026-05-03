@@ -24,6 +24,7 @@ import {
   updateImperdibleDestinationAction,
 } from "@/lib/actions/imperdibles";
 import { uploadGalleryAssetAction } from "@/lib/actions/gallery";
+import { toServedMediaUrl } from "@/lib/media-url";
 
 export type ImperdibleAdminRow = {
   id: string;
@@ -86,7 +87,7 @@ function DestinationFormInner({
   );
 
   const mapsHelperUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${form.mapLat},${form.mapLng}`)}`;
-  const isLocalUploadPreview = form.cardImageUrl.startsWith("/uploads/");
+  const previewSrc = toServedMediaUrl(form.cardImageUrl);
 
   async function onUploadCard(f: File | null) {
     if (!f) return;
@@ -186,12 +187,12 @@ function DestinationFormInner({
           {form.cardImageUrl ? (
             <div className="relative mt-2 aspect-video w-full max-w-xs overflow-hidden rounded-md border">
               <Image
-                src={form.cardImageUrl}
+                src={previewSrc}
                 alt=""
                 fill
                 className="object-cover"
                 sizes="320px"
-                unoptimized={isLocalUploadPreview}
+                unoptimized
               />
             </div>
           ) : (
