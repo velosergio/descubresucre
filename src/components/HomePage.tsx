@@ -6,7 +6,8 @@ import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
 import HeroSection from "@/components/HeroSection";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
-import PromoCards from "@/components/PromoCards";
+import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
+import ImperdiblesSection from "@/components/ImperdiblesSection";
 import ActivitiesSection from "@/components/ActivitiesSection";
 import EventsSection from "@/components/EventsSection";
 import CulturalAgenda from "@/components/CulturalAgenda";
@@ -15,7 +16,13 @@ import MapSection from "@/components/MapSection";
 import Footer from "@/components/Footer";
 import { ChatPanel } from "@/components/ChatPanel";
 
-export default function HomePage({ heroConfig }: { heroConfig: ResolvedHeroConfig }) {
+export default function HomePage({
+  heroConfig,
+  imperdiblesPayload,
+}: {
+  heroConfig: ResolvedHeroConfig;
+  imperdiblesPayload: ImperdiblesHomePayload;
+}) {
   const [view, setView] = useState<"landing" | "chat">("landing");
   const [chatKey, setChatKey] = useState(0);
   const [initialMessage, setInitialMessage] = useState<string | undefined>();
@@ -42,7 +49,7 @@ export default function HomePage({ heroConfig }: { heroConfig: ResolvedHeroConfi
             transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
           >
             <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
-            <PromoCards />
+            <ImperdiblesSection payload={imperdiblesPayload} />
             <ActivitiesSection />
             <EventsSection />
             <CulturalAgenda />

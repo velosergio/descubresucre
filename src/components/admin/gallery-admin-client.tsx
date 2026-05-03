@@ -78,7 +78,7 @@ export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) 
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar este archivo?</AlertDialogTitle>
             <AlertDialogDescription>
-              Si el banner lo está usando, la eliminación será rechazada.
+              Si el banner o Destinos imperdibles lo están usando, la eliminación será rechazada.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

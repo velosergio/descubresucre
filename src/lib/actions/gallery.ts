@@ -120,6 +120,7 @@ export async function uploadGalleryAssetAction(formData: FormData) {
 
     revalidatePath("/admin/personalizar/galeria");
     revalidatePath("/admin/personalizar/banner");
+    revalidatePath("/admin/personalizar/destinos-imperdibles");
 
     return {
       ok: true as const,
@@ -155,6 +156,18 @@ export async function deleteGalleryAssetAction(id: string) {
       };
     }
 
+    const usedByImperdible = await prisma.imperdibleDestination.findFirst({
+      where: { cardImageUrl: asset.publicUrl },
+      select: { id: true },
+    });
+    if (usedByImperdible) {
+      return {
+        ok: false as const,
+        error:
+          "Este archivo está en uso en Destinos imperdibles. Cambia o elimina ese destino antes de borrarlo.",
+      };
+    }
+
     const diskPath = filePathFromPublicUrl(asset.publicUrl);
     if (diskPath) {
       try {
@@ -168,6 +181,7 @@ export async function deleteGalleryAssetAction(id: string) {
 
     revalidatePath("/admin/personalizar/galeria");
     revalidatePath("/admin/personalizar/banner");
+    revalidatePath("/admin/personalizar/destinos-imperdibles");
     revalidatePath("/");
 
     return { ok: true as const };

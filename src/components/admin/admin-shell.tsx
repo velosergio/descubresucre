@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { ImageIcon, Images, LayoutDashboard, LayoutGrid, Settings, Shield, Users, LogOut } from "lucide-react";
+import { ImageIcon, Images, LayoutDashboard, LayoutGrid, MapPin, Settings, Shield, Users, LogOut } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +33,7 @@ const personalizarNav: {
   { href: "/admin/personalizar", label: "Vista general", icon: LayoutGrid, exact: true },
   { href: "/admin/personalizar/galeria", label: "Galería", icon: Images },
   { href: "/admin/personalizar/banner", label: "Banner principal", icon: ImageIcon },
+  { href: "/admin/personalizar/destinos-imperdibles", label: "Destinos imperdibles", icon: MapPin },
 ];
 
 const adminNav = [

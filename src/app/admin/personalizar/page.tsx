@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ImageIcon, Images } from "lucide-react";
+import { ImageIcon, Images, MapPin } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminPersonalizarPage() {
@@ -37,6 +37,22 @@ export default function AdminPersonalizarPage() {
                 <CardTitle className="text-lg">Banner principal</CardTitle>
                 <CardDescription>
                   Imagen, vídeo o carrusel de fondo en la portada (elige desde la galería o sube archivos nuevos).
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href="/admin/personalizar/destinos-imperdibles" className="block transition-opacity hover:opacity-90">
+          <Card className="border-border/80">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                <MapPin className="size-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-lg">Destinos imperdibles</CardTitle>
+                <CardDescription>
+                  Tarjetas de la portada, detalle en Markdown y ubicación en Google Maps.
                 </CardDescription>
               </div>
             </CardHeader>

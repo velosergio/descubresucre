@@ -135,3 +135,43 @@ model GalleryAsset {
   @@index([kind])
   @@index([createdAt])
 }
+
+enum ImperdiblesDisplayMode {
+  GRID_THREE
+  CAROUSEL
+}
+
+enum ImperdiblesItemOrder {
+  MANUAL
+  RANDOM
+}
+
+/// Fila única: id fijo "singleton". Presentación de la sección Destinos imperdibles en la home.
+model ImperdiblesSectionSettings {
+  id                   String                 @id @default("singleton")
+  displayMode          ImperdiblesDisplayMode @default(GRID_THREE)
+  itemOrder            ImperdiblesItemOrder   @default(MANUAL)
+  headingTitle         String?                @db.VarChar(200)
+  headingSubtitle      String?                @db.VarChar(500)
+  carouselIntervalMs   Int                    @default(5000)
+  updatedAt            DateTime               @updatedAt
+}
+
+/// Destino destacado en la home y página de detalle.
+model ImperdibleDestination {
+  id             String   @id @default(cuid())
+  slug           String   @unique @db.VarChar(160)
+  title          String   @db.VarChar(200)
+  subtitle       String   @db.VarChar(500)
+  cardImageUrl   String   @db.VarChar(2048)
+  bodyMarkdown   String   @db.Text
+  mapLat         Decimal  @db.Decimal(10, 7)
+  mapLng         Decimal  @db.Decimal(10, 7)
+  mapZoom        Int      @default(14)
+  published      Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([published, sortOrder])
+}
