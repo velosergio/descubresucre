@@ -86,6 +86,7 @@ function DestinationFormInner({
   );
 
   const mapsHelperUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${form.mapLat},${form.mapLng}`)}`;
+  const isLocalUploadPreview = form.cardImageUrl.startsWith("/uploads/");
 
   async function onUploadCard(f: File | null) {
     if (!f) return;
@@ -184,7 +185,14 @@ function DestinationFormInner({
           </div>
           {form.cardImageUrl ? (
             <div className="relative mt-2 aspect-video w-full max-w-xs overflow-hidden rounded-md border">
-              <Image src={form.cardImageUrl} alt="" fill className="object-cover" sizes="320px" />
+              <Image
+                src={form.cardImageUrl}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="320px"
+                unoptimized={isLocalUploadPreview}
+              />
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">Elige o sube una imagen.</p>

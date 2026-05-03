@@ -16,6 +16,7 @@ interface HeroSectionProps {
 
 function slideImage(src: string, alt: string, priority: boolean, extra?: string) {
   const isRemoteHttps = /^https:\/\//i.test(src);
+  const isLocalUpload = src.startsWith("/uploads/");
   if (isRemoteHttps || src.startsWith("http://localhost") || src.startsWith("http://127.0.0.1")) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- URLs HTTPS arbitrarias del admin
@@ -31,6 +32,7 @@ function slideImage(src: string, alt: string, priority: boolean, extra?: string)
       sizes="100vw"
       priority={priority}
       quality={priority ? 85 : 78}
+      unoptimized={isLocalUpload}
     />
   );
 }

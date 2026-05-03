@@ -32,6 +32,7 @@ export default async function ImperdibleDetailPage({ params }: Props) {
     mapsKey &&
     `https://www.google.com/maps/embed/v1/view?key=${encodeURIComponent(mapsKey)}&center=${dest.mapLat},${dest.mapLng}&zoom=${dest.mapZoom}`;
   const externalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dest.mapLat},${dest.mapLng}`)}`;
+  const isLocalUpload = dest.cardImageUrl.startsWith("/uploads/");
 
   return (
     <article className="min-h-screen bg-background">
@@ -44,7 +45,15 @@ export default async function ImperdibleDetailPage({ params }: Props) {
             </Link>
           </Button>
           <div className="relative aspect-[21/9] max-h-[320px] w-full overflow-hidden rounded-xl border border-border/80">
-            <Image src={dest.cardImageUrl} alt="" fill className="object-cover" sizes="(max-width: 896px) 100vw, 896px" priority />
+            <Image
+              src={dest.cardImageUrl}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="(max-width: 896px) 100vw, 896px"
+              priority
+              unoptimized={isLocalUpload}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
               <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">{dest.title}</h1>

@@ -30,6 +30,7 @@ function DestinationCard({
   subtitle: string;
   cardImageUrl: string;
 }) {
+  const isLocalUpload = cardImageUrl.startsWith("/uploads/");
   return (
     <Link
       href={`/imperdibles/${slug}`}
@@ -41,6 +42,7 @@ function DestinationCard({
         fill
         className="object-cover transition-transform duration-700 group-hover:scale-110"
         sizes="(max-width: 768px) 100vw, 33vw"
+        unoptimized={isLocalUpload}
       />
       <div className="absolute inset-0 gradient-card-overlay" />
       <div className="absolute bottom-0 left-0 right-0 p-6">

@@ -57,7 +57,9 @@ export function GalleryPickerDialog({
             </p>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {assets.map((a) => (
+              {assets.map((a) => {
+                const isLocalUpload = a.publicUrl.startsWith("/uploads/");
+                return (
                 <button
                   key={a.id}
                   type="button"
@@ -68,7 +70,7 @@ export function GalleryPickerDialog({
                   }}
                 >
                   {a.kind === "IMAGE" ? (
-                    <Image src={a.publicUrl} alt="" fill className="object-cover" sizes="200px" />
+                    <Image src={a.publicUrl} alt="" fill className="object-cover" sizes="200px" unoptimized={isLocalUpload} />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-muted">
                       <Film className="size-12 text-muted-foreground" />
@@ -76,7 +78,8 @@ export function GalleryPickerDialog({
                   )}
                   <span className="sr-only">Seleccionar</span>
                 </button>
-              ))}
+                );
+              })}
             </div>
           )
         ) : null}

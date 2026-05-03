@@ -118,11 +118,12 @@ function GalleryTile({
   onDelete: () => void;
   pending: boolean;
 }) {
+  const isLocalUpload = asset.publicUrl.startsWith("/uploads/");
   return (
     <div className="overflow-hidden rounded-lg border border-border/80 bg-card shadow-sm">
       <div className="relative aspect-video bg-muted">
         {asset.kind === "IMAGE" ? (
-          <Image src={asset.publicUrl} alt="" fill className="object-cover" sizes="400px" />
+          <Image src={asset.publicUrl} alt="" fill className="object-cover" sizes="400px" unoptimized={isLocalUpload} />
         ) : (
           <div className="flex h-full items-center justify-center">
             <Film className="size-14 text-muted-foreground" />
