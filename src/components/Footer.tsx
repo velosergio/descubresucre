@@ -5,7 +5,7 @@ const Footer = () => (
     <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
       <div>
         <h3 className="font-display font-bold text-xl text-primary-foreground mb-3">
-          Sucre <span className="text-tropical-gold">Turístico</span>
+          Sucre <span className="text-tropical-gold">Vivo</span>
         </h3>
         <p className="font-body text-sm text-primary-foreground/60">
           Tu guía digital para explorar las maravillas del departamento de Sucre, Colombia.
