@@ -1,7 +1,7 @@
 CREATE TABLE `GalleryAsset` (
     `id` VARCHAR(191) NOT NULL,
     `kind` ENUM('IMAGE', 'VIDEO') NOT NULL,
-    `publicUrl` VARCHAR(2048) NOT NULL,
+    `publicUrl` VARCHAR(768) NOT NULL,
     `mimeType` VARCHAR(128) NULL,
     `sizeBytes` INT NULL,
     `originalName` VARCHAR(512) NULL,

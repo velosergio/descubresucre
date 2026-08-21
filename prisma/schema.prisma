@@ -126,7 +126,7 @@ enum GalleryAssetKind {
 model GalleryAsset {
   id           String           @id @default(cuid())
   kind         GalleryAssetKind
-  publicUrl    String           @unique @db.VarChar(2048)
+  publicUrl    String           @unique @db.VarChar(768)
   mimeType     String?          @db.VarChar(128)
   sizeBytes    Int?
   originalName String?          @db.VarChar(512)
