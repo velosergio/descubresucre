@@ -43,8 +43,8 @@ export function ChatbotSettingsForm({ initialWebhookUrl, callbackHint }: Chatbot
           autoComplete="off"
         />
         <p className="text-sm text-muted-foreground">
-          Next.js envía el trabajo a esta URL; n8n debe responder de inmediato y luego llamar al callback
-          con la respuesta.
+          Next.js envía el trabajo a esta URL; n8n debe responder de inmediato y luego llamar al
+          callback con la respuesta.
         </p>
       </div>
 
@@ -54,7 +54,8 @@ export function ChatbotSettingsForm({ initialWebhookUrl, callbackHint }: Chatbot
         <p className="mt-2 text-muted-foreground">
           Usa el mismo valor para <code className="text-xs">N8N_CALLBACK_SECRET</code> en{" "}
           <code className="text-xs">.env</code> y en el workflow (cabecera{" "}
-          <code className="text-xs">X-N8N-Secret</code> o campo <code className="text-xs">secret</code>).
+          <code className="text-xs">X-N8N-Secret</code> o campo{" "}
+          <code className="text-xs">secret</code>).
         </p>
       </div>
 

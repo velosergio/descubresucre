@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { MapPin, Navigation, Waves, Landmark, TreePine, UtensilsCrossed } from "lucide-react";
 import * as m from "framer-motion/m";
+import { Landmark, MapPin, Navigation, TreePine, UtensilsCrossed, Waves } from "lucide-react";
+import { useState } from "react";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -15,16 +15,96 @@ interface Destination {
 }
 
 const destinations: Destination[] = [
-  { id: 1, name: "Playa Blanca, Tolú", lat: 9.5256, lng: -75.5811, category: "playas", description: "Arena blanca y aguas cristalinas del Golfo de Morrosquillo.", color: "hsl(174, 62%, 35%)" },
-  { id: 2, name: "Islas de San Bernardo", lat: 9.7667, lng: -75.8833, category: "playas", description: "Archipiélago paradisíaco con aguas turquesas y arrecifes de coral.", color: "hsl(174, 62%, 35%)" },
-  { id: 3, name: "Coveñas", lat: 9.4033, lng: -75.6847, category: "playas", description: "Playas tranquilas, manglares y rica oferta gastronómica.", color: "hsl(174, 62%, 35%)" },
-  { id: 4, name: "Sincelejo – Centro Histórico", lat: 9.3047, lng: -75.3953, category: "cultura", description: "Capital del departamento, sede de las Fiestas en Corralejas.", color: "hsl(28, 85%, 55%)" },
-  { id: 5, name: "San Juan de Betulia", lat: 9.35, lng: -75.24, category: "cultura", description: "Tradiciones ganaderas y festivales folclóricos de la sabana.", color: "hsl(28, 85%, 55%)" },
-  { id: 6, name: "Ciénaga de la Caimanera", lat: 9.4778, lng: -75.6083, category: "naturaleza", description: "Ecosistema de manglar con avistamiento de aves y caimanes.", color: "hsl(120, 40%, 40%)" },
-  { id: 7, name: "Serranía de San Jacinto", lat: 9.8167, lng: -75.1167, category: "naturaleza", description: "Bosques secos, cascadas y senderos ecológicos.", color: "hsl(120, 40%, 40%)" },
-  { id: 8, name: "Tolú – Zona Gastronómica", lat: 9.5311, lng: -75.5722, category: "gastronomía", description: "Ceviche, arroz con coco, patacón y cocadas del Caribe.", color: "hsl(5, 72%, 60%)" },
-  { id: 9, name: "Ovejas", lat: 9.5333, lng: -75.2333, category: "cultura", description: "Cuna del Festival Nacional de Gaitas.", color: "hsl(28, 85%, 55%)" },
-  { id: 10, name: "San Onofre", lat: 9.7333, lng: -75.5333, category: "playas", description: "Playas vírgenes de Rincón del Mar y herencia afrocolombiana.", color: "hsl(174, 62%, 35%)" },
+  {
+    id: 1,
+    name: "Playa Blanca, Tolú",
+    lat: 9.5256,
+    lng: -75.5811,
+    category: "playas",
+    description: "Arena blanca y aguas cristalinas del Golfo de Morrosquillo.",
+    color: "hsl(174, 62%, 35%)",
+  },
+  {
+    id: 2,
+    name: "Islas de San Bernardo",
+    lat: 9.7667,
+    lng: -75.8833,
+    category: "playas",
+    description: "Archipiélago paradisíaco con aguas turquesas y arrecifes de coral.",
+    color: "hsl(174, 62%, 35%)",
+  },
+  {
+    id: 3,
+    name: "Coveñas",
+    lat: 9.4033,
+    lng: -75.6847,
+    category: "playas",
+    description: "Playas tranquilas, manglares y rica oferta gastronómica.",
+    color: "hsl(174, 62%, 35%)",
+  },
+  {
+    id: 4,
+    name: "Sincelejo – Centro Histórico",
+    lat: 9.3047,
+    lng: -75.3953,
+    category: "cultura",
+    description: "Capital del departamento, sede de las Fiestas en Corralejas.",
+    color: "hsl(28, 85%, 55%)",
+  },
+  {
+    id: 5,
+    name: "San Juan de Betulia",
+    lat: 9.35,
+    lng: -75.24,
+    category: "cultura",
+    description: "Tradiciones ganaderas y festivales folclóricos de la sabana.",
+    color: "hsl(28, 85%, 55%)",
+  },
+  {
+    id: 6,
+    name: "Ciénaga de la Caimanera",
+    lat: 9.4778,
+    lng: -75.6083,
+    category: "naturaleza",
+    description: "Ecosistema de manglar con avistamiento de aves y caimanes.",
+    color: "hsl(120, 40%, 40%)",
+  },
+  {
+    id: 7,
+    name: "Serranía de San Jacinto",
+    lat: 9.8167,
+    lng: -75.1167,
+    category: "naturaleza",
+    description: "Bosques secos, cascadas y senderos ecológicos.",
+    color: "hsl(120, 40%, 40%)",
+  },
+  {
+    id: 8,
+    name: "Tolú – Zona Gastronómica",
+    lat: 9.5311,
+    lng: -75.5722,
+    category: "gastronomía",
+    description: "Ceviche, arroz con coco, patacón y cocadas del Caribe.",
+    color: "hsl(5, 72%, 60%)",
+  },
+  {
+    id: 9,
+    name: "Ovejas",
+    lat: 9.5333,
+    lng: -75.2333,
+    category: "cultura",
+    description: "Cuna del Festival Nacional de Gaitas.",
+    color: "hsl(28, 85%, 55%)",
+  },
+  {
+    id: 10,
+    name: "San Onofre",
+    lat: 9.7333,
+    lng: -75.5333,
+    category: "playas",
+    description: "Playas vírgenes de Rincón del Mar y herencia afrocolombiana.",
+    color: "hsl(174, 62%, 35%)",
+  },
 ];
 
 const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
@@ -39,7 +119,10 @@ const MapSection = () => {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
 
-  const filtered = activeCategory === "all" ? destinations : destinations.filter((d) => d.category === activeCategory);
+  const filtered =
+    activeCategory === "all"
+      ? destinations
+      : destinations.filter((d) => d.category === activeCategory);
 
   const mapCenter = selectedDest
     ? { lat: selectedDest.lat, lng: selectedDest.lng, zoom: 12 }
@@ -59,7 +142,8 @@ const MapSection = () => {
             Destinos turísticos de <span className="text-primary">Sucre</span>
           </h2>
           <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-            Navega por el mapa interactivo y descubre playas, cultura, naturaleza y gastronomía en todo el departamento.
+            Navega por el mapa interactivo y descubre playas, cultura, naturaleza y gastronomía en
+            todo el departamento.
           </p>
         </div>
 
@@ -67,6 +151,7 @@ const MapSection = () => {
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           {categories.map((cat) => (
             <button
+              type="button"
               key={cat.key}
               onClick={() => {
                 setActiveCategory(cat.key);
@@ -86,7 +171,10 @@ const MapSection = () => {
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Map */}
-          <div className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border" style={{ height: 500 }}>
+          <div
+            className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border"
+            style={{ height: 500 }}
+          >
             <iframe
               key={`${mapCenter.lat}-${mapCenter.lng}`}
               width="100%"
@@ -96,6 +184,7 @@ const MapSection = () => {
               allowFullScreen
               loading="lazy"
               title="Mapa de Sucre"
+              sandbox="allow-scripts allow-popups allow-forms"
             />
           </div>
 
@@ -119,8 +208,12 @@ const MapSection = () => {
                   />
                   <div>
                     <h4 className="font-semibold text-foreground text-sm">{dest.name}</h4>
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{dest.description}</p>
-                    <span className="inline-block mt-2 text-xs font-medium text-primary capitalize">{dest.category}</span>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {dest.description}
+                    </p>
+                    <span className="inline-block mt-2 text-xs font-medium text-primary capitalize">
+                      {dest.category}
+                    </span>
                   </div>
                 </div>
               </m.button>

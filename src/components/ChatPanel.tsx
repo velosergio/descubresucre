@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Bot, User } from "lucide-react";
 import * as m from "framer-motion/m";
+import { Bot, Send, User, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 interface Message {
@@ -40,63 +40,67 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const processedInitial = useRef(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll when messages/loading change
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
 
-  const sendMessagesToApi = useCallback(async (payload: { role: "user" | "assistant"; content: string }[]) => {
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionKey: sessionKeyRef.current,
-          messages: payload,
-        }),
-      });
-      const data: { jobId?: string; error?: string } = await res.json();
+  const sendMessagesToApi = useCallback(
+    async (payload: { role: "user" | "assistant"; content: string }[]) => {
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionKey: sessionKeyRef.current,
+            messages: payload,
+          }),
+        });
+        const data: { jobId?: string; error?: string } = await res.json();
 
-      if (!data.jobId) {
+        if (!data.jobId) {
+          setMessages((p) => [
+            ...p,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content:
+                data.error ||
+                "No se pudo enviar el mensaje. Comprueba la configuración del asistente.",
+            },
+          ]);
+          return;
+        }
+
+        const outcome = await pollJob(data.jobId);
+        if ("error" in outcome) {
+          setMessages((p) => [
+            ...p,
+            { id: crypto.randomUUID(), role: "assistant", content: `⚠️ ${outcome.error}` },
+          ]);
+        } else {
+          setMessages((p) => [
+            ...p,
+            { id: crypto.randomUUID(), role: "assistant", content: outcome.reply },
+          ]);
+        }
+      } catch {
         setMessages((p) => [
           ...p,
           {
             id: crypto.randomUUID(),
             role: "assistant",
-            content:
-              data.error ||
-              "No se pudo enviar el mensaje. Comprueba la configuración del asistente.",
+            content: "Error de conexión. Vuelve a intentar en un momento.",
           },
         ]);
-        return;
+      } finally {
+        setIsLoading(false);
       }
-
-      const outcome = await pollJob(data.jobId);
-      if ("error" in outcome) {
-        setMessages((p) => [
-          ...p,
-          { id: crypto.randomUUID(), role: "assistant", content: `⚠️ ${outcome.error}` },
-        ]);
-      } else {
-        setMessages((p) => [
-          ...p,
-          { id: crypto.randomUUID(), role: "assistant", content: outcome.reply },
-        ]);
-      }
-    } catch {
-      setMessages((p) => [
-        ...p,
-        {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: "Error de conexión. Vuelve a intentar en un momento.",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const handleSend = useCallback(
     (text: string) => {
@@ -143,7 +147,9 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
             <Bot className="size-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <h2 className="font-display text-lg font-semibold tracking-tight md:text-xl">Guía Sucre</h2>
+            <h2 className="font-display text-lg font-semibold tracking-tight md:text-xl">
+              Guía Sucre
+            </h2>
             <p className="text-xs text-muted-foreground md:text-sm">Asistente turístico</p>
           </div>
         </div>
@@ -157,10 +163,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
         </button>
       </header>
 
-      <div
-        ref={scrollRef}
-        className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-8"
-      >
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-8">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 pb-4">
           {messages.length === 0 && !isLoading && (
             <div className="py-12 text-center text-muted-foreground">

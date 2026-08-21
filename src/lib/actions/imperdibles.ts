@@ -18,7 +18,10 @@ const cardImageSchema = z
   .string()
   .min(1)
   .max(2048)
-  .refine((u) => u.startsWith("/uploads/gallery/images/") && !u.includes(".."), "Imagen: debe ser una ruta de galería válida.");
+  .refine(
+    (u) => u.startsWith("/uploads/gallery/images/") && !u.includes(".."),
+    "Imagen: debe ser una ruta de galería válida.",
+  );
 
 const destinationBaseSchema = z.object({
   title: z.string().min(1).max(200),
@@ -27,7 +30,7 @@ const destinationBaseSchema = z.object({
     .string()
     .max(160)
     .optional()
-    .transform((s) => (s && s.trim() ? s.trim() : undefined)),
+    .transform((s) => (s?.trim() ? s.trim() : undefined)),
   cardImageUrl: cardImageSchema,
   bodyMarkdown: z.string().max(100_000),
   mapLat: z.coerce.number().gte(-90).lte(90),
@@ -104,7 +107,11 @@ export async function createImperdibleDestinationAction(input: unknown) {
 
   const raw = parsed.data;
   const slugCandidate = raw.slug?.trim()
-    ? raw.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "")
+    ? raw.slug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
     : slugifyImperdible(raw.title);
   const slugParsed = slugSchema.safeParse(slugCandidate || "destino");
   if (!slugParsed.success) {
@@ -160,7 +167,11 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
 
   const raw = parsed.data;
   const slugCandidate = raw.slug?.trim()
-    ? raw.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "")
+    ? raw.slug
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
     : slugifyImperdible(raw.title);
   const slugParsed = slugSchema.safeParse(slugCandidate || "destino");
   if (!slugParsed.success) {

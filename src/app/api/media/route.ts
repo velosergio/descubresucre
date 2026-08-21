@@ -1,6 +1,6 @@
-import { readFile } from "fs/promises";
-import path from "path";
-import { NextRequest, NextResponse } from "next/server";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { type NextRequest, NextResponse } from "next/server";
 
 const MIME_BY_EXT: Record<string, string> = {
   ".webp": "image/webp",

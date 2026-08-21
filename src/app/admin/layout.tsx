@@ -1,5 +1,5 @@
-import { requireStaffSession } from "@/lib/auth-helpers";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { requireStaffSession } from "@/lib/auth-helpers";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { session, user } = await requireStaffSession();

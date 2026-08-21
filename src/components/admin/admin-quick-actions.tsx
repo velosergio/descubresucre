@@ -1,13 +1,5 @@
+import { ExternalLink, ImageIcon, Images, LayoutGrid, Settings, Shield, Users } from "lucide-react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  ImageIcon,
-  Images,
-  LayoutGrid,
-  Settings,
-  Shield,
-  Users,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -66,12 +58,19 @@ export function AdminQuickActions({ isAdmin }: { isAdmin: boolean }) {
         {isAdmin ? (
           <div className="grid gap-3 sm:grid-cols-2">
             {adminQuickLinks.map((item) => (
-              <Button key={item.href} variant="outline" className="h-auto justify-start gap-3 py-3" asChild>
+              <Button
+                key={item.href}
+                variant="outline"
+                className="h-auto justify-start gap-3 py-3"
+                asChild
+              >
                 <Link href={item.href}>
                   <item.icon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
                   <span className="flex min-w-0 flex-col items-start gap-0.5 text-left">
                     <span className="font-medium leading-none">{item.label}</span>
-                    <span className="text-xs font-normal text-muted-foreground">{item.description}</span>
+                    <span className="text-xs font-normal text-muted-foreground">
+                      {item.description}
+                    </span>
                   </span>
                 </Link>
               </Button>

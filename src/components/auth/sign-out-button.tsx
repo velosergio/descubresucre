@@ -17,7 +17,12 @@ export function SignOutButton({
   callbackUrl = "/login",
 }: SignOutButtonProps) {
   return (
-    <Button type="button" variant={variant} className={className} onClick={() => void signOut({ callbackUrl })}>
+    <Button
+      type="button"
+      variant={variant}
+      className={className}
+      onClick={() => void signOut({ callbackUrl })}
+    >
       {label}
     </Button>
   );

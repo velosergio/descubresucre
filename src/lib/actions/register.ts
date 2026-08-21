@@ -26,7 +26,10 @@ export async function registerUserAction(input: unknown) {
 
   const editor = await prisma.role.findUnique({ where: { name: "editor" } });
   if (!editor) {
-    return { ok: false as const, error: "El sitio no está configurado para registro (falta el rol editor)." };
+    return {
+      ok: false as const,
+      error: "El sitio no está configurado para registro (falta el rol editor).",
+    };
   }
 
   const hash = await bcrypt.hash(parsed.data.password, 12);

@@ -1,18 +1,43 @@
-import Image from "next/image";
 import * as m from "framer-motion/m";
-import { Waves, Palette, UtensilsCrossed, TreePine, Heart } from "lucide-react";
-import playaImg from "@/assets/playa-tolu.jpg";
+import { Heart, Palette, TreePine, UtensilsCrossed, Waves } from "lucide-react";
+import Image from "next/image";
 import culturaImg from "@/assets/cultura-sucre.jpg";
+import festivalImg from "@/assets/festival-sucre.jpg";
 import gastroImg from "@/assets/gastronomia-sucre.jpg";
 import natImg from "@/assets/naturaleza-sucre.jpg";
-import festivalImg from "@/assets/festival-sucre.jpg";
+import playaImg from "@/assets/playa-tolu.jpg";
 
 const activities = [
-  { icon: Waves, title: "Playas", desc: "Tolú, Coveñas, San Bernardo, Rincón del Mar", image: playaImg },
-  { icon: Palette, title: "Cultura", desc: "Artesanías Zenú, museos, arquitectura colonial", image: culturaImg },
-  { icon: UtensilsCrossed, title: "Gastronomía", desc: "Arroz de coco, mote de queso, fritos costeños", image: gastroImg },
-  { icon: TreePine, title: "Naturaleza", desc: "Manglares, ciénagas, reservas ecológicas", image: natImg },
-  { icon: Heart, title: "Experiencias", desc: "Corralejas, música de gaitas, vida local", image: festivalImg },
+  {
+    icon: Waves,
+    title: "Playas",
+    desc: "Tolú, Coveñas, San Bernardo, Rincón del Mar",
+    image: playaImg,
+  },
+  {
+    icon: Palette,
+    title: "Cultura",
+    desc: "Artesanías Zenú, museos, arquitectura colonial",
+    image: culturaImg,
+  },
+  {
+    icon: UtensilsCrossed,
+    title: "Gastronomía",
+    desc: "Arroz de coco, mote de queso, fritos costeños",
+    image: gastroImg,
+  },
+  {
+    icon: TreePine,
+    title: "Naturaleza",
+    desc: "Manglares, ciénagas, reservas ecológicas",
+    image: natImg,
+  },
+  {
+    icon: Heart,
+    title: "Experiencias",
+    desc: "Corralejas, música de gaitas, vida local",
+    image: festivalImg,
+  },
 ];
 
 const ActivitiesSection = () => {
@@ -55,7 +80,9 @@ const ActivitiesSection = () => {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-primary-foreground">
                   <act.icon className="w-10 h-10 mb-3" />
                   <h3 className="font-display font-bold text-lg">{act.title}</h3>
-                  <p className="text-xs text-primary-foreground/70 text-center px-4 mt-1 font-body">{act.desc}</p>
+                  <p className="text-xs text-primary-foreground/70 text-center px-4 mt-1 font-body">
+                    {act.desc}
+                  </p>
                 </div>
               </div>
             </m.div>

@@ -1,10 +1,17 @@
 import Link from "next/link";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
 
 export default async function CuentaPendientePage() {
   const session = await auth();
@@ -33,14 +40,14 @@ export default async function CuentaPendientePage() {
         <CardHeader>
           <CardTitle className="font-display text-2xl">Cuenta en revisión</CardTitle>
           <CardDescription>
-            Hola{user.email ? `, ${user.email}` : ""}. Un administrador debe aprobar tu registro antes de que puedas
-            acceder al panel.
+            Hola{user.email ? `, ${user.email}` : ""}. Un administrador debe aprobar tu registro
+            antes de que puedas acceder al panel.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           <p>
-            Cuando tu acceso sea aprobado, podrás entrar en <strong className="text-foreground">/admin</strong> con tu
-            usuario.
+            Cuando tu acceso sea aprobado, podrás entrar en{" "}
+            <strong className="text-foreground">/admin</strong> con tu usuario.
           </p>
         </CardContent>
         <CardFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end">

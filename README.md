@@ -131,7 +131,9 @@
   - `npm run build`: build de producción
   - `npm run start`: servidor de producción (tras `build`)
   - `npm run preview`: alias de `next start`
-  - `npm run lint`: **ESLint CLI** (`eslint .`). No uses `next lint` (deprecado en Next 16+).
+  - `npm run lint`: **Biome** (`biome check --write .`) — lint + format con autofix.
+  - `npm run format`: solo formato (`biome format --write .`).
+  - En CI / `test:ci`: `biome check .` (verifica sin escribir).
   - `npm run test`: corre pruebas una vez
   - `npm run test:watch`: corre pruebas en modo observación
   - `npm run db:generate`: regenera Prisma Client
@@ -160,7 +162,7 @@
 
   ### Base de datos de pruebas (Prisma real)
 
-  1. Crea un archivo `.env.test` (puedes copiar `.env.test.example`).
+  1. Crea un archivo `.env.test` copiando la sección **Tests** de `.env.example`.
   2. Asegura que `TEST_DATABASE_URL` apunte a una base aislada (ej. `sucre_vivo_test`).
   3. Prepara schema+seed para tests:
 

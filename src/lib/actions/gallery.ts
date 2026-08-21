@@ -1,22 +1,22 @@
 "use server";
 
-import { mkdir, unlink, writeFile } from "fs/promises";
-import path from "path";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { revalidatePath } from "next/cache";
 import type { GalleryAssetKind } from "@/generated/prisma";
 import { assertAdminAction } from "@/lib/auth-helpers";
-import { isGalleryUrlReferencedByHero } from "@/lib/gallery-hero-references";
 import { encodeRasterImageToWebp, GALLERY_WEBP_MAX_EDGE } from "@/lib/encode-image-webp";
+import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
+import { collectGalleryOrphanIds, mapExistingGalleryRowsToDTO } from "@/lib/gallery-assets";
+import { isGalleryUrlReferencedByHero } from "@/lib/gallery-hero-references";
+import { prisma } from "@/lib/prisma";
 import {
   IMAGE_MIME_TO_EXT,
   MAX_UPLOAD_IMAGE_BYTES,
   MAX_UPLOAD_VIDEO_BYTES,
   VIDEO_MIME_TO_EXT,
 } from "@/lib/upload-limits";
-import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
-import { collectGalleryOrphanIds, mapExistingGalleryRowsToDTO } from "@/lib/gallery-assets";
-import { prisma } from "@/lib/prisma";
 
 export async function listGalleryAssetsAction(input?: { kind?: GalleryAssetKind }) {
   const gate = await assertAdminAction();
@@ -91,7 +91,10 @@ export async function uploadGalleryAssetAction(formData: FormData) {
       try {
         webp = await encodeRasterImageToWebp(buf, { maxEdge: GALLERY_WEBP_MAX_EDGE });
       } catch {
-        return { ok: false as const, error: "No se pudo optimizar la imagen. Usa un JPEG, PNG o WebP válido." };
+        return {
+          ok: false as const,
+          error: "No se pudo optimizar la imagen. Usa un JPEG, PNG o WebP válido.",
+        };
       }
       await writeFile(fullPath, webp);
       bytesOut = webp.length;
@@ -182,7 +185,8 @@ export async function deleteGalleryAssetAction(id: string) {
     if (isGalleryUrlReferencedByHero(hero, asset.publicUrl)) {
       return {
         ok: false as const,
-        error: "Este archivo está en uso en el banner. Cambia la configuración del banner antes de borrarlo.",
+        error:
+          "Este archivo está en uso en el banner. Cambia la configuración del banner antes de borrarlo.",
       };
     }
 

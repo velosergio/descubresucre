@@ -1,10 +1,17 @@
 import Link from "next/link";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
 
 export default async function CuentaRechazadaPage() {
   const session = await auth();
@@ -31,7 +38,9 @@ export default async function CuentaRechazadaPage() {
     <main className="flex min-h-svh flex-col items-center justify-center bg-muted/30 px-4 py-12">
       <Card className="w-full max-w-md border-destructive/30 shadow-lg">
         <CardHeader>
-          <CardTitle className="font-display text-2xl text-destructive">Acceso no autorizado</CardTitle>
+          <CardTitle className="font-display text-2xl text-destructive">
+            Acceso no autorizado
+          </CardTitle>
           <CardDescription>
             Tu solicitud de acceso al panel no fue aprobada{user.email ? ` (${user.email})` : ""}.
           </CardDescription>

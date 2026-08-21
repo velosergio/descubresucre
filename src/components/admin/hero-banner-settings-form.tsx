@@ -2,22 +2,30 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import type { HeroMode, HeroVideoSource } from "@/generated/prisma";
+import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
+import type { HeroMode, HeroVideoSource } from "@/generated/prisma";
+import { uploadGalleryAssetAction } from "@/lib/actions/gallery";
+import { saveHeroAppearanceAction } from "@/lib/actions/hero-appearance";
 import type { HeroCarouselSlide } from "@/lib/hero-appearance";
 import { isAllowedExternalVideoUrl } from "@/lib/hero-appearance";
-import { saveHeroAppearanceAction } from "@/lib/actions/hero-appearance";
-import { uploadGalleryAssetAction } from "@/lib/actions/gallery";
 
 const MODES: { value: HeroMode; label: string; hint: string }[] = [
-  { value: "IMAGE_DEFAULT", label: "Imagen por defecto", hint: "Foto aérea de Sucre incluida en el sitio." },
+  {
+    value: "IMAGE_DEFAULT",
+    label: "Imagen por defecto",
+    hint: "Foto aérea de Sucre incluida en el sitio.",
+  },
   { value: "IMAGE_CUSTOM", label: "Imagen subida", hint: "Una imagen tuya a pantalla completa." },
   { value: "VIDEO", label: "Vídeo de fondo", hint: "Archivo MP4/WebM o enlace directo HTTPS." },
-  { value: "CAROUSEL", label: "Carrusel de imágenes", hint: "Mínimo dos imágenes; rotación automática." },
+  {
+    value: "CAROUSEL",
+    label: "Carrusel de imágenes",
+    hint: "Mínimo dos imágenes; rotación automática.",
+  },
 ];
 
 export type HeroBannerInitial = {
@@ -61,7 +69,11 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
 
   function onSave(e: React.FormEvent) {
     e.preventDefault();
-    if (mode === "VIDEO" && videoSource === "EXTERNAL_URL" && !isAllowedExternalVideoUrl(heroVideoUrl)) {
+    if (
+      mode === "VIDEO" &&
+      videoSource === "EXTERNAL_URL" &&
+      !isAllowedExternalVideoUrl(heroVideoUrl)
+    ) {
       toast.error("URL de vídeo: usa HTTPS o http://127.0.0.1 / localhost en desarrollo.");
       return;
     }
@@ -133,7 +145,11 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
 
       <div className="space-y-3">
         <Label className="text-base">Modo del banner</Label>
-        <RadioGroup value={mode} onValueChange={(v) => setMode(v as HeroMode)} className="grid gap-3">
+        <RadioGroup
+          value={mode}
+          onValueChange={(v) => setMode(v as HeroMode)}
+          className="grid gap-3"
+        >
           {MODES.map((m) => (
             <div
               key={m.value}
@@ -155,10 +171,16 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
         <div className="space-y-4 rounded-lg border border-border/80 p-4">
           <Label>Imagen del hero</Label>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setPickHeroImageOpen(true)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPickHeroImageOpen(true)}
+            >
               De la galería
             </Button>
             <span className="self-center text-xs text-muted-foreground">o</span>
+            {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
             <label className="cursor-pointer">
               <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
                 Subir nuevo (se guarda en la galería)
@@ -176,7 +198,9 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
               Actual: <code>{heroImageUrl}</code>
             </p>
           ) : (
-            <p className="text-sm text-amber-600 dark:text-amber-500">Elige o sube una imagen antes de guardar.</p>
+            <p className="text-sm text-amber-600 dark:text-amber-500">
+              Elige o sube una imagen antes de guardar.
+            </p>
           )}
         </div>
       ) : null}
@@ -201,10 +225,16 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
           {videoSource === "UPLOAD" ? (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setPickVideoOpen(true)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPickVideoOpen(true)}
+                >
                   De la galería
                 </Button>
                 <span className="self-center text-xs text-muted-foreground">o</span>
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
                 <label className="cursor-pointer">
                   <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
                     Subir nuevo (se guarda en la galería)
@@ -242,10 +272,16 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
         <div className="space-y-4 rounded-lg border border-border/80 p-4">
           <Label>Añadir imágenes al carrusel</Label>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => setPickCarouselOpen(true)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPickCarouselOpen(true)}
+            >
               De la galería
             </Button>
             <span className="self-center text-xs text-muted-foreground">o</span>
+            {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
             <label className="cursor-pointer">
               <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
                 Subir nuevo (se guarda en la galería)
@@ -259,9 +295,11 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
             </label>
           </div>
           <ul className="space-y-2">
-            {carouselSlides.map((s, i) => (
-              <li key={s.url + i} className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="max-w-[200px] truncate font-mono text-xs text-muted-foreground">{s.url}</span>
+            {carouselSlides.map((s) => (
+              <li key={s.url} className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="max-w-[200px] truncate font-mono text-xs text-muted-foreground">
+                  {s.url}
+                </span>
                 <Input
                   className="max-w-xs flex-1"
                   placeholder="Texto alternativo (opcional)"
@@ -269,18 +307,25 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
                   onChange={(e) => {
                     const v = e.target.value;
                     setCarouselSlides((prev) =>
-                      prev.map((p, j) => (j === i ? { ...p, alt: v || undefined } : p)),
+                      prev.map((p) => (p.url === s.url ? { ...p, alt: v || undefined } : p)),
                     );
                   }}
                 />
-                <Button type="button" variant="ghost" size="sm" onClick={() => setCarouselSlides((p) => p.filter((_, j) => j !== i))}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCarouselSlides((p) => p.filter((x) => x.url !== s.url))}
+                >
                   Quitar
                 </Button>
               </li>
             ))}
           </ul>
           {carouselSlides.length < 2 ? (
-            <p className="text-sm text-amber-600 dark:text-amber-500">Se necesitan al menos dos imágenes.</p>
+            <p className="text-sm text-amber-600 dark:text-amber-500">
+              Se necesitan al menos dos imágenes.
+            </p>
           ) : null}
         </div>
       ) : null}

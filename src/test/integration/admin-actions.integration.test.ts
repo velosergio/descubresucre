@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { applyTestEnv } from "@/test/utils/test-env";
 import { createTestPrisma, resetTestDatabase, seedBaseRoles } from "@/test/utils/test-db";
+import { applyTestEnv } from "@/test/utils/test-env";
 
 const hasTestDb = applyTestEnv();
 const describeIfDb = hasTestDb ? describe : describe.skip;

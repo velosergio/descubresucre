@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useState, useTransition } from "react";
 import ReactMarkdown from "react-markdown";
-import { ImageIcon } from "lucide-react";
+import { toast } from "sonner";
+import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -18,12 +19,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
+import { uploadGalleryAssetAction } from "@/lib/actions/gallery";
 import {
   createImperdibleDestinationAction,
   updateImperdibleDestinationAction,
 } from "@/lib/actions/imperdibles";
-import { uploadGalleryAssetAction } from "@/lib/actions/gallery";
 import { toServedMediaUrl } from "@/lib/media-url";
 
 export type ImperdibleAdminRow = {
@@ -53,7 +53,9 @@ const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
   sortOrder: 0,
 });
 
-function formFromInitial(initial: ImperdibleAdminRow): Omit<ImperdibleAdminRow, "id"> & { id?: string } {
+function formFromInitial(
+  initial: ImperdibleAdminRow,
+): Omit<ImperdibleAdminRow, "id"> & { id?: string } {
   return {
     id: initial.id,
     slug: initial.slug,
@@ -172,7 +174,13 @@ function DestinationFormInner({
         <div className="space-y-2">
           <Label>Imagen de la tarjeta</Label>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" disabled={pending} onClick={() => setPickerOpen(true)}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={pending}
+              onClick={() => setPickerOpen(true)}
+            >
               <ImageIcon className="mr-2 size-4" />
               Galería
             </Button>
@@ -288,10 +296,19 @@ function DestinationFormInner({
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => onOpenChange(false)}
+          disabled={pending}
+        >
           Cancelar
         </Button>
-        <Button type="button" onClick={() => submit()} disabled={pending || !form.title.trim() || !form.cardImageUrl}>
+        <Button
+          type="button"
+          onClick={() => submit()}
+          disabled={pending || !form.title.trim() || !form.cardImageUrl}
+        >
           Guardar
         </Button>
       </DialogFooter>
@@ -326,7 +343,12 @@ export function ImperdiblesDestinationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto">
         {open ? (
-          <DestinationFormInner key={formKey} mode={mode} initial={initial} onOpenChange={onOpenChange} />
+          <DestinationFormInner
+            key={formKey}
+            mode={mode}
+            initial={initial}
+            onOpenChange={onOpenChange}
+          />
         ) : null}
       </DialogContent>
     </Dialog>

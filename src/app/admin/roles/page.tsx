@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { RolesManager } from "@/components/admin/roles-manager";
+import { prisma } from "@/lib/prisma";
 
 export default async function AdminRolesPage() {
   const roles = await prisma.role.findMany({ orderBy: { name: "asc" } });

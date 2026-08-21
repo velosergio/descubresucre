@@ -1,13 +1,13 @@
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getImperdibleBySlug } from "@/lib/get-imperdible-detail";
-import { getSiteOrigin } from "@/lib/site-url";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { getSiteOrigin } from "@/lib/site-url";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -57,7 +57,9 @@ export default async function ImperdibleDetailPage({ params }: Props) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-              <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">{dest.title}</h1>
+              <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+                {dest.title}
+              </h1>
               <p className="mt-2 max-w-2xl font-body text-muted-foreground">{dest.subtitle}</p>
             </div>
           </div>
@@ -78,6 +80,7 @@ export default async function ImperdibleDetailPage({ params }: Props) {
                 className="h-full w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                sandbox="allow-scripts allow-popups allow-forms"
                 src={embedUrl}
               />
             </div>

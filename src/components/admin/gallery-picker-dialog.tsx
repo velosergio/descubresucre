@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { Film } from "lucide-react";
-import type { GalleryAssetKind } from "@/generated/prisma";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,8 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
+import type { GalleryAssetKind } from "@/generated/prisma";
 import { listGalleryAssetsAction } from "@/lib/actions/gallery";
+import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
 import { toServedMediaUrl } from "@/lib/media-url";
 
 export function GalleryPickerDialog({
@@ -61,24 +61,31 @@ export function GalleryPickerDialog({
               {assets.map((a) => {
                 const src = toServedMediaUrl(a.publicUrl);
                 return (
-                <button
-                  key={a.id}
-                  type="button"
-                  className="group relative aspect-video overflow-hidden rounded-md border bg-muted text-left outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
-                  onClick={() => {
-                    onSelect(a.publicUrl);
-                    onOpenChange(false);
-                  }}
-                >
-                  {a.kind === "IMAGE" ? (
-                    <Image src={src} alt="" fill className="object-cover" sizes="200px" unoptimized />
-                  ) : (
-                    <div className="flex h-full items-center justify-center bg-muted">
-                      <Film className="size-12 text-muted-foreground" />
-                    </div>
-                  )}
-                  <span className="sr-only">Seleccionar</span>
-                </button>
+                  <button
+                    key={a.id}
+                    type="button"
+                    className="group relative aspect-video overflow-hidden rounded-md border bg-muted text-left outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
+                    onClick={() => {
+                      onSelect(a.publicUrl);
+                      onOpenChange(false);
+                    }}
+                  >
+                    {a.kind === "IMAGE" ? (
+                      <Image
+                        src={src}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="200px"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-muted">
+                        <Film className="size-12 text-muted-foreground" />
+                      </div>
+                    )}
+                    <span className="sr-only">Seleccionar</span>
+                  </button>
                 );
               })}
             </div>

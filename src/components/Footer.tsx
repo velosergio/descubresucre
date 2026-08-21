@@ -1,4 +1,4 @@
-import { MapPin, Mail, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground/80 py-12 px-4">
@@ -14,17 +14,27 @@ const Footer = () => (
       <div>
         <h4 className="font-display font-semibold text-primary-foreground mb-3">Contacto</h4>
         <div className="space-y-2 font-body text-sm">
-          <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-tropical-gold" /> Sincelejo, Sucre, Colombia</p>
-          <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-tropical-gold" /> turismo@sucre.gov.co</p>
-          <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-tropical-gold" /> +57 (5) 282 0000</p>
+          <p className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-tropical-gold" /> Sincelejo, Sucre, Colombia
+          </p>
+          <p className="flex items-center gap-2">
+            <Mail className="w-4 h-4 text-tropical-gold" /> turismo@sucre.gov.co
+          </p>
+          <p className="flex items-center gap-2">
+            <Phone className="w-4 h-4 text-tropical-gold" /> +57 (5) 282 0000
+          </p>
         </div>
       </div>
       <div>
         <h4 className="font-display font-semibold text-primary-foreground mb-3">Enlaces</h4>
         <div className="space-y-2 font-body text-sm">
-          <p className="hover:text-tropical-gold cursor-pointer transition-colors">Gobernación de Sucre</p>
+          <p className="hover:text-tropical-gold cursor-pointer transition-colors">
+            Gobernación de Sucre
+          </p>
           <p className="hover:text-tropical-gold cursor-pointer transition-colors">ProColombia</p>
-          <p className="hover:text-tropical-gold cursor-pointer transition-colors">Ministerio de Cultura</p>
+          <p className="hover:text-tropical-gold cursor-pointer transition-colors">
+            Ministerio de Cultura
+          </p>
         </div>
       </div>
     </div>

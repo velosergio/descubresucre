@@ -1,21 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { createRoleAction, deleteRoleAction, updateRoleAction } from "@/lib/actions/roles";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +14,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { createRoleAction, deleteRoleAction, updateRoleAction } from "@/lib/actions/roles";
 
 interface RoleRow {
   id: string;
@@ -59,7 +66,9 @@ export function RolesManager({ roles }: { roles: RoleRow[] }) {
 
   function submit() {
     start(async () => {
-      const res = editId ? await updateRoleAction({ id: editId, name }) : await createRoleAction({ name });
+      const res = editId
+        ? await updateRoleAction({ id: editId, name })
+        : await createRoleAction({ name });
       if (!res.ok) {
         toast.error(res.error);
         return;
@@ -114,7 +123,12 @@ export function RolesManager({ roles }: { roles: RoleRow[] }) {
                 <TableRow key={role.id}>
                   <TableCell className="font-medium">{role.name}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => openEdit(role)} aria-label="Editar">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEdit(role)}
+                      aria-label="Editar"
+                    >
                       <Pencil className="size-4" />
                     </Button>
                     <Button

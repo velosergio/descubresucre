@@ -9,7 +9,9 @@ describe("isGalleryUrlUsedByImperdibleCardImages", () => {
   });
 
   it("detecta coincidencia exacta", () => {
-    expect(isGalleryUrlUsedByImperdibleCardImages(["/uploads/gallery/images/b.webp", u], u)).toBe(true);
+    expect(isGalleryUrlUsedByImperdibleCardImages(["/uploads/gallery/images/b.webp", u], u)).toBe(
+      true,
+    );
   });
 
   it("ignora espacios en el needle", () => {
@@ -17,6 +19,8 @@ describe("isGalleryUrlUsedByImperdibleCardImages", () => {
   });
 
   it("retorna false si no coincide", () => {
-    expect(isGalleryUrlUsedByImperdibleCardImages(["/uploads/gallery/images/x.webp"], u)).toBe(false);
+    expect(isGalleryUrlUsedByImperdibleCardImages(["/uploads/gallery/images/x.webp"], u)).toBe(
+      false,
+    );
   });
 });

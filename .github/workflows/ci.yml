@@ -1,0 +1,167 @@
+# CI: lint (Biome) + unit/component + integration + e2e.
+# Equivalente a `npm run test:ci`, con MySQL de servicio para tests que tocan Prisma.
+#
+# Nota: `npm run test` local sin `.env.test` hace skip de integraciones con DB
+# (describe.skip si falta TEST_DATABASE_URL). En este workflow sí se define.
+
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AUTH_SECRET: test-auth-secret
+  N8N_CALLBACK_SECRET: test-n8n-secret
+  NEXT_PUBLIC_SITE_URL: http://localhost:3000
+  # Misma DB de servicio para app (Next) y suite de integración/e2e
+  DATABASE_URL: mysql://root:root@127.0.0.1:3306/sucre_vivo_test
+  TEST_DATABASE_URL: mysql://root:root@127.0.0.1:3306/sucre_vivo_test
+
+jobs:
+  lint:
+    name: Lint (Biome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Biome check
+        run: npx biome check .
+
+  unit-and-component:
+    name: Unit + Component
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ignore-scripts=true en .npmrc: prisma generate no corre en install
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Component tests
+        run: npm run test:component
+
+  integration:
+    name: Integration
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sucre_vivo_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Write .env.test
+        run: |
+          {
+            echo 'DATABASE_URL=mysql://root:root@127.0.0.1:3306/sucre_vivo_test'
+            echo 'TEST_DATABASE_URL=mysql://root:root@127.0.0.1:3306/sucre_vivo_test'
+            echo 'AUTH_SECRET=test-auth-secret'
+            echo 'N8N_CALLBACK_SECRET=test-n8n-secret'
+            echo 'NEXT_PUBLIC_SITE_URL=http://localhost:3000'
+          } > .env.test
+
+      - name: Integration tests
+        run: npm run test:integration
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sucre_vivo_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run db:generate
+
+      - name: Write .env.test
+        run: |
+          {
+            echo 'DATABASE_URL=mysql://root:root@127.0.0.1:3306/sucre_vivo_test'
+            echo 'TEST_DATABASE_URL=mysql://root:root@127.0.0.1:3306/sucre_vivo_test'
+            echo 'AUTH_SECRET=test-auth-secret'
+            echo 'N8N_CALLBACK_SECRET=test-n8n-secret'
+            echo 'NEXT_PUBLIC_SITE_URL=http://localhost:3000'
+          } > .env.test
+
+      # Next lee DATABASE_URL vía dotenv/prisma; también lo exportamos al job
+      - name: Prepare test database
+        run: npm run test:db:prepare
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          # next dev necesita DATABASE_URL; Playwright carga .env.test vía --env-file
+          DATABASE_URL: mysql://root:root@127.0.0.1:3306/sucre_vivo_test

@@ -8,10 +8,7 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [
-        1360,
-        352
-      ],
+      "position": [1360, 352],
       "id": "fc52dd24-f3cc-443f-a21b-281948156632",
       "name": "Webhook",
       "webhookId": "e796510a-37b0-488c-aea6-b3a6548f3671"
@@ -50,10 +47,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        1904,
-        352
-      ],
+      "position": [1904, 352],
       "id": "06223de2-5562-460d-9974-0ab15d586586",
       "name": "Callback"
     },
@@ -65,10 +59,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        1568,
-        352
-      ],
+      "position": [1568, 352],
       "id": "292b4f9d-88a9-48e1-9d02-5584d34fc028",
       "name": "AI Agent"
     },
@@ -78,10 +69,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [
-        1520,
-        576
-      ],
+      "position": [1520, 576],
       "id": "1d5dd1ac-b1a3-43cf-a139-acb09b7592d1",
       "name": "Google Gemini Chat Model",
       "credentials": {

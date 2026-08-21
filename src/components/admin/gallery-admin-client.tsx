@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Film, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Film, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,8 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  cleanupGalleryOrphansAction,
+  deleteGalleryAssetAction,
+  uploadGalleryAssetAction,
+} from "@/lib/actions/gallery";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
-import { cleanupGalleryOrphansAction, deleteGalleryAssetAction, uploadGalleryAssetAction } from "@/lib/actions/gallery";
 import { toServedMediaUrl } from "@/lib/media-url";
 
 export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) {
@@ -78,7 +82,9 @@ export function GalleryAdminClient({ initial }: { initial: GalleryAssetDTO[] }) 
           className="mt-2 max-w-md"
           onChange={(e) => void onUpload(e.target.files?.[0] ?? null)}
         />
-        <p className="mt-2 text-xs text-muted-foreground">JPEG, PNG, WebP hasta 12 MB; MP4/WebM hasta 80 MB.</p>
+        <p className="mt-2 text-xs text-muted-foreground">
+          JPEG, PNG, WebP hasta 12 MB; MP4/WebM hasta 80 MB.
+        </p>
         <div className="mt-3">
           <Button type="button" variant="outline" disabled={pending} onClick={cleanupOrphans}>
             Limpiar registros huérfanos
@@ -138,7 +144,14 @@ function GalleryTile({
         {asset.originalName ? (
           <p className="truncate text-xs font-medium">{asset.originalName}</p>
         ) : null}
-        <Button type="button" variant="destructive" size="sm" disabled={pending} className="w-full gap-2" onClick={onDelete}>
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          disabled={pending}
+          className="w-full gap-2"
+          onClick={onDelete}
+        >
           <Trash2 className="size-4" />
           Eliminar
         </Button>

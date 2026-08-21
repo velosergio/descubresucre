@@ -1,14 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Send, MapPin, Sparkles } from "lucide-react";
 import * as m from "framer-motion/m";
+import { MapPin, Send, Sparkles } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import heroImg from "@/assets/hero-sucre.jpg";
+import {
+  Carousel,
+  type CarouselApi,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
   onChatMessage: (msg: string) => void;
@@ -20,7 +25,7 @@ function slideImage(src: string, alt: string, priority: boolean, extra?: string)
   const servedSrc = toServedMediaUrl(src);
   if (isRemoteHttps || src.startsWith("http://localhost") || src.startsWith("http://127.0.0.1")) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- URLs HTTPS arbitrarias del admin
+      // biome-ignore lint/performance/noImgElement: remote HTTPS URLs from admin cannot use next/image
       <img src={src} alt={alt} className={cn("absolute inset-0 size-full object-cover", extra)} />
     );
   }
@@ -85,10 +90,14 @@ const HeroBackground = ({ config }: { config: ResolvedHeroConfig }) => {
 
   if (config.mode === "CAROUSEL") {
     return (
-      <Carousel opts={{ loop: true, align: "start" }} className="h-full w-full" setApi={setCarouselApi}>
+      <Carousel
+        opts={{ loop: true, align: "start" }}
+        className="h-full w-full"
+        setApi={setCarouselApi}
+      >
         <CarouselContent className="-ml-0 ml-0 h-screen">
           {config.slides.map((s, i) => (
-            <CarouselItem key={`${s.url}-${i}`} className="basis-full pl-0">
+            <CarouselItem key={s.url} className="basis-full pl-0">
               <div className="relative min-h-screen w-full">
                 {slideImage(s.url, s.alt ?? "Sucre", i === 0)}
               </div>
@@ -153,8 +162,8 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
           </h1>
 
           <p className="font-body mx-auto mb-10 max-w-2xl text-lg text-primary-foreground/80 md:text-xl">
-            Playas paradisíacas, cultura vibrante y sabores inolvidables te esperan. Pregúntale a nuestro asistente todo lo que quieras
-            saber.
+            Playas paradisíacas, cultura vibrante y sabores inolvidables te esperan. Pregúntale a
+            nuestro asistente todo lo que quieras saber.
           </p>
         </m.div>
 

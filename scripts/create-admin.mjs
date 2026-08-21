@@ -5,9 +5,9 @@
  */
 import "dotenv/config";
 import { createRequire } from "node:module";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcrypt";
 import prompts from "prompts";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const require = createRequire(import.meta.url);
 const { PrismaClient } = require("../src/generated/prisma/index.js");
@@ -28,7 +28,9 @@ function isEmail(s) {
 
 async function main() {
   if (!process.stdin.isTTY) {
-    console.error("Ejecuta este comando en una terminal interactiva (no se puede automatizar sin TTY).");
+    console.error(
+      "Ejecuta este comando en una terminal interactiva (no se puede automatizar sin TTY).",
+    );
     process.exit(1);
   }
 

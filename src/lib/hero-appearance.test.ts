@@ -46,9 +46,21 @@ describe("validateHeroSaveInput", () => {
     expect(r.ok).toBe(true);
   });
   it("IMAGE_CUSTOM exige ruta de subida", () => {
-    expect(validateHeroSaveInput({ heroMode: "IMAGE_CUSTOM", heroImageUrl: "/uploads/hero/images/x.jpg" }).ok).toBe(true);
-    expect(validateHeroSaveInput({ heroMode: "IMAGE_CUSTOM", heroImageUrl: "/uploads/gallery/images/x.jpg" }).ok).toBe(true);
-    expect(validateHeroSaveInput({ heroMode: "IMAGE_CUSTOM", heroImageUrl: "/etc/passwd" }).ok).toBe(false);
+    expect(
+      validateHeroSaveInput({
+        heroMode: "IMAGE_CUSTOM",
+        heroImageUrl: "/uploads/hero/images/x.jpg",
+      }).ok,
+    ).toBe(true);
+    expect(
+      validateHeroSaveInput({
+        heroMode: "IMAGE_CUSTOM",
+        heroImageUrl: "/uploads/gallery/images/x.jpg",
+      }).ok,
+    ).toBe(true);
+    expect(
+      validateHeroSaveInput({ heroMode: "IMAGE_CUSTOM", heroImageUrl: "/etc/passwd" }).ok,
+    ).toBe(false);
   });
   it("CAROUSEL exige 2+ slides", () => {
     expect(
@@ -83,6 +95,9 @@ describe("resolveHeroFromRow", () => {
       carouselSlides: null,
       updatedAt: new Date(),
     };
-    expect(resolveHeroFromRow(row)).toEqual({ mode: "IMAGE_CUSTOM", imageUrl: "/uploads/hero/images/z.jpg" });
+    expect(resolveHeroFromRow(row)).toEqual({
+      mode: "IMAGE_CUSTOM",
+      imageUrl: "/uploads/hero/images/z.jpg",
+    });
   });
 });

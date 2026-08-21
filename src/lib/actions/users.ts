@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { assertAdminAction } from "@/lib/auth-helpers";
 import { prisma } from "@/lib/prisma";
@@ -39,7 +39,9 @@ export async function createUserAction(input: unknown) {
 
   const hash = await bcrypt.hash(parsed.data.password, 12);
   const roleConnect =
-    parsed.data.roleIds.length > 0 ? { connect: parsed.data.roleIds.map((id) => ({ id })) } : undefined;
+    parsed.data.roleIds.length > 0
+      ? { connect: parsed.data.roleIds.map((id) => ({ id })) }
+      : undefined;
   try {
     await prisma.user.create({
       data: {

@@ -1,5 +1,5 @@
-import { access } from "fs/promises";
-import path from "path";
+import { access } from "node:fs/promises";
+import path from "node:path";
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
 
 type GalleryRowLike = {
@@ -32,7 +32,9 @@ export async function collectGalleryOrphanIds(rows: GalleryRowLike[]): Promise<s
   return orphanIds;
 }
 
-export async function mapExistingGalleryRowsToDTO(rows: GalleryRowLike[]): Promise<GalleryAssetDTO[]> {
+export async function mapExistingGalleryRowsToDTO(
+  rows: GalleryRowLike[],
+): Promise<GalleryAssetDTO[]> {
   const out: GalleryAssetDTO[] = [];
   for (const r of rows) {
     if (!(await galleryFileExists(r.publicUrl))) continue;

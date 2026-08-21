@@ -19,7 +19,14 @@ const globalForPrisma = globalThis as unknown as {
  * un cliente cacheado puede quedar sin delegados (p. ej. `chatbotSettings`) y falla con
  * "Cannot read properties of undefined (reading 'findUnique')".
  */
-export const prisma =
-  process.env.NODE_ENV === "production"
-    ? (globalForPrisma.prisma ??= createPrismaClient())
-    : createPrismaClient();
+function getPrismaClient() {
+  if (process.env.NODE_ENV === "production") {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = createPrismaClient();
+    }
+    return globalForPrisma.prisma;
+  }
+  return createPrismaClient();
+}
+
+export const prisma = getPrismaClient();

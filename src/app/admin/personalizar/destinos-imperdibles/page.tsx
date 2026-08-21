@@ -1,10 +1,12 @@
-import { prisma } from "@/lib/prisma";
-import { getOrCreateSectionSettings } from "@/lib/get-imperdibles-home";
 import { ImperdiblesAdminClient } from "@/components/admin/imperdibles-admin-client";
+import { getOrCreateSectionSettings } from "@/lib/get-imperdibles-home";
+import { prisma } from "@/lib/prisma";
 
 export default async function AdminDestinosImperdiblesPage() {
-  const settings = await getOrCreateSectionSettings();
-  const rows = await prisma.imperdibleDestination.findMany({ orderBy: { sortOrder: "asc" } });
+  const [settings, rows] = await Promise.all([
+    getOrCreateSectionSettings(),
+    prisma.imperdibleDestination.findMany({ orderBy: { sortOrder: "asc" } }),
+  ]);
 
   const initialDestinations = rows.map((d) => ({
     id: d.id,
@@ -25,10 +27,12 @@ export default async function AdminDestinosImperdiblesPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div className="space-y-1 border-b border-border/80 pb-6">
-        <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">Destinos imperdibles</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+          Destinos imperdibles
+        </h1>
         <p className="max-w-xl text-muted-foreground">
-          Gestiona las tarjetas de la portada y el contenido de detalle. Las imágenes pueden elegirse desde la galería o
-          subirse aquí (se registran en la galería).
+          Gestiona las tarjetas de la portada y el contenido de detalle. Las imágenes pueden
+          elegirse desde la galería o subirse aquí (se registran en la galería).
         </p>
       </div>
 

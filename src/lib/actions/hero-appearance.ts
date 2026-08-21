@@ -1,15 +1,15 @@
 "use server";
 
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { revalidatePath } from "next/cache";
 import type { HeroMode, HeroVideoSource } from "@/generated/prisma";
 import { assertAdminAction } from "@/lib/auth-helpers";
+import { encodeRasterImageToWebp, HERO_WEBP_MAX_EDGE } from "@/lib/encode-image-webp";
 import type { HeroCarouselSlide, HeroSaveInput } from "@/lib/hero-appearance";
 import { validateHeroSaveInput } from "@/lib/hero-appearance";
 import { prisma } from "@/lib/prisma";
-import { encodeRasterImageToWebp, HERO_WEBP_MAX_EDGE } from "@/lib/encode-image-webp";
 import {
   IMAGE_MIME_TO_EXT,
   MAX_UPLOAD_IMAGE_BYTES,
@@ -57,7 +57,10 @@ export async function uploadHeroAssetAction(formData: FormData) {
       try {
         webp = await encodeRasterImageToWebp(raw, { maxEdge: HERO_WEBP_MAX_EDGE });
       } catch {
-        return { ok: false as const, error: "No se pudo optimizar la imagen. Usa un JPEG, PNG o WebP válido." };
+        return {
+          ok: false as const,
+          error: "No se pudo optimizar la imagen. Usa un JPEG, PNG o WebP válido.",
+        };
       }
       const name = `${randomUUID()}.webp`;
       const full = path.join(dir, name);

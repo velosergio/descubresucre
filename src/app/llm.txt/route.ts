@@ -39,7 +39,7 @@ export function GET() {
 ## Rutas y límites
 
 - **Público:** principalmente \`/\`, además de flujos de registro e inicio de sesión según despliegue (\`/register\`, \`/login\`).
-- **Administración:** rutas bajo \`/admin\*\`; requieren sesión y roles. **No** pidas ni asumas credenciales; no enumeres datos personales de usuarios.
+- **Administración:** rutas bajo \`/admin*\`; requieren sesión y roles. **No** pidas ni asumas credenciales; no enumeres datos personales de usuarios.
 - **APIs del chat (referencia técnica):** el cliente usa \`/api/chat\` y polling de jobs; callbacks hacia n8n son del servidor. Un agente que solo navegue no debe invocar estos endpoints sin autorización explícita del operador del sitio.
 
 ## Identidad y atribución

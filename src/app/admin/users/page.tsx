@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
 import { UsersManager } from "@/components/admin/users-manager";
+import { prisma } from "@/lib/prisma";
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -22,7 +22,8 @@ export default async function AdminUsersPage() {
         <div className="space-y-1">
           <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">Usuarios</h1>
           <p className="max-w-xl text-muted-foreground">
-            Gestiona cuentas del panel: crear, editar, roles y aprobar o rechazar solicitudes de acceso.
+            Gestiona cuentas del panel: crear, editar, roles y aprobar o rechazar solicitudes de
+            acceso.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
@@ -32,7 +33,9 @@ export default async function AdminUsersPage() {
           </div>
           <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 px-4 py-2 shadow-sm">
             <p className="text-muted-foreground">Pendientes</p>
-            <p className="text-2xl font-semibold tabular-nums text-amber-700 dark:text-amber-400">{pendingCount}</p>
+            <p className="text-2xl font-semibold tabular-nums text-amber-700 dark:text-amber-400">
+              {pendingCount}
+            </p>
           </div>
         </div>
       </div>

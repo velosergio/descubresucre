@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { RegisterForm } from "@/components/admin/register-form";
 
 function RegisterFormFallback() {

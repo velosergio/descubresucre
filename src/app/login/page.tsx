@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/login-form";
 import { prisma } from "@/lib/prisma";
 

@@ -1,24 +1,26 @@
-import Image from "next/image";
 import * as m from "framer-motion/m";
 import { Calendar, MapPin } from "lucide-react";
-import festivalImg from "@/assets/festival-sucre.jpg";
+import Image from "next/image";
 import culturaImg from "@/assets/cultura-sucre.jpg";
-import playaImg from "@/assets/playa-tolu.jpg";
+import festivalImg from "@/assets/festival-sucre.jpg";
 import gastroImg from "@/assets/gastronomia-sucre.jpg";
+import playaImg from "@/assets/playa-tolu.jpg";
 
 const events = [
   {
     title: "Fiestas del 20 de Enero",
     date: "20 - 25 Enero 2026",
     location: "Sincelejo",
-    description: "Las tradicionales corralejas y el festival más grande de Sucre con desfiles, música y cultura.",
+    description:
+      "Las tradicionales corralejas y el festival más grande de Sucre con desfiles, música y cultura.",
     image: festivalImg,
   },
   {
     title: "Festival del Porro",
     date: "15 - 20 Junio 2026",
     location: "San Pelayo",
-    description: "Celebración de la música de porro con orquestas y bandas de todo el Caribe colombiano.",
+    description:
+      "Celebración de la música de porro con orquestas y bandas de todo el Caribe colombiano.",
     image: culturaImg,
   },
   {

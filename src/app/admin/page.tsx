@@ -1,6 +1,6 @@
-import { requireStaffSession } from "@/lib/auth-helpers";
 import { AdminQuickActions } from "@/components/admin/admin-quick-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { requireStaffSession } from "@/lib/auth-helpers";
 
 export default async function AdminHomePage() {
   const { user } = await requireStaffSession();
@@ -11,7 +11,9 @@ export default async function AdminHomePage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold tracking-tight">Tablero</h1>
-        <p className="text-muted-foreground">Resumen del panel y accesos rápidos al contenido y la administración.</p>
+        <p className="text-muted-foreground">
+          Resumen del panel y accesos rápidos al contenido y la administración.
+        </p>
       </div>
       <AdminQuickActions isAdmin={isAdmin} />
       <Card>

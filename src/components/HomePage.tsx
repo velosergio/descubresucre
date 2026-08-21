@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { MessageCircle } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
+import { MessageCircle } from "lucide-react";
+import { useState } from "react";
+import ActivitiesSection from "@/components/ActivitiesSection";
+import { ChatPanel } from "@/components/ChatPanel";
+import ConvocatoriasSection from "@/components/ConvocatoriasSection";
+import CulturalAgenda from "@/components/CulturalAgenda";
+import EventsSection from "@/components/EventsSection";
+import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
+import ImperdiblesSection from "@/components/ImperdiblesSection";
+import MapSection from "@/components/MapSection";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
-import ImperdiblesSection from "@/components/ImperdiblesSection";
-import ActivitiesSection from "@/components/ActivitiesSection";
-import EventsSection from "@/components/EventsSection";
-import CulturalAgenda from "@/components/CulturalAgenda";
-import ConvocatoriasSection from "@/components/ConvocatoriasSection";
-import MapSection from "@/components/MapSection";
-import Footer from "@/components/Footer";
-import { ChatPanel } from "@/components/ChatPanel";
 
 export default function HomePage({
   heroConfig,

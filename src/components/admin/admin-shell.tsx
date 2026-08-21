@@ -1,9 +1,21 @@
 "use client";
 
+import {
+  ImageIcon,
+  Images,
+  LayoutDashboard,
+  LayoutGrid,
+  LogOut,
+  MapPin,
+  Settings,
+  Shield,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { ImageIcon, Images, LayoutDashboard, LayoutGrid, MapPin, Settings, Shield, Users, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -19,8 +31,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 
 const mainNav = [{ href: "/admin", label: "Resumen", icon: LayoutDashboard }];
 

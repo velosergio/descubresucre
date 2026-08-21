@@ -62,7 +62,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
   }
 }
@@ -86,19 +91,11 @@
   }
 
   .gradient-hero {
-    background: linear-gradient(
-      180deg,
-      hsla(210, 25%, 12%, 0.7) 0%,
-      hsla(174, 62%, 35%, 0.4) 100%
-    );
+    background: linear-gradient(180deg, hsla(210, 25%, 12%, 0.7) 0%, hsla(174, 62%, 35%, 0.4) 100%);
   }
 
   .gradient-card-overlay {
-    background: linear-gradient(
-      180deg,
-      transparent 40%,
-      hsla(210, 25%, 12%, 0.85) 100%
-    );
+    background: linear-gradient(180deg, transparent 40%, hsla(210, 25%, 12%, 0.85) 100%);
   }
 
   .glass-input {

@@ -1,15 +1,22 @@
 "use client";
 
-import { useReducer } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { registerUserAction } from "@/lib/actions/register";
+import { useReducer } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { registerUserAction } from "@/lib/actions/register";
 
 interface RegisterFormProps {
   googleEnabled: boolean;
@@ -38,7 +45,10 @@ const INITIAL_FORM: RegisterFormState = {
   loading: false,
 };
 
-function registerFormReducer(state: RegisterFormState, action: RegisterFormAction): RegisterFormState {
+function registerFormReducer(
+  state: RegisterFormState,
+  action: RegisterFormAction,
+): RegisterFormState {
   switch (action.type) {
     case "setName":
       return { ...state, name: action.value };
@@ -107,7 +117,8 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
       <CardHeader>
         <CardTitle className="font-display text-2xl">Crear cuenta</CardTitle>
         <CardDescription>
-          Recibirás el rol editor. Tu acceso al panel quedará pendiente hasta que un administrador apruebe tu cuenta.
+          Recibirás el rol editor. Tu acceso al panel quedará pendiente hasta que un administrador
+          apruebe tu cuenta.
         </CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
@@ -160,14 +171,22 @@ export function RegisterForm({ googleEnabled }: RegisterFormProps) {
             {form.loading ? "Creando cuenta…" : "Registrarse"}
           </Button>
           {googleEnabled ? (
-            <Button type="button" variant="outline" className="w-full" disabled={form.loading} onClick={() => void onGoogle()}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={form.loading}
+              onClick={() => void onGoogle()}
+            >
               Continuar con Google
             </Button>
           ) : null}
           <p className="text-center text-sm text-muted-foreground">
             ¿Ya tienes cuenta?{" "}
             <Link
-              href={callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"}
+              href={
+                callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"
+              }
               className="font-medium text-foreground underline underline-offset-4"
             >
               Iniciar sesión

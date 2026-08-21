@@ -1,23 +1,9 @@
 "use client";
 
-import { type Dispatch, useMemo, useReducer, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { CheckCircle2, Pencil, Plus, Trash2, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { type Dispatch, useMemo, useReducer, useState, useTransition } from "react";
 import { toast } from "sonner";
-import {
-  approveUserAction,
-  createUserAction,
-  deleteUserAction,
-  rejectUserAction,
-  updateUserAction,
-} from "@/lib/actions/users";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +14,41 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  approveUserAction,
+  createUserAction,
+  deleteUserAction,
+  rejectUserAction,
+  updateUserAction,
+} from "@/lib/actions/users";
 
 type AccountStatus = "PENDING" | "APPROVED" | "REJECTED";
 type UserTab = "all" | AccountStatus;
@@ -116,7 +136,10 @@ function userFormReducer(state: UserFormState, action: UserFormAction): UserForm
 function StatusBadge({ status }: { status: AccountStatus }) {
   if (status === "PENDING") {
     return (
-      <Badge variant="secondary" className="border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200">
+      <Badge
+        variant="secondary"
+        className="border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+      >
         Pendiente
       </Badge>
     );
@@ -142,7 +165,11 @@ function UserStatusTabs({
 }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-wrap gap-2 rounded-lg border border-border/60 bg-muted/30 p-1" role="tablist" aria-label="Filtrar por estado">
+      <div
+        className="flex flex-wrap gap-2 rounded-lg border border-border/60 bg-muted/30 p-1"
+        role="tablist"
+        aria-label="Filtrar por estado"
+      >
         {[
           { key: "all" as const, label: "Todos", count: counts.all },
           { key: "PENDING" as const, label: "Pendientes", count: counts.PENDING },
@@ -162,7 +189,11 @@ function UserStatusTabs({
           </Button>
         ))}
       </div>
-      <Button onClick={onCreate} size="sm" className="w-full gap-1.5 shadow-sm sm:w-auto sm:shrink-0">
+      <Button
+        onClick={onCreate}
+        size="sm"
+        className="w-full gap-1.5 shadow-sm sm:w-auto sm:shrink-0"
+      >
         <Plus className="size-4" />
         Nuevo usuario
       </Button>
@@ -196,11 +227,16 @@ function UsersTable({
           </div>
         ) : (
           users.map((user) => (
-            <article key={user.id} className="space-y-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm">
+            <article
+              key={user.id}
+              className="space-y-3 rounded-xl border border-border/80 bg-card p-4 shadow-sm"
+            >
               <div className="space-y-2">
                 <p className="truncate font-medium">{user.email}</p>
                 <p className="text-sm text-muted-foreground">{user.name ?? "—"}</p>
-                <p className="text-sm text-muted-foreground">{user.roles.map((r) => r.name).join(", ") || "—"}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.roles.map((r) => r.name).join(", ") || "—"}
+                </p>
                 <StatusBadge status={user.accountStatus} />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -249,7 +285,12 @@ function UsersTable({
                   <Pencil className="mr-1 size-4" />
                   Editar
                 </Button>
-                <Button variant="outline" size="sm" className="h-9 text-destructive hover:text-destructive" onClick={() => onDelete(user.id)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 text-destructive hover:text-destructive"
+                  onClick={() => onDelete(user.id)}
+                >
                   <Trash2 className="mr-1 size-4" />
                   Eliminar
                 </Button>
@@ -282,7 +323,9 @@ function UsersTable({
                 <TableRow key={user.id} className="group">
                   <TableCell className="max-w-[200px] truncate font-medium">{user.email}</TableCell>
                   <TableCell className="text-muted-foreground">{user.name ?? "—"}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{user.roles.map((r) => r.name).join(", ") || "—"}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {user.roles.map((r) => r.name).join(", ") || "—"}
+                  </TableCell>
                   <TableCell>
                     <StatusBadge status={user.accountStatus} />
                   </TableCell>
@@ -328,7 +371,13 @@ function UsersTable({
                           Aprobar
                         </Button>
                       ) : null}
-                      <Button variant="ghost" size="icon" className="size-9" onClick={() => onEdit(user)} title="Editar">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-9"
+                        onClick={() => onEdit(user)}
+                        title="Editar"
+                      >
                         <Pencil className="size-4" />
                       </Button>
                       <Button
@@ -375,7 +424,9 @@ function UserFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Editar usuario" : "Nuevo usuario"}</DialogTitle>
-          <DialogDescription>Configura datos de acceso, estado y roles del usuario.</DialogDescription>
+          <DialogDescription>
+            Configura datos de acceso, estado y roles del usuario.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
           <div className="space-y-2">
@@ -390,12 +441,21 @@ function UserFormDialog({
           </div>
           <div className="space-y-2">
             <Label htmlFor="u-name">Nombre</Label>
-            <Input id="u-name" value={form.name} onChange={(e) => dispatch({ type: "setName", value: e.target.value })} />
+            <Input
+              id="u-name"
+              value={form.name}
+              onChange={(e) => dispatch({ type: "setName", value: e.target.value })}
+            />
           </div>
           {isEdit ? (
             <div className="space-y-2">
               <Label>Estado de la cuenta</Label>
-              <Select value={form.accountStatus} onValueChange={(v) => dispatch({ type: "setAccountStatus", value: v as AccountStatus })}>
+              <Select
+                value={form.accountStatus}
+                onValueChange={(v) =>
+                  dispatch({ type: "setAccountStatus", value: v as AccountStatus })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -408,7 +468,9 @@ function UserFormDialog({
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label htmlFor="u-password">{isEdit ? "Nueva contraseña (opcional)" : "Contraseña"}</Label>
+            <Label htmlFor="u-password">
+              {isEdit ? "Nueva contraseña (opcional)" : "Contraseña"}
+            </Label>
             <Input
               id="u-password"
               type="password"
@@ -424,10 +486,13 @@ function UserFormDialog({
                 <p className="text-sm text-muted-foreground">Crea roles primero.</p>
               ) : (
                 roles.map((role) => (
+                  // biome-ignore lint/a11y/noLabelWithoutControl: wraps Radix Checkbox
                   <label key={role.id} className="flex items-center gap-2 text-sm">
                     <Checkbox
                       checked={Boolean(form.selectedRoles[role.id])}
-                      onCheckedChange={(checked) => dispatch({ type: "setRole", roleId: role.id, checked: checked === true })}
+                      onCheckedChange={(checked) =>
+                        dispatch({ type: "setRole", roleId: role.id, checked: checked === true })
+                      }
                     />
                     {role.name}
                   </label>
@@ -440,7 +505,10 @@ function UserFormDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button disabled={pending || !form.email.trim() || (!isEdit && form.password.length < 8)} onClick={onSubmit}>
+          <Button
+            disabled={pending || !form.email.trim() || (!isEdit && form.password.length < 8)}
+            onClick={onSubmit}
+          >
             Guardar
           </Button>
         </DialogFooter>
@@ -475,7 +543,10 @@ export function UsersManager({
     [users],
   );
 
-  const filtered = useMemo(() => (tab === "all" ? users : users.filter((u) => u.accountStatus === tab)), [users, tab]);
+  const filtered = useMemo(
+    () => (tab === "all" ? users : users.filter((u) => u.accountStatus === tab)),
+    [users, tab],
+  );
 
   function openCreate() {
     dispatch({ type: "reset" });
@@ -596,13 +667,23 @@ export function UsersManager({
         onDelete={setDeleteId}
       />
 
-      <UserFormDialog open={open} onOpenChange={setOpen} form={form} roles={roles} pending={pending} onSubmit={submit} dispatch={dispatch} />
+      <UserFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        form={form}
+        roles={roles}
+        pending={pending}
+        onSubmit={submit}
+        dispatch={dispatch}
+      />
 
       <AlertDialog open={Boolean(deleteId)} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
-            <AlertDialogDescription>Se borrarán también sus sesiones y cuentas vinculadas.</AlertDialogDescription>
+            <AlertDialogDescription>
+              Se borrarán también sus sesiones y cuentas vinculadas.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

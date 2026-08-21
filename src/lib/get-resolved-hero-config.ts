@@ -1,8 +1,10 @@
+import { type ResolvedHeroConfig, resolveHeroFromRow } from "@/lib/hero-appearance";
 import { prisma } from "@/lib/prisma";
-import { resolveHeroFromRow, type ResolvedHeroConfig } from "@/lib/hero-appearance";
 
 function isMissingHeroTable(e: unknown): boolean {
-  return typeof e === "object" && e !== null && "code" in e && (e as { code: string }).code === "P2021";
+  return (
+    typeof e === "object" && e !== null && "code" in e && (e as { code: string }).code === "P2021"
+  );
 }
 
 /** Lee configuración del hero; si la tabla aún no existe (migración pendiente), usa imagen por defecto. */

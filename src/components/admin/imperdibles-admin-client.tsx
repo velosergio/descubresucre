@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import {
+  type ImperdibleAdminRow,
+  ImperdiblesDestinationDialog,
+} from "@/components/admin/imperdibles-destination-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,10 +24,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  ImperdiblesDestinationDialog,
-  type ImperdibleAdminRow,
-} from "@/components/admin/imperdibles-destination-dialog";
-import { deleteImperdibleDestinationAction, saveImperdiblesSectionAction } from "@/lib/actions/imperdibles";
+  deleteImperdibleDestinationAction,
+  saveImperdiblesSectionAction,
+} from "@/lib/actions/imperdibles";
 
 export type ImperdiblesSettingsDTO = {
   displayMode: "GRID_THREE" | "CAROUSEL";
@@ -91,7 +94,9 @@ export function ImperdiblesAdminClient({
       <Card className="border-border/80">
         <CardHeader>
           <CardTitle>Presentación en la portada</CardTitle>
-          <CardDescription>Modo de visualización y orden de los destinos publicados.</CardDescription>
+          <CardDescription>
+            Modo de visualización y orden de los destinos publicados.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-3">
@@ -99,7 +104,10 @@ export function ImperdiblesAdminClient({
             <RadioGroup
               value={section.displayMode}
               onValueChange={(v) =>
-                setSection((s) => ({ ...s, displayMode: v as ImperdiblesSettingsDTO["displayMode"] }))
+                setSection((s) => ({
+                  ...s,
+                  displayMode: v as ImperdiblesSettingsDTO["displayMode"],
+                }))
               }
               className="flex flex-col gap-2"
               disabled={pending}
@@ -123,7 +131,9 @@ export function ImperdiblesAdminClient({
             <Label>Orden de los ítems</Label>
             <RadioGroup
               value={section.itemOrder}
-              onValueChange={(v) => setSection((s) => ({ ...s, itemOrder: v as ImperdiblesSettingsDTO["itemOrder"] }))}
+              onValueChange={(v) =>
+                setSection((s) => ({ ...s, itemOrder: v as ImperdiblesSettingsDTO["itemOrder"] }))
+              }
               className="flex flex-col gap-2"
               disabled={pending}
             >
@@ -148,7 +158,9 @@ export function ImperdiblesAdminClient({
               <Input
                 id="h-title"
                 value={section.headingTitle ?? ""}
-                onChange={(e) => setSection((s) => ({ ...s, headingTitle: e.target.value || null }))}
+                onChange={(e) =>
+                  setSection((s) => ({ ...s, headingTitle: e.target.value || null }))
+                }
                 disabled={pending}
                 placeholder="Destinos Imperdibles"
               />
@@ -158,7 +170,9 @@ export function ImperdiblesAdminClient({
               <Input
                 id="h-sub"
                 value={section.headingSubtitle ?? ""}
-                onChange={(e) => setSection((s) => ({ ...s, headingSubtitle: e.target.value || null }))}
+                onChange={(e) =>
+                  setSection((s) => ({ ...s, headingSubtitle: e.target.value || null }))
+                }
                 disabled={pending}
               />
             </div>
@@ -174,7 +188,9 @@ export function ImperdiblesAdminClient({
                 max={60000}
                 step={500}
                 value={section.carouselIntervalMs}
-                onChange={(e) => setSection((s) => ({ ...s, carouselIntervalMs: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setSection((s) => ({ ...s, carouselIntervalMs: Number(e.target.value) }))
+                }
                 disabled={pending}
               />
             </div>
@@ -221,7 +237,13 @@ export function ImperdiblesAdminClient({
                   <td className="p-3">{d.sortOrder}</td>
                   <td className="p-3">
                     <div className="flex gap-1">
-                      <Button type="button" variant="ghost" size="icon" onClick={() => openEdit(d)} aria-label="Editar">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEdit(d)}
+                        aria-label="Editar"
+                      >
                         <Pencil className="size-4" />
                       </Button>
                       <Button
@@ -254,7 +276,9 @@ export function ImperdiblesAdminClient({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Eliminar este destino?</AlertDialogTitle>
-            <AlertDialogDescription>Se quitará de la portada y la URL de detalle dejará de existir.</AlertDialogDescription>
+            <AlertDialogDescription>
+              Se quitará de la portada y la URL de detalle dejará de existir.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

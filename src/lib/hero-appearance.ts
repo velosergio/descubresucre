@@ -97,9 +97,9 @@ export type HeroSaveInput =
   | { heroMode: "VIDEO"; heroVideoUrl: string; heroVideoSource: HeroVideoSource }
   | { heroMode: "CAROUSEL"; carouselSlides: HeroCarouselSlide[] };
 
-export function validateHeroSaveInput(input: unknown):
-  | { ok: true; data: HeroSaveInput }
-  | { ok: false; error: string } {
+export function validateHeroSaveInput(
+  input: unknown,
+): { ok: true; data: HeroSaveInput } | { ok: false; error: string } {
   if (!input || typeof input !== "object") {
     return { ok: false, error: "Datos inválidos" };
   }
@@ -129,7 +129,10 @@ export function validateHeroSaveInput(input: unknown):
     }
     if (src === "EXTERNAL_URL") {
       if (!isAllowedExternalVideoUrl(heroVideoUrl)) {
-        return { ok: false, error: "La URL del vídeo debe ser HTTPS (o http://localhost en desarrollo)." };
+        return {
+          ok: false,
+          error: "La URL del vídeo debe ser HTTPS (o http://localhost en desarrollo).",
+        };
       }
     } else if (!isPublicUploadPath(heroVideoUrl)) {
       return { ok: false, error: "Sube un archivo de vídeo válido." };

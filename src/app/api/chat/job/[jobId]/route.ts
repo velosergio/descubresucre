@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ jobId: string }> },
-) {
+export async function GET(_request: Request, context: { params: Promise<{ jobId: string }> }) {
   const { jobId } = await context.params;
   if (!jobId || jobId.length > 64) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 });

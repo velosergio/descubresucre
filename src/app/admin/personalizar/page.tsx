@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ImageIcon, Images, MapPin } from "lucide-react";
+import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminPersonalizarPage() {
@@ -13,7 +13,10 @@ export default function AdminPersonalizarPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
-        <Link href="/admin/personalizar/galeria" className="block transition-opacity hover:opacity-90">
+        <Link
+          href="/admin/personalizar/galeria"
+          className="block transition-opacity hover:opacity-90"
+        >
           <Card className="border-border/80">
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
@@ -21,13 +24,18 @@ export default function AdminPersonalizarPage() {
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-lg">Galería</CardTitle>
-                <CardDescription>Imágenes y vídeos reutilizables para el banner y otras secciones.</CardDescription>
+                <CardDescription>
+                  Imágenes y vídeos reutilizables para el banner y otras secciones.
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>
         </Link>
 
-        <Link href="/admin/personalizar/banner" className="block transition-opacity hover:opacity-90">
+        <Link
+          href="/admin/personalizar/banner"
+          className="block transition-opacity hover:opacity-90"
+        >
           <Card className="border-border/80">
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
@@ -36,14 +44,18 @@ export default function AdminPersonalizarPage() {
               <div className="space-y-1">
                 <CardTitle className="text-lg">Banner principal</CardTitle>
                 <CardDescription>
-                  Imagen, vídeo o carrusel de fondo en la portada (elige desde la galería o sube archivos nuevos).
+                  Imagen, vídeo o carrusel de fondo en la portada (elige desde la galería o sube
+                  archivos nuevos).
                 </CardDescription>
               </div>
             </CardHeader>
           </Card>
         </Link>
 
-        <Link href="/admin/personalizar/destinos-imperdibles" className="block transition-opacity hover:opacity-90">
+        <Link
+          href="/admin/personalizar/destinos-imperdibles"
+          className="block transition-opacity hover:opacity-90"
+        >
           <Card className="border-border/80">
             <CardHeader className="flex flex-row items-center gap-4">
               <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">

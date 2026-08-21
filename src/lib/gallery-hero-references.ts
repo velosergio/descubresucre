@@ -1,10 +1,16 @@
 import type { HeroAppearanceSettings } from "@/generated/prisma";
 import { parseCarouselSlides } from "@/lib/hero-appearance";
 
-export type HeroRefsPick = Pick<HeroAppearanceSettings, "heroImageUrl" | "heroVideoUrl" | "carouselSlides">;
+export type HeroRefsPick = Pick<
+  HeroAppearanceSettings,
+  "heroImageUrl" | "heroVideoUrl" | "carouselSlides"
+>;
 
 /** Indica si la URL de un activo de galería está usada en la configuración actual del hero. */
-export function isGalleryUrlReferencedByHero(hero: HeroRefsPick | null, publicUrl: string): boolean {
+export function isGalleryUrlReferencedByHero(
+  hero: HeroRefsPick | null,
+  publicUrl: string,
+): boolean {
   const needle = publicUrl.trim();
   if (!needle || !hero) return false;
 

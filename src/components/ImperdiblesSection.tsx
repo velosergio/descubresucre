@@ -1,12 +1,11 @@
 "use client";
 
+import Autoplay from "embla-carousel-autoplay";
+import * as m from "framer-motion/m";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
-import * as m from "framer-motion/m";
-import Autoplay from "embla-carousel-autoplay";
-import { ArrowRight } from "lucide-react";
-import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
 import {
   Carousel,
   CarouselContent,
@@ -14,6 +13,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
 import { toServedMediaUrl } from "@/lib/media-url";
 
 type Props = {

@@ -1,14 +1,21 @@
 "use client";
 
-import { useReducer } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useReducer } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface LoginFormProps {
   googleEnabled: boolean;
@@ -126,14 +133,24 @@ export function LoginForm({ googleEnabled }: LoginFormProps) {
             {form.loading ? "Entrando…" : "Entrar"}
           </Button>
           {googleEnabled ? (
-            <Button type="button" variant="outline" className="w-full" disabled={form.loading} onClick={() => void onGoogle()}>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={form.loading}
+              onClick={() => void onGoogle()}
+            >
               Continuar con Google
             </Button>
           ) : null}
           <p className="text-center text-sm text-muted-foreground">
             ¿No tienes cuenta?{" "}
             <Link
-              href={callbackUrl ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/register"}
+              href={
+                callbackUrl
+                  ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/register"
+              }
               className="font-medium text-foreground underline underline-offset-4"
             >
               Registrarse

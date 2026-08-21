@@ -1,5 +1,5 @@
 import * as m from "framer-motion/m";
-import { Megaphone, Clock, Users, ArrowRight } from "lucide-react";
+import { ArrowRight, Clock, Megaphone, Users } from "lucide-react";
 
 const convocatorias = [
   {
@@ -11,7 +11,8 @@ const convocatorias = [
   },
   {
     title: "Emprendimiento Turístico Comunitario",
-    description: "Apoyo técnico y financiero para proyectos de turismo comunitario en municipios de Sucre.",
+    description:
+      "Apoyo técnico y financiero para proyectos de turismo comunitario en municipios de Sucre.",
     deadline: "15 de Abril, 2026",
     audience: "Emprendedores y comunidades",
     type: "Turismo",
@@ -25,7 +26,8 @@ const convocatorias = [
   },
   {
     title: "Festival del Porro - Participación de Bandas",
-    description: "Inscripción de bandas y agrupaciones musicales para el Festival Nacional del Porro 2026.",
+    description:
+      "Inscripción de bandas y agrupaciones musicales para el Festival Nacional del Porro 2026.",
     deadline: "30 de Mayo, 2026",
     audience: "Agrupaciones musicales",
     type: "Música",
@@ -51,7 +53,9 @@ const ConvocatoriasSection = () => {
         >
           <div className="inline-flex items-center gap-2 bg-secondary/10 rounded-full px-4 py-2 mb-4">
             <Megaphone className="w-4 h-4 text-secondary" />
-            <span className="text-sm font-body font-medium text-secondary">Oportunidades abiertas</span>
+            <span className="text-sm font-body font-medium text-secondary">
+              Oportunidades abiertas
+            </span>
           </div>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
             Convocatorias
@@ -72,7 +76,9 @@ const ConvocatoriasSection = () => {
               className="bg-card rounded-2xl p-6 border border-border card-hover cursor-pointer group"
             >
               <div className="flex items-start justify-between mb-3">
-                <span className={`text-xs font-body font-medium rounded-full px-3 py-1 border ${typeColors[conv.type]}`}>
+                <span
+                  className={`text-xs font-body font-medium rounded-full px-3 py-1 border ${typeColors[conv.type]}`}
+                >
                   {conv.type}
                 </span>
               </div>
