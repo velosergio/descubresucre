@@ -29,22 +29,26 @@ function DestinationCard({
   slug: string;
   title: string;
   subtitle: string;
-  cardImageUrl: string;
+  cardImageUrl: string | null;
 }) {
-  const cardSrc = toServedMediaUrl(cardImageUrl);
+  const cardSrc = cardImageUrl ? toServedMediaUrl(cardImageUrl) : null;
   return (
     <Link
       href={`/imperdibles/${slug}`}
       className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl card-hover"
     >
-      <Image
-        src={cardSrc}
-        alt=""
-        fill
-        className="object-cover transition-transform duration-700 group-hover:scale-110"
-        sizes="(max-width: 768px) 100vw, 33vw"
-        unoptimized
-      />
+      {cardSrc ? (
+        <Image
+          src={cardSrc}
+          alt=""
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized
+        />
+      ) : (
+        <div className="absolute inset-0 bg-muted" aria-hidden />
+      )}
       <div className="absolute inset-0 gradient-card-overlay" />
       <div className="absolute bottom-0 left-0 right-0 p-6">
         <h3 className="mb-2 font-display text-xl font-bold text-primary-foreground">{title}</h3>
@@ -96,6 +100,15 @@ export default function ImperdiblesSection({ payload }: Props) {
             )}
           </h2>
           <p className="mx-auto max-w-xl font-body text-muted-foreground">{headingSubtitle}</p>
+          <p className="mt-4">
+            <Link
+              href="/sucre-natural"
+              className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Ver fichas de naturaleza
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </p>
         </m.div>
 
         {settings.displayMode === "GRID_THREE" ? (

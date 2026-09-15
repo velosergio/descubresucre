@@ -1,4 +1,5 @@
 import { Mail, MapPin, Phone } from "lucide-react";
+import Link from "next/link";
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground/80 py-12 px-4">
@@ -28,6 +29,12 @@ const Footer = () => (
       <div>
         <h4 className="font-display font-semibold text-primary-foreground mb-3">Enlaces</h4>
         <div className="space-y-2 font-body text-sm">
+          <Link
+            href="/sucre-natural"
+            className="block hover:text-tropical-gold cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-tropical-gold"
+          >
+            Sucre Natural
+          </Link>
           <p className="hover:text-tropical-gold cursor-pointer transition-colors">
             Gobernación de Sucre
           </p>

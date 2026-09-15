@@ -10,6 +10,7 @@ import { encodeRasterImageToWebp, GALLERY_WEBP_MAX_EDGE } from "@/lib/encode-ima
 import type { GalleryAssetDTO } from "@/lib/gallery-asset-dto";
 import { collectGalleryOrphanIds, mapExistingGalleryRowsToDTO } from "@/lib/gallery-assets";
 import { isGalleryUrlReferencedByHero } from "@/lib/gallery-hero-references";
+import { isGalleryUrlUsedBySucreNatural } from "@/lib/gallery-sucre-natural-references";
 import { prisma } from "@/lib/prisma";
 import {
   IMAGE_MIME_TO_EXT,
@@ -190,15 +191,29 @@ export async function deleteGalleryAssetAction(id: string) {
       };
     }
 
-    const usedByImperdible = await prisma.imperdibleDestination.findFirst({
-      where: { cardImageUrl: asset.publicUrl },
-      select: { id: true },
-    });
-    if (usedByImperdible) {
+    const [destCards, galleryItems, hubCovers, speciesImgs, expImgs] = await Promise.all([
+      prisma.imperdibleDestination.findMany({ select: { cardImageUrl: true } }),
+      prisma.imperdibleGalleryItem.findMany({ select: { publicUrl: true } }),
+      prisma.sucreNaturalHub.findMany({ select: { coverImageUrl: true } }),
+      prisma.biodiversityEntry.findMany({ select: { imageUrl: true } }),
+      prisma.natureExperience.findMany({ select: { imageUrl: true } }),
+    ]);
+    if (
+      isGalleryUrlUsedBySucreNatural(
+        {
+          cardImageUrls: destCards.map((d) => d.cardImageUrl),
+          galleryItemUrls: galleryItems.map((g) => g.publicUrl),
+          hubCoverUrls: hubCovers.map((h) => h.coverImageUrl),
+          speciesImageUrls: speciesImgs.map((s) => s.imageUrl),
+          experienceImageUrls: expImgs.map((e) => e.imageUrl),
+        },
+        asset.publicUrl,
+      )
+    ) {
       return {
         ok: false as const,
         error:
-          "Este archivo está en uso en Destinos imperdibles. Cambia o elimina ese destino antes de borrarlo.",
+          "Este archivo está en uso en Destinos imperdibles o Sucre Natural. Cambia o elimina esa referencia antes de borrarlo.",
       };
     }
 

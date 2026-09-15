@@ -1,0 +1,47 @@
+/* Estética de fichas Sucre Natural: papel, pincel, polaroid. Tokens en globals.css. */
+
+.sn-paper {
+  background-color: hsl(var(--sn-paper));
+  color: hsl(var(--sn-ink));
+}
+
+.sn-brush-title {
+  font-family: var(--font-display);
+  position: relative;
+  display: inline-block;
+}
+
+.sn-brush-title::after {
+  content: "";
+  position: absolute;
+  left: -0.35em;
+  right: -0.35em;
+  bottom: 0.05em;
+  height: 0.42em;
+  z-index: -1;
+  border-radius: 999px 40% 60% 999px;
+  background: hsl(var(--sn-accent) / 0.22);
+  transform: rotate(-1.2deg);
+}
+
+.sn-polaroid {
+  background: #fff;
+  padding: 0.55rem 0.55rem 1.6rem;
+  box-shadow:
+    0 1px 2px hsl(var(--sn-ink) / 0.08),
+    0 12px 28px -12px hsl(var(--sn-ink) / 0.28);
+  transform: rotate(-1.4deg);
+}
+
+.sn-polaroid:nth-child(even) {
+  transform: rotate(1.2deg);
+}
+
+.sn-section-label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--sn-ink) / 0.72);
+}

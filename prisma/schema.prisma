@@ -157,21 +157,164 @@ model ImperdiblesSectionSettings {
   updatedAt            DateTime               @updatedAt
 }
 
-/// Destino destacado en la home y página de detalle.
+enum BiodiversityKind {
+  FAUNA
+  FLORA
+  ECOSYSTEM
+}
+
+/// Micrositio temático Sucre Natural (catálogo cerrado de 7 ids).
+model SucreNaturalHub {
+  id            String                    @id @db.VarChar(32)
+  title         String                    @db.VarChar(200)
+  tagline       String?                   @db.VarChar(500)
+  introMarkdown String?                   @db.Text
+  coverImageUrl String?                   @db.VarChar(2048)
+  sortOrder     Int
+  updatedAt     DateTime                  @updatedAt
+  destinations  ImperdibleDestinationHub[]
+}
+
+/// Destino destacado en la home y página de detalle (ficha Sucre Natural opcional).
 model ImperdibleDestination {
   id             String   @id @default(cuid())
   slug           String   @unique @db.VarChar(160)
   title          String   @db.VarChar(200)
   subtitle       String   @db.VarChar(500)
-  cardImageUrl   String   @db.VarChar(2048)
+  cardImageUrl   String?  @db.VarChar(2048)
   bodyMarkdown   String   @db.Text
-  mapLat         Decimal  @db.Decimal(10, 7)
-  mapLng         Decimal  @db.Decimal(10, 7)
+  mapLat         Decimal? @db.Decimal(10, 7)
+  mapLng         Decimal? @db.Decimal(10, 7)
   mapZoom        Int      @default(14)
   published      Boolean  @default(true)
   sortOrder      Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  municipality           String? @db.VarChar(200)
+  region                 String? @db.VarChar(200)
+  locationLabel          String? @db.VarChar(300)
+  ecosystems             String? @db.VarChar(500)
+  approach               String? @db.VarChar(500)
+  specialWhy             String? @db.Text
+  howToArrive            String? @db.Text
+  climate                String? @db.VarChar(300)
+  recommendedTime        String? @db.VarChar(300)
+  audience               String? @db.VarChar(300)
+  mapNote                String? @db.VarChar(500)
+  liveActivities         Json?
+  responsibleTips        Json?
+  biodiversityChipLabels Json?
+  showOnHome             Boolean @default(false)
+  seedManaged            Boolean @default(false)
+
+  hubs         ImperdibleDestinationHub[]
+  galleryItems ImperdibleGalleryItem[]
+  biodiversity BiodiversityOnDestination[]
+  experiences  ExperienceOnDestination[]
+  sources      DestinationSource[]
+
   @@index([published, sortOrder])
+  @@index([published, showOnHome, sortOrder])
+  @@index([published, municipality])
+}
+
+model ImperdibleDestinationHub {
+  destinationId String
+  hubId         String
+  destination   ImperdibleDestination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  hub           SucreNaturalHub       @relation(fields: [hubId], references: [id], onDelete: Restrict)
+
+  @@id([destinationId, hubId])
+  @@index([hubId])
+}
+
+model ImperdibleGalleryItem {
+  id            String                @id @default(cuid())
+  destinationId String
+  publicUrl     String                @db.VarChar(2048)
+  sortOrder     Int                   @default(0)
+  alt           String?               @db.VarChar(300)
+  destination   ImperdibleDestination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@index([destinationId, sortOrder])
+}
+
+model BiodiversityEntry {
+  id             String                      @id @default(cuid())
+  slug           String                      @unique @db.VarChar(160)
+  kind           BiodiversityKind
+  groupKey       String                      @db.VarChar(80)
+  commonName     String                      @db.VarChar(200)
+  scientificName String?                     @db.VarChar(200)
+  summary        String                      @db.Text
+  whereFound     String?                     @db.Text
+  imageUrl       String?                     @db.VarChar(2048)
+  published      Boolean                     @default(true)
+  sortOrder      Int                         @default(0)
+  seedManaged    Boolean                     @default(false)
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @updatedAt
+  destinations   BiodiversityOnDestination[]
+
+  @@index([published, kind, sortOrder])
+}
+
+model BiodiversityOnDestination {
+  destinationId String
+  entryId       String
+  destination   ImperdibleDestination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  entry         BiodiversityEntry     @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@id([destinationId, entryId])
+  @@index([entryId])
+}
+
+model NatureExperience {
+  id              String                    @id @default(cuid())
+  slug            String                    @unique @db.VarChar(160)
+  title           String                    @db.VarChar(200)
+  tagline         String?                   @db.VarChar(500)
+  whereText       String?                   @db.Text
+  whatYouDo       Json?
+  specialWhy      String?                   @db.Text
+  recommendations Json?
+  imageUrl        String?                   @db.VarChar(2048)
+  published       Boolean                   @default(true)
+  sortOrder       Int                       @default(0)
+  seedManaged     Boolean                   @default(false)
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  destinations    ExperienceOnDestination[]
+
+  @@index([published, sortOrder])
+}
+
+model ExperienceOnDestination {
+  destinationId String
+  experienceId  String
+  destination   ImperdibleDestination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  experience    NatureExperience      @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@id([destinationId, experienceId])
+  @@index([experienceId])
+}
+
+model ContentSource {
+  id           String              @id @default(cuid())
+  slug         String              @unique @db.VarChar(80)
+  name         String              @db.VarChar(200)
+  url          String?             @db.VarChar(2048)
+  note         String?             @db.VarChar(500)
+  destinations DestinationSource[]
+}
+
+model DestinationSource {
+  destinationId String
+  sourceId      String
+  destination   ImperdibleDestination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  source        ContentSource         @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@id([destinationId, sourceId])
+  @@index([sourceId])
 }

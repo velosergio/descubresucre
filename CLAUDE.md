@@ -21,7 +21,7 @@ Base de datos:
 ```bash
 npm run db:migrate       # prisma migrate dev
 npm run db:generate      # regenera el cliente en src/generated/prisma
-npm run db:seed          # solo crea roles admin/editor
+npm run db:seed          # roles admin/editor + carga Sucre Natural (hubs, fichas, especies, experiencias, fuentes)
 npm run admin:create     # crea el primer usuario admin (interactivo)
 ```
 
@@ -114,3 +114,13 @@ Para probar la imagen en local: dentro del contenedor usa `127.0.0.1`, no `local
 ## Spec Kit
 
 El repo usa Spec Kit: `specs/NNN-nombre/` documenta cada feature y `.specify/memory/constitution.md` fija los principios normativos del proyecto (pruebas proporcionales al riesgo, validación en todos los límites, secretos solo por entorno, logs con contexto en rutas críticas). Las skills `speckit-*` implementan el flujo `specify → plan → tasks → implement`. Al añadir una feature con impacto en autenticación, persistencia o integraciones, la constitución exige pruebas automatizadas.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import { FichaDestino } from "@/components/sucre-natural/ficha-destino";
 import { Button } from "@/components/ui/button";
 import { getImperdibleBySlug } from "@/lib/get-imperdible-detail";
 import { toServedMediaUrl } from "@/lib/media-url";
@@ -28,12 +29,20 @@ export default async function ImperdibleDetailPage({ params }: Props) {
   const dest = await getImperdibleBySlug(slug);
   if (!dest) notFound();
 
+  if (dest.hasStructuredFicha) {
+    return <FichaDestino ficha={dest} />;
+  }
+
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
+  const hasCoords = dest.mapLat != null && dest.mapLng != null;
   const embedUrl =
     mapsKey &&
+    hasCoords &&
     `https://www.google.com/maps/embed/v1/view?key=${encodeURIComponent(mapsKey)}&center=${dest.mapLat},${dest.mapLng}&zoom=${dest.mapZoom}`;
-  const externalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dest.mapLat},${dest.mapLng}`)}`;
-  const cardSrc = toServedMediaUrl(dest.cardImageUrl);
+  const externalMapsUrl = hasCoords
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dest.mapLat},${dest.mapLng}`)}`
+    : null;
+  const cardSrc = dest.cardImageUrl ? toServedMediaUrl(dest.cardImageUrl) : null;
 
   return (
     <article className="min-h-screen bg-background">
@@ -45,16 +54,18 @@ export default async function ImperdibleDetailPage({ params }: Props) {
               Volver al inicio
             </Link>
           </Button>
-          <div className="relative aspect-[21/9] max-h-[320px] w-full overflow-hidden rounded-xl border border-border/80">
-            <Image
-              src={cardSrc}
-              alt=""
-              fill
-              className="object-cover"
-              sizes="(max-width: 896px) 100vw, 896px"
-              priority
-              unoptimized
-            />
+          <div className="relative aspect-[21/9] max-h-[320px] w-full overflow-hidden rounded-xl border border-border/80 bg-muted">
+            {cardSrc ? (
+              <Image
+                src={cardSrc}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="(max-width: 896px) 100vw, 896px"
+                priority
+                unoptimized
+              />
+            ) : null}
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
               <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
@@ -84,17 +95,23 @@ export default async function ImperdibleDetailPage({ params }: Props) {
                 src={embedUrl}
               />
             </div>
-          ) : (
+          ) : hasCoords ? (
             <p className="text-sm text-muted-foreground">
               Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps.
             </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Este destino aún no tiene coordenadas de mapa.
+            </p>
           )}
-          <Button variant="outline" size="sm" asChild className="gap-2">
-            <a href={externalMapsUrl} target="_blank" rel="noreferrer">
-              <ExternalLink className="size-4" />
-              Abrir en Google Maps
-            </a>
-          </Button>
+          {externalMapsUrl ? (
+            <Button variant="outline" size="sm" asChild className="gap-2">
+              <a href={externalMapsUrl} target="_blank" rel="noreferrer">
+                <ExternalLink className="size-4" />
+                Abrir en Google Maps
+              </a>
+            </Button>
+          ) : null}
         </section>
       </div>
     </article>

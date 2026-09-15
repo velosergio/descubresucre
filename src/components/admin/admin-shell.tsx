@@ -1,12 +1,15 @@
 "use client";
 
 import {
+  Binoculars,
   ImageIcon,
   Images,
   LayoutDashboard,
   LayoutGrid,
+  Leaf,
   LogOut,
   MapPin,
+  Palmtree,
   Settings,
   Shield,
   Users,
@@ -44,6 +47,13 @@ const personalizarNav: {
   { href: "/admin/personalizar/galeria", label: "Galería", icon: Images },
   { href: "/admin/personalizar/banner", label: "Banner principal", icon: ImageIcon },
   { href: "/admin/personalizar/destinos-imperdibles", label: "Destinos imperdibles", icon: MapPin },
+  { href: "/admin/personalizar/sucre-natural", label: "Sucre Natural", icon: Palmtree },
+  { href: "/admin/personalizar/biodiversidad", label: "Biodiversidad", icon: Leaf },
+  {
+    href: "/admin/personalizar/experiencias-naturaleza",
+    label: "Experiencias naturaleza",
+    icon: Binoculars,
+  },
 ];
 
 const adminNav = [

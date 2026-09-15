@@ -48,6 +48,39 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Sucre Natural: papel crema, tinta y acento por hub (data-hub) */
+    --sn-paper: 40 33% 94%;
+    --sn-ink: 210 25% 12%;
+    --sn-accent: 174 62% 35%;
+  }
+
+  [data-hub="playas"] {
+    --sn-accent: 174 62% 35%;
+  }
+
+  [data-hub="cienagas"] {
+    --sn-accent: 142 40% 32%;
+  }
+
+  [data-hub="rios"] {
+    --sn-accent: 25 35% 38%;
+  }
+
+  [data-hub="paisajes"] {
+    --sn-accent: 130 35% 30%;
+  }
+
+  [data-hub="biodiversidad"] {
+    --sn-accent: 32 80% 42%;
+  }
+
+  [data-hub="senderos"] {
+    --sn-accent: 270 35% 38%;
+  }
+
+  [data-hub="experiencias"] {
+    --sn-accent: 18 80% 45%;
   }
 }
 
