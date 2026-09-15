@@ -10,6 +10,8 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["e2e/**", "playwright-report/**", "test-results/**"],
+    // Integraciones Prisma comparten TEST_DATABASE_URL; un archivo a la vez evita P2002/P2003.
+    fileParallelism: false,
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],

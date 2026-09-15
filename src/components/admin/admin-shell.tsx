@@ -10,6 +10,8 @@ import {
   LogOut,
   MapPin,
   Palmtree,
+  PanelLeftClose,
+  PanelLeftOpen,
   Settings,
   Shield,
   Users,
@@ -32,8 +34,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const mainNav = [{ href: "/admin", label: "Resumen", icon: LayoutDashboard }];
 
@@ -69,6 +73,34 @@ function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function AdminSidebarTrigger({ className }: { className?: string }) {
+  const { isMobile, state, toggleSidebar } = useSidebar();
+  const collapsed = state === "collapsed";
+  const label = isMobile ? "Abrir menú" : collapsed ? "Expandir menú" : "Colapsar menú";
+  const Icon = isMobile || collapsed ? PanelLeftOpen : PanelLeftClose;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className={cn("size-7", className)}
+          onClick={toggleSidebar}
+          aria-label={label}
+          aria-expanded={isMobile ? undefined : !collapsed}
+        >
+          <Icon className="size-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side={collapsed ? "right" : "bottom"} hidden={isMobile}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 interface AdminShellProps {
   children: React.ReactNode;
   userLabel: string;
@@ -81,9 +113,12 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-border/80">
-        <SidebarHeader className="gap-2 px-4 py-3">
-          <p className="truncate text-sm font-semibold tracking-tight">Sucre Vivo</p>
-          <p className="truncate text-xs text-muted-foreground">Panel de administración</p>
+        <SidebarHeader className="flex-row items-center gap-2 px-3 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2">
+          <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
+            <p className="truncate text-sm font-semibold tracking-tight">Sucre Vivo</p>
+            <p className="truncate text-xs text-muted-foreground">Panel de administración</p>
+          </div>
+          <AdminSidebarTrigger className="hidden size-7 shrink-0 md:inline-flex" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
@@ -94,7 +129,7 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
                   const active = isNavActive(pathname, item.href);
                   return (
                     <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton asChild isActive={active}>
+                      <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
                         <Link href={item.href}>
                           <item.icon className="size-4" />
                           <span>{item.label}</span>
@@ -118,7 +153,7 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
                         : isNavActive(pathname, item.href);
                       return (
                         <SidebarMenuItem key={item.href}>
-                          <SidebarMenuButton asChild isActive={active}>
+                          <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
                             <Link href={item.href}>
                               <item.icon className="size-4" />
                               <span>{item.label}</span>
@@ -138,7 +173,7 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
                       const active = isNavActive(pathname, item.href);
                       return (
                         <SidebarMenuItem key={item.href}>
-                          <SidebarMenuButton asChild isActive={active}>
+                          <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
                             <Link href={item.href}>
                               <item.icon className="size-4" />
                               <span>{item.label}</span>
@@ -154,21 +189,22 @@ export function AdminShell({ children, userLabel, isAdmin }: AdminShellProps) {
           ) : null}
         </SidebarContent>
         <SidebarFooter className="gap-2 border-t border-border/60 p-2">
-          <p className="truncate px-2 text-xs text-muted-foreground">{userLabel}</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start gap-2"
-            onClick={() => void signOut({ callbackUrl: "/" })}
-          >
-            <LogOut className="size-4" />
-            Salir
-          </Button>
+          <p className="truncate px-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+            {userLabel}
+          </p>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton tooltip="Salir" onClick={() => void signOut({ callbackUrl: "/" })}>
+                <LogOut className="size-4" />
+                <span>Salir</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center gap-2 border-b border-border/80 px-4 md:hidden">
-          <SidebarTrigger />
+          <AdminSidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
           <span className="text-sm font-medium">Admin</span>
         </header>
