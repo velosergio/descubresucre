@@ -42,3 +42,6 @@ test-results
 !/public/uploads/gallery/images/.gitkeep
 /public/uploads/gallery/video/*
 !/public/uploads/gallery/video/.gitkeep
+
+# Docs muy grandes
+/docs/fichas_destinos.pdf

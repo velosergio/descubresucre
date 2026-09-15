@@ -6,7 +6,7 @@ export type ImperdiblePublicCard = {
   slug: string;
   title: string;
   subtitle: string;
-  cardImageUrl: string;
+  cardImageUrl: string | null;
 };
 
 export type ImperdiblesHomePayload = {

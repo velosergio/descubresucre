@@ -65,6 +65,11 @@ export default {
           deep: "hsl(var(--tropical-deep))",
           coral: "hsl(var(--tropical-coral))",
         },
+        sn: {
+          paper: "hsl(var(--sn-paper))",
+          ink: "hsl(var(--sn-ink))",
+          accent: "hsl(var(--sn-accent))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

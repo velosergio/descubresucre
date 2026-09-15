@@ -7,38 +7,8 @@ import { assertAdminAction } from "@/lib/auth-helpers";
 import { IMPERDIBLES_HOME_MAX_ITEMS } from "@/lib/imperdibles-public";
 import { slugifyImperdible } from "@/lib/imperdibles-slug";
 import { prisma } from "@/lib/prisma";
-
-const slugSchema = z
-  .string()
-  .min(1)
-  .max(160)
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug: solo minúsculas, números y guiones.");
-
-const cardImageSchema = z
-  .string()
-  .min(1)
-  .max(2048)
-  .refine(
-    (u) => u.startsWith("/uploads/gallery/images/") && !u.includes(".."),
-    "Imagen: debe ser una ruta de galería válida.",
-  );
-
-const destinationBaseSchema = z.object({
-  title: z.string().min(1).max(200),
-  subtitle: z.string().max(500),
-  slug: z
-    .string()
-    .max(160)
-    .optional()
-    .transform((s) => (s?.trim() ? s.trim() : undefined)),
-  cardImageUrl: cardImageSchema,
-  bodyMarkdown: z.string().max(100_000),
-  mapLat: z.coerce.number().gte(-90).lte(90),
-  mapLng: z.coerce.number().gte(-180).lte(180),
-  mapZoom: z.coerce.number().int().gte(1).lte(21).default(14),
-  published: z.coerce.boolean(),
-  sortOrder: z.coerce.number().int().default(0),
-});
+import { slugSchema, sucreNaturalDestinationSchema } from "@/lib/sucre-natural-destination-schema";
+import { revalidateSucreNaturalPaths } from "@/lib/sucre-natural-revalidate";
 
 const sectionSchema = z.object({
   displayMode: z.enum(["GRID_THREE", "CAROUSEL"]),
@@ -82,15 +52,23 @@ export async function saveImperdiblesSectionAction(input: unknown) {
   return { ok: true as const };
 }
 
-async function assertPublishedLimit(excludeId: string | null, willBePublished: boolean) {
-  if (!willBePublished) return { ok: true as const };
+async function assertPublishedLimit(
+  excludeId: string | null,
+  willBePublished: boolean,
+  willShowOnHome = false,
+) {
+  if (!willBePublished || !willShowOnHome) return { ok: true as const };
   const count = await prisma.imperdibleDestination.count({
-    where: { published: true, ...(excludeId ? { NOT: { id: excludeId } } : {}) },
+    where: {
+      published: true,
+      showOnHome: true,
+      ...(excludeId ? { NOT: { id: excludeId } } : {}),
+    },
   });
   if (count >= IMPERDIBLES_HOME_MAX_ITEMS) {
     return {
       ok: false as const,
-      error: `Solo puedes tener hasta ${IMPERDIBLES_HOME_MAX_ITEMS} destinos publicados.`,
+      error: "Solo puedes destacar hasta 20 destinos en la home.",
     };
   }
   return { ok: true as const };
@@ -100,7 +78,7 @@ export async function createImperdibleDestinationAction(input: unknown) {
   const gate = await assertAdminAction();
   if (!gate.ok) return { ok: false as const, error: gate.error };
 
-  const parsed = destinationBaseSchema.safeParse(input);
+  const parsed = sucreNaturalDestinationSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
@@ -119,27 +97,15 @@ export async function createImperdibleDestinationAction(input: unknown) {
   }
   const slug = slugParsed.data;
 
-  const limit = await assertPublishedLimit(null, raw.published);
+  const limit = await assertPublishedLimit(null, raw.published, raw.showOnHome);
   if (!limit.ok) return limit;
 
   try {
     const row = await prisma.imperdibleDestination.create({
-      data: {
-        slug,
-        title: raw.title,
-        subtitle: raw.subtitle,
-        cardImageUrl: raw.cardImageUrl,
-        bodyMarkdown: raw.bodyMarkdown,
-        mapLat: raw.mapLat,
-        mapLng: raw.mapLng,
-        mapZoom: raw.mapZoom,
-        published: raw.published,
-        sortOrder: raw.sortOrder,
-      },
+      data: destinationWriteData(raw, slug, false),
     });
-    revalidatePath("/");
-    revalidatePath("/admin/personalizar/destinos-imperdibles");
-    revalidatePath(`/imperdibles/${row.slug}`);
+    await syncDestinationRelations(row.id, raw);
+    revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
     return { ok: true as const, id: row.id };
   } catch (e: unknown) {
     const code = typeof e === "object" && e && "code" in e ? (e as { code: string }).code : "";
@@ -157,7 +123,7 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
 
   if (!id?.trim()) return { ok: false as const, error: "Identificador inválido." };
 
-  const parsed = destinationBaseSchema.safeParse(input);
+  const parsed = sucreNaturalDestinationSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
@@ -179,33 +145,22 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
   }
   const slug = slugParsed.data;
 
-  const wasPublished = existing.published;
-  if (raw.published && !wasPublished) {
-    const limit = await assertPublishedLimit(id, true);
+  const willHighlight = raw.published && raw.showOnHome;
+  const wasHighlight = existing.published && existing.showOnHome;
+  if (willHighlight && !wasHighlight) {
+    const limit = await assertPublishedLimit(id, true, true);
     if (!limit.ok) return limit;
   }
 
   try {
     const row = await prisma.imperdibleDestination.update({
       where: { id },
-      data: {
-        slug,
-        title: raw.title,
-        subtitle: raw.subtitle,
-        cardImageUrl: raw.cardImageUrl,
-        bodyMarkdown: raw.bodyMarkdown,
-        mapLat: raw.mapLat,
-        mapLng: raw.mapLng,
-        mapZoom: raw.mapZoom,
-        published: raw.published,
-        sortOrder: raw.sortOrder,
-      },
+      data: destinationWriteData(raw, slug, false),
     });
-    revalidatePath("/");
-    revalidatePath("/admin/personalizar/destinos-imperdibles");
-    revalidatePath(`/imperdibles/${existing.slug}`);
+    await syncDestinationRelations(row.id, raw);
+    revalidateSucreNaturalPaths({ slug: existing.slug, hubIds: raw.hubIds });
     if (existing.slug !== row.slug) {
-      revalidatePath(`/imperdibles/${row.slug}`);
+      revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
     }
     return { ok: true as const };
   } catch (e: unknown) {
@@ -226,11 +181,90 @@ export async function deleteImperdibleDestinationAction(id: string) {
 
   try {
     const row = await prisma.imperdibleDestination.delete({ where: { id } });
-    revalidatePath("/");
-    revalidatePath("/admin/personalizar/destinos-imperdibles");
-    revalidatePath(`/imperdibles/${row.slug}`);
+    revalidateSucreNaturalPaths({ slug: row.slug });
     return { ok: true as const };
-  } catch {
+  } catch (e) {
+    console.error("deleteImperdibleDestinationAction", e);
     return { ok: false as const, error: "No se pudo eliminar." };
+  }
+}
+
+function emptyToNull(value: string | null | undefined) {
+  const t = value?.trim();
+  return t ? t : null;
+}
+
+function destinationWriteData(
+  raw: z.infer<typeof sucreNaturalDestinationSchema>,
+  slug: string,
+  seedManaged: boolean,
+) {
+  return {
+    slug,
+    title: raw.title,
+    subtitle: raw.subtitle,
+    cardImageUrl: raw.cardImageUrl,
+    bodyMarkdown: raw.bodyMarkdown,
+    mapLat: raw.mapLat,
+    mapLng: raw.mapLng,
+    mapZoom: raw.mapZoom,
+    published: raw.published,
+    showOnHome: raw.showOnHome,
+    sortOrder: raw.sortOrder,
+    municipality: emptyToNull(raw.municipality),
+    region: emptyToNull(raw.region),
+    locationLabel: emptyToNull(raw.locationLabel),
+    ecosystems: emptyToNull(raw.ecosystems),
+    approach: emptyToNull(raw.approach),
+    specialWhy: emptyToNull(raw.specialWhy),
+    howToArrive: emptyToNull(raw.howToArrive),
+    climate: emptyToNull(raw.climate),
+    recommendedTime: emptyToNull(raw.recommendedTime),
+    audience: emptyToNull(raw.audience),
+    mapNote: emptyToNull(raw.mapNote),
+    liveActivities: raw.liveActivities,
+    responsibleTips: raw.responsibleTips.filter((t) => t.trim()),
+    biodiversityChipLabels: raw.biodiversityChipLabels.filter((t) => t.trim()),
+    seedManaged,
+  };
+}
+
+async function syncDestinationRelations(
+  destinationId: string,
+  raw: z.infer<typeof sucreNaturalDestinationSchema>,
+) {
+  await prisma.imperdibleDestinationHub.deleteMany({ where: { destinationId } });
+  if (raw.hubIds.length) {
+    await prisma.imperdibleDestinationHub.createMany({
+      data: raw.hubIds.map((hubId) => ({ destinationId, hubId })),
+    });
+  }
+  await prisma.imperdibleGalleryItem.deleteMany({ where: { destinationId } });
+  if (raw.galleryUrls.length) {
+    await prisma.imperdibleGalleryItem.createMany({
+      data: raw.galleryUrls.map((publicUrl, i) => ({
+        destinationId,
+        publicUrl,
+        sortOrder: i,
+      })),
+    });
+  }
+  await prisma.destinationSource.deleteMany({ where: { destinationId } });
+  if (raw.sourceIds.length) {
+    await prisma.destinationSource.createMany({
+      data: raw.sourceIds.map((sourceId) => ({ destinationId, sourceId })),
+    });
+  }
+  await prisma.biodiversityOnDestination.deleteMany({ where: { destinationId } });
+  if (raw.biodiversityIds.length) {
+    await prisma.biodiversityOnDestination.createMany({
+      data: raw.biodiversityIds.map((entryId) => ({ destinationId, entryId })),
+    });
+  }
+  await prisma.experienceOnDestination.deleteMany({ where: { destinationId } });
+  if (raw.experienceIds.length) {
+    await prisma.experienceOnDestination.createMany({
+      data: raw.experienceIds.map((experienceId) => ({ destinationId, experienceId })),
+    });
   }
 }

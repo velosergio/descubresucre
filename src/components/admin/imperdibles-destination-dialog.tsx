@@ -25,6 +25,7 @@ import {
   updateImperdibleDestinationAction,
 } from "@/lib/actions/imperdibles";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { SUCRE_NATURAL_HUBS } from "@/lib/sucre-natural-hubs";
 
 export type ImperdibleAdminRow = {
   id: string;
@@ -33,11 +34,29 @@ export type ImperdibleAdminRow = {
   subtitle: string;
   cardImageUrl: string;
   bodyMarkdown: string;
-  mapLat: number;
-  mapLng: number;
+  mapLat: number | null;
+  mapLng: number | null;
   mapZoom: number;
   published: boolean;
+  showOnHome: boolean;
   sortOrder: number;
+  municipality: string;
+  region: string;
+  locationLabel: string;
+  ecosystems: string;
+  approach: string;
+  specialWhy: string;
+  howToArrive: string;
+  climate: string;
+  recommendedTime: string;
+  audience: string;
+  mapNote: string;
+  liveActivitiesText: string;
+  responsibleTipsText: string;
+  biodiversityChipLabelsText: string;
+  hubIds: string[];
+  galleryUrls: string[];
+  sourceIds: string[];
 };
 
 const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
@@ -46,11 +65,29 @@ const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
   subtitle: "",
   cardImageUrl: "",
   bodyMarkdown: "",
-  mapLat: 9.3,
-  mapLng: -75.4,
+  mapLat: null,
+  mapLng: null,
   mapZoom: 14,
   published: true,
+  showOnHome: false,
   sortOrder: 0,
+  municipality: "",
+  region: "",
+  locationLabel: "",
+  ecosystems: "",
+  approach: "",
+  specialWhy: "",
+  howToArrive: "",
+  climate: "",
+  recommendedTime: "",
+  audience: "",
+  mapNote: "",
+  liveActivitiesText: "",
+  responsibleTipsText: "",
+  biodiversityChipLabelsText: "",
+  hubIds: [],
+  galleryUrls: [],
+  sourceIds: [],
 });
 
 function formFromInitial(
@@ -67,7 +104,25 @@ function formFromInitial(
     mapLng: initial.mapLng,
     mapZoom: initial.mapZoom,
     published: initial.published,
+    showOnHome: initial.showOnHome,
     sortOrder: initial.sortOrder,
+    municipality: initial.municipality,
+    region: initial.region,
+    locationLabel: initial.locationLabel,
+    ecosystems: initial.ecosystems,
+    approach: initial.approach,
+    specialWhy: initial.specialWhy,
+    howToArrive: initial.howToArrive,
+    climate: initial.climate,
+    recommendedTime: initial.recommendedTime,
+    audience: initial.audience,
+    mapNote: initial.mapNote,
+    liveActivitiesText: initial.liveActivitiesText,
+    responsibleTipsText: initial.responsibleTipsText,
+    biodiversityChipLabelsText: initial.biodiversityChipLabelsText,
+    hubIds: initial.hubIds,
+    galleryUrls: initial.galleryUrls,
+    sourceIds: initial.sourceIds,
   };
 }
 
@@ -83,12 +138,16 @@ function DestinationFormInner({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState<"card" | "gallery">("card");
   const [previewMd, setPreviewMd] = useState(false);
   const [form, setForm] = useState<Omit<ImperdibleAdminRow, "id"> & { id?: string }>(() =>
     mode === "edit" && initial ? formFromInitial(initial) : emptyForm(),
   );
 
-  const mapsHelperUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${form.mapLat},${form.mapLng}`)}`;
+  const mapsHelperUrl =
+    form.mapLat != null && form.mapLng != null
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${form.mapLat},${form.mapLng}`)}`
+      : "https://www.google.com/maps";
   const previewSrc = toServedMediaUrl(form.cardImageUrl);
 
   async function onUploadCard(f: File | null) {
@@ -112,13 +171,41 @@ function DestinationFormInner({
         title: form.title,
         subtitle: form.subtitle,
         slug: form.slug || undefined,
-        cardImageUrl: form.cardImageUrl,
+        cardImageUrl: form.cardImageUrl || null,
         bodyMarkdown: form.bodyMarkdown,
         mapLat: form.mapLat,
         mapLng: form.mapLng,
         mapZoom: form.mapZoom,
         published: form.published,
+        showOnHome: form.showOnHome,
         sortOrder: form.sortOrder,
+        municipality: form.municipality,
+        region: form.region,
+        locationLabel: form.locationLabel,
+        ecosystems: form.ecosystems,
+        approach: form.approach,
+        specialWhy: form.specialWhy,
+        howToArrive: form.howToArrive,
+        climate: form.climate,
+        recommendedTime: form.recommendedTime,
+        audience: form.audience,
+        mapNote: form.mapNote,
+        liveActivities: form.liveActivitiesText
+          .split("\n")
+          .map((t) => t.trim())
+          .filter(Boolean)
+          .map((title) => ({ title })),
+        responsibleTips: form.responsibleTipsText
+          .split("\n")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        biodiversityChipLabels: form.biodiversityChipLabelsText
+          .split("\n")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        hubIds: form.hubIds,
+        galleryUrls: form.galleryUrls,
+        sourceIds: form.sourceIds,
       };
       if (mode === "create") {
         const res = await createImperdibleDestinationAction(payload);
@@ -179,7 +266,10 @@ function DestinationFormInner({
               variant="outline"
               size="sm"
               disabled={pending}
-              onClick={() => setPickerOpen(true)}
+              onClick={() => {
+                setPickerTarget("card");
+                setPickerOpen(true);
+              }}
             >
               <ImageIcon className="mr-2 size-4" />
               Galería
@@ -236,8 +326,13 @@ function DestinationFormInner({
             <Input
               type="number"
               step="any"
-              value={form.mapLat}
-              onChange={(e) => setForm((s) => ({ ...s, mapLat: Number(e.target.value) }))}
+              value={form.mapLat ?? ""}
+              onChange={(e) =>
+                setForm((s) => ({
+                  ...s,
+                  mapLat: e.target.value === "" ? null : Number(e.target.value),
+                }))
+              }
               disabled={pending}
             />
           </div>
@@ -246,8 +341,13 @@ function DestinationFormInner({
             <Input
               type="number"
               step="any"
-              value={form.mapLng}
-              onChange={(e) => setForm((s) => ({ ...s, mapLng: Number(e.target.value) }))}
+              value={form.mapLng ?? ""}
+              onChange={(e) =>
+                setForm((s) => ({
+                  ...s,
+                  mapLng: e.target.value === "" ? null : Number(e.target.value),
+                }))
+              }
               disabled={pending}
             />
           </div>
@@ -293,6 +393,196 @@ function DestinationFormInner({
             Publicado
           </Label>
         </div>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="home"
+            checked={form.showOnHome}
+            onCheckedChange={(c) => setForm((s) => ({ ...s, showOnHome: c === true }))}
+            disabled={pending}
+          />
+          <Label htmlFor="home" className="cursor-pointer font-normal">
+            Destacar en la home (máx. 20)
+          </Label>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Hubs Sucre Natural</Label>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SUCRE_NATURAL_HUBS.map((hub) => (
+              <div key={hub.id} className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  id={`hub-${hub.id}`}
+                  checked={form.hubIds.includes(hub.id)}
+                  onCheckedChange={(c) =>
+                    setForm((s) => ({
+                      ...s,
+                      hubIds:
+                        c === true ? [...s.hubIds, hub.id] : s.hubIds.filter((id) => id !== hub.id),
+                    }))
+                  }
+                  disabled={pending}
+                />
+                <Label htmlFor={`hub-${hub.id}`} className="cursor-pointer font-normal">
+                  {hub.iconLabel}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Municipio</Label>
+            <Input
+              value={form.municipality}
+              onChange={(e) => setForm((s) => ({ ...s, municipality: e.target.value }))}
+              disabled={pending}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Región</Label>
+            <Input
+              value={form.region}
+              onChange={(e) => setForm((s) => ({ ...s, region: e.target.value }))}
+              disabled={pending}
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Ubicación (etiqueta)</Label>
+          <Input
+            value={form.locationLabel}
+            onChange={(e) => setForm((s) => ({ ...s, locationLabel: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Ecosistemas</Label>
+          <Input
+            value={form.ecosystems}
+            onChange={(e) => setForm((s) => ({ ...s, ecosystems: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Enfoque</Label>
+          <Input
+            value={form.approach}
+            onChange={(e) => setForm((s) => ({ ...s, approach: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Qué lo hace especial</Label>
+          <Textarea
+            rows={4}
+            value={form.specialWhy}
+            onChange={(e) => setForm((s) => ({ ...s, specialWhy: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Cómo llegar</Label>
+          <Textarea
+            rows={3}
+            value={form.howToArrive}
+            onChange={(e) => setForm((s) => ({ ...s, howToArrive: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Clima</Label>
+            <Input
+              value={form.climate}
+              onChange={(e) => setForm((s) => ({ ...s, climate: e.target.value }))}
+              disabled={pending}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Tiempo recomendado</Label>
+            <Input
+              value={form.recommendedTime}
+              onChange={(e) => setForm((s) => ({ ...s, recommendedTime: e.target.value }))}
+              disabled={pending}
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Para quién</Label>
+          <Input
+            value={form.audience}
+            onChange={(e) => setForm((s) => ({ ...s, audience: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Nota de mapa</Label>
+          <Input
+            value={form.mapNote}
+            onChange={(e) => setForm((s) => ({ ...s, mapNote: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Vive el destino (una actividad por línea)</Label>
+          <Textarea
+            rows={4}
+            value={form.liveActivitiesText}
+            onChange={(e) => setForm((s) => ({ ...s, liveActivitiesText: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Turismo responsable (una pauta por línea)</Label>
+          <Textarea
+            rows={4}
+            value={form.responsibleTipsText}
+            onChange={(e) => setForm((s) => ({ ...s, responsibleTipsText: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Chips de biodiversidad (uno por línea)</Label>
+          <Textarea
+            rows={3}
+            value={form.biodiversityChipLabelsText}
+            onChange={(e) => setForm((s) => ({ ...s, biodiversityChipLabelsText: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Galería de la ficha</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={pending}
+            onClick={() => {
+              setPickerTarget("gallery");
+              setPickerOpen(true);
+            }}
+          >
+            Añadir imagen de galería
+          </Button>
+          <ul className="space-y-1 text-xs text-muted-foreground">
+            {form.galleryUrls.map((url) => (
+              <li key={url} className="flex items-center justify-between gap-2">
+                <span className="truncate">{url}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() =>
+                    setForm((s) => ({ ...s, galleryUrls: s.galleryUrls.filter((u) => u !== url) }))
+                  }
+                >
+                  Quitar
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <DialogFooter>
@@ -304,11 +594,7 @@ function DestinationFormInner({
         >
           Cancelar
         </Button>
-        <Button
-          type="button"
-          onClick={() => submit()}
-          disabled={pending || !form.title.trim() || !form.cardImageUrl}
-        >
+        <Button type="button" onClick={() => submit()} disabled={pending || !form.title.trim()}>
           Guardar
         </Button>
       </DialogFooter>
@@ -317,8 +603,19 @@ function DestinationFormInner({
         open={pickerOpen}
         onOpenChange={setPickerOpen}
         kindFilter="IMAGE"
-        title="Elegir imagen de la galería"
-        onSelect={(url) => setForm((s) => ({ ...s, cardImageUrl: url }))}
+        title={
+          pickerTarget === "card" ? "Elegir imagen de la tarjeta" : "Añadir imagen a la galería"
+        }
+        onSelect={(url) => {
+          if (pickerTarget === "gallery") {
+            setForm((s) => ({
+              ...s,
+              galleryUrls: s.galleryUrls.includes(url) ? s.galleryUrls : [...s.galleryUrls, url],
+            }));
+          } else {
+            setForm((s) => ({ ...s, cardImageUrl: url }));
+          }
+        }}
       />
     </>
   );

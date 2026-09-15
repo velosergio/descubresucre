@@ -22,7 +22,7 @@ export async function getImperdiblesForHome(): Promise<ImperdiblesHomePayload> {
   const [settings, rows] = await Promise.all([
     getOrCreateSectionSettings(),
     prisma.imperdibleDestination.findMany({
-      where: { published: true },
+      where: { published: true, showOnHome: true },
       orderBy: { sortOrder: "asc" },
       take: IMPERDIBLES_HOME_MAX_ITEMS,
     }),

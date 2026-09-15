@@ -5,7 +5,14 @@ import { prisma } from "@/lib/prisma";
 export default async function AdminDestinosImperdiblesPage() {
   const [settings, rows] = await Promise.all([
     getOrCreateSectionSettings(),
-    prisma.imperdibleDestination.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.imperdibleDestination.findMany({
+      orderBy: { sortOrder: "asc" },
+      include: {
+        hubs: true,
+        galleryItems: { orderBy: { sortOrder: "asc" } },
+        sources: true,
+      },
+    }),
   ]);
 
   const initialDestinations = rows.map((d) => ({
@@ -13,13 +20,40 @@ export default async function AdminDestinosImperdiblesPage() {
     slug: d.slug,
     title: d.title,
     subtitle: d.subtitle,
-    cardImageUrl: d.cardImageUrl,
+    cardImageUrl: d.cardImageUrl ?? "",
     bodyMarkdown: d.bodyMarkdown,
-    mapLat: Number(d.mapLat),
-    mapLng: Number(d.mapLng),
+    mapLat: d.mapLat == null ? null : Number(d.mapLat),
+    mapLng: d.mapLng == null ? null : Number(d.mapLng),
     mapZoom: d.mapZoom,
     published: d.published,
+    showOnHome: d.showOnHome,
     sortOrder: d.sortOrder,
+    municipality: d.municipality ?? "",
+    region: d.region ?? "",
+    locationLabel: d.locationLabel ?? "",
+    ecosystems: d.ecosystems ?? "",
+    approach: d.approach ?? "",
+    specialWhy: d.specialWhy ?? "",
+    howToArrive: d.howToArrive ?? "",
+    climate: d.climate ?? "",
+    recommendedTime: d.recommendedTime ?? "",
+    audience: d.audience ?? "",
+    mapNote: d.mapNote ?? "",
+    liveActivitiesText: Array.isArray(d.liveActivities)
+      ? (d.liveActivities as { title?: string }[])
+          .map((a) => (typeof a?.title === "string" ? a.title : ""))
+          .filter(Boolean)
+          .join("\n")
+      : "",
+    responsibleTipsText: Array.isArray(d.responsibleTips)
+      ? (d.responsibleTips as unknown[]).filter((t) => typeof t === "string").join("\n")
+      : "",
+    biodiversityChipLabelsText: Array.isArray(d.biodiversityChipLabels)
+      ? (d.biodiversityChipLabels as unknown[]).filter((t) => typeof t === "string").join("\n")
+      : "",
+    hubIds: d.hubs.map((h) => h.hubId),
+    galleryUrls: d.galleryItems.map((g) => g.publicUrl),
+    sourceIds: d.sources.map((s) => s.sourceId),
   }));
 
   const clientKey = `${settings.updatedAt.getTime()}-${rows.map((r) => r.updatedAt.getTime()).join(",")}`;
