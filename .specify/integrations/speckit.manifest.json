@@ -1,6 +1,6 @@
 {
   "integration": "speckit",
-  "version": "0.16.3",
+  "version": "1.0.7",
   "installed_at": "2026-04-17T04:29:45.455251+00:00",
   "files": {
     ".specify/scripts/powershell/check-prerequisites.ps1": "bcb37804b0757c37799b65a9321c1d3fb7b7ddcab6703c55c5b9a142c9166bf1",
@@ -13,7 +13,7 @@
     ".specify/templates/spec-template.md": "4b02840fe663d4aec59de62693fcbf44e22ef99f1498a24101d131d2c91f98b8",
     ".specify/templates/tasks-template.md": "677ba1340229d71c355dfdd98c04391d1045250987cb9649ad8a6e4fa8754904",
     ".specify/scripts/powershell/resolve-template.ps1": "e49c565a09902e4ebd4b5a51c4e014d5067fdee5b1592f15cb44ef31f430d745",
-    ".specify/scripts/powershell/setup-tasks.ps1": "c83d843c1640dca75fdac922a95cd97d8612d49bfe8331ee44390e85fe434a19",
+    ".specify/scripts/powershell/setup-tasks.ps1": "57cd05e12bd472c60ac0554ad61b89770c278d50c48e484fb824196f44f75076",
     ".specify/.gitignore": "8c908410d177a1ef3d0dee16d7ad55f2ac3333df3104c4d4adee1c9b82f1dbc1"
   },
   "recovered_files": [
