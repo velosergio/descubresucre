@@ -24,28 +24,22 @@ async function galleryFileExists(publicUrl: string): Promise<boolean> {
 }
 
 export async function collectGalleryOrphanIds(rows: GalleryRowLike[]): Promise<string[]> {
-  const orphanIds: string[] = [];
-  for (const r of rows) {
-    if (await galleryFileExists(r.publicUrl)) continue;
-    orphanIds.push(r.id);
-  }
-  return orphanIds;
+  const exists = await Promise.all(rows.map((r) => galleryFileExists(r.publicUrl)));
+  return rows.filter((_, i) => !exists[i]).map((r) => r.id);
 }
 
 export async function mapExistingGalleryRowsToDTO(
   rows: GalleryRowLike[],
 ): Promise<GalleryAssetDTO[]> {
-  const out: GalleryAssetDTO[] = [];
-  for (const r of rows) {
-    if (!(await galleryFileExists(r.publicUrl))) continue;
-    out.push({
+  const exists = await Promise.all(rows.map((r) => galleryFileExists(r.publicUrl)));
+  return rows
+    .filter((_, i) => exists[i])
+    .map((r) => ({
       id: r.id,
       kind: r.kind,
       publicUrl: r.publicUrl,
       mimeType: r.mimeType,
       originalName: r.originalName,
       createdAt: r.createdAt.toISOString(),
-    });
-  }
-  return out;
+    }));
 }
