@@ -1,4 +1,6 @@
+import { galleryPublicUrlExists } from "@/lib/gallery-assets";
 import { prisma } from "@/lib/prisma";
+import { filterLivePhotos, isActivityPubliclyVisible } from "@/lib/que-hacer-photos";
 import { isSucreNaturalHubId } from "@/lib/sucre-natural-hubs";
 import {
   type BiodiversityChip,
@@ -12,6 +14,11 @@ import { hasStructuredFicha } from "@/lib/sucre-natural-resolve";
 
 export type ImperdibleHubRef = {
   id: string;
+  title: string;
+};
+
+export type ImperdibleQueHacerRef = {
+  slug: string;
   title: string;
 };
 
@@ -41,6 +48,7 @@ export type ImperdibleDetail = {
   gallery: FichaGalleryItem[];
   sources: FichaSource[];
   hubs: ImperdibleHubRef[];
+  queHacerActivities: ImperdibleQueHacerRef[];
   hasStructuredFicha: boolean;
 };
 
@@ -53,6 +61,12 @@ export async function getImperdibleBySlug(slug: string): Promise<ImperdibleDetai
       sources: { include: { source: true } },
       biodiversity: {
         include: { entry: true },
+      },
+      queHacerActivities: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          activity: { include: { photos: { orderBy: { sortOrder: "asc" } } } },
+        },
       },
     },
   });
@@ -75,6 +89,25 @@ export async function getImperdibleBySlug(slug: string): Promise<ImperdibleDetai
     hubs,
     specialWhy: row.specialWhy,
     municipality: row.municipality,
+  });
+
+  const photoFlags = await Promise.all(
+    row.queHacerActivities.flatMap((j) =>
+      j.activity.photos.map((p) => galleryPublicUrlExists(p.publicUrl)),
+    ),
+  );
+  const liveSet = new Set<string>();
+  let pi = 0;
+  for (const j of row.queHacerActivities) {
+    for (const p of j.activity.photos) {
+      if (photoFlags[pi]) liveSet.add(p.publicUrl.trim());
+      pi += 1;
+    }
+  }
+  const queHacerActivities = row.queHacerActivities.flatMap((j) => {
+    const live = filterLivePhotos(j.activity.photos, liveSet);
+    if (!isActivityPubliclyVisible(j.activity.published, live)) return [];
+    return [{ slug: j.activity.slug, title: j.activity.title }];
   });
 
   return {
@@ -110,6 +143,7 @@ export async function getImperdibleBySlug(slug: string): Promise<ImperdibleDetai
       note: s.source.note,
     })),
     hubs,
+    queHacerActivities,
     hasStructuredFicha: structured,
   };
 }

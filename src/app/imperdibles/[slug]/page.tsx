@@ -82,6 +82,24 @@ export default async function ImperdibleDetailPage({ params }: Props) {
           <ReactMarkdown>{dest.bodyMarkdown}</ReactMarkdown>
         </div>
 
+        {dest.queHacerActivities.length > 0 ? (
+          <section className="mt-12 space-y-3">
+            <h2 className="font-display text-xl font-semibold text-foreground">Qué hacer</h2>
+            <ul className="grid gap-2 sm:grid-cols-2">
+              {dest.queHacerActivities.map((act) => (
+                <li key={act.slug}>
+                  <Link
+                    href={`/que-hacer/${act.slug}`}
+                    className="block rounded-xl border border-border/80 bg-card p-3 font-body outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    {act.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <section className="mt-12 space-y-4">
           <h2 className="font-display text-xl font-semibold text-foreground">Ubicación</h2>
           {embedUrl ? (

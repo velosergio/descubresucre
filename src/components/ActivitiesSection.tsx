@@ -1,96 +1,167 @@
+"use client";
+
+import Autoplay from "embla-carousel-autoplay";
 import * as m from "framer-motion/m";
-import { Heart, Palette, TreePine, UtensilsCrossed, Waves } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import Image from "next/image";
-import culturaImg from "@/assets/cultura-sucre.jpg";
-import festivalImg from "@/assets/festival-sucre.jpg";
-import gastroImg from "@/assets/gastronomia-sucre.jpg";
-import natImg from "@/assets/naturaleza-sucre.jpg";
-import playaImg from "@/assets/playa-tolu.jpg";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import type { QueHacerHomeCard, QueHacerHomePayload } from "@/lib/get-que-hacer-home";
+import { toServedMediaUrl } from "@/lib/media-url";
+import { QUE_HACER_AUTOPLAY_MS } from "@/lib/que-hacer-home";
+import { resolveQueHacerIcon } from "@/lib/que-hacer-icons";
 
-const activities = [
-  {
-    icon: Waves,
-    title: "Playas",
-    desc: "Tolú, Coveñas, San Bernardo, Rincón del Mar",
-    image: playaImg,
-  },
-  {
-    icon: Palette,
-    title: "Cultura",
-    desc: "Artesanías Zenú, museos, arquitectura colonial",
-    image: culturaImg,
-  },
-  {
-    icon: UtensilsCrossed,
-    title: "Gastronomía",
-    desc: "Arroz de coco, mote de queso, fritos costeños",
-    image: gastroImg,
-  },
-  {
-    icon: TreePine,
-    title: "Naturaleza",
-    desc: "Manglares, ciénagas, reservas ecológicas",
-    image: natImg,
-  },
-  {
-    icon: Heart,
-    title: "Experiencias",
-    desc: "Corralejas, música de gaitas, vida local",
-    image: festivalImg,
-  },
-];
-
-const ActivitiesSection = () => {
+function ActivityCard({ item }: { item: QueHacerHomeCard }) {
+  const icon = resolveQueHacerIcon(item.iconKey);
+  const Icon = icon.Icon;
+  const src = toServedMediaUrl(item.coverUrl);
   return (
-    <section className="section-padding bg-muted">
-      <div className="max-w-7xl mx-auto">
+    <Link
+      href={`/que-hacer/${item.slug}`}
+      className="group relative block aspect-square overflow-hidden rounded-2xl bg-card card-hover"
+    >
+      <Image
+        src={src}
+        alt={item.coverAlt}
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+        unoptimized
+      />
+      <div className="absolute inset-0 bg-foreground/55 transition-colors group-hover:bg-foreground/65" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center text-primary-foreground">
+        <Icon className="mb-3 h-10 w-10" aria-hidden />
+        <h3 className="font-display text-lg font-bold">{item.title}</h3>
+        <p className="mt-1 font-body text-xs text-primary-foreground/85">{item.description}</p>
+      </div>
+    </Link>
+  );
+}
+
+export default function ActivitiesSection({ payload }: { payload: QueHacerHomePayload }) {
+  const { items, useCardCarousel } = payload;
+  const [paused, setPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [bgIndex, setBgIndex] = useState(0);
+
+  const autoplayPlugin = useMemo(
+    () =>
+      Autoplay({
+        delay: QUE_HACER_AUTOPLAY_MS,
+        stopOnInteraction: true,
+        stopOnMouseEnter: true,
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const autoplayOff = paused || reducedMotion;
+
+  useEffect(() => {
+    if (autoplayOff || items.length < 2) return;
+    const id = window.setInterval(() => {
+      setBgIndex((i) => (i + 1) % items.length);
+    }, QUE_HACER_AUTOPLAY_MS);
+    return () => window.clearInterval(id);
+  }, [autoplayOff, items.length]);
+
+  if (items.length === 0) return null;
+
+  const bgItem = items[bgIndex] ?? items[0];
+  const bgSrc = bgItem ? toServedMediaUrl(bgItem.coverUrl) : null;
+
+  return (
+    <section id="que-hacer" className="relative overflow-hidden section-padding">
+      {bgSrc ? (
+        <div className="pointer-events-none absolute inset-0" aria-hidden>
+          <Image src={bgSrc} alt="" fill className="object-cover" sizes="100vw" unoptimized />
+          <div className="absolute inset-0 bg-background/80" />
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-muted" aria-hidden />
+      )}
+
+      <div className="relative z-10 mx-auto max-w-7xl">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="mb-12 text-center"
         >
-          <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
+          <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-5xl">
             Qué hacer en <span className="text-secondary">Sucre</span>
           </h2>
-          <p className="text-muted-foreground font-body max-w-xl mx-auto">
+          <p className="mx-auto max-w-xl font-body text-muted-foreground">
             Actividades para todos los gustos en el corazón del Caribe colombiano
           </p>
+          {reducedMotion ? null : (
+            <button
+              type="button"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 font-body text-sm text-foreground outline-none hover:bg-background focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? "Reanudar autoplay" : "Pausar autoplay"}
+            >
+              {paused ? (
+                <Play className="size-4" aria-hidden />
+              ) : (
+                <Pause className="size-4" aria-hidden />
+              )}
+              {paused ? "Reanudar" : "Pausar"}
+            </button>
+          )}
         </m.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {activities.map((act, i) => (
-            <m.div
-              key={act.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative bg-card rounded-2xl overflow-hidden card-hover cursor-pointer"
+        {useCardCarousel ? (
+          <div className="relative px-10 md:px-14">
+            <Carousel
+              opts={{ align: "start", loop: true }}
+              plugins={autoplayOff ? [] : [autoplayPlugin]}
+              className="w-full"
             >
-              <div className="aspect-square relative">
-                <Image
-                  src={act.image}
-                  alt={act.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                />
-                <div className="absolute inset-0 bg-foreground/30 group-hover:bg-foreground/50 transition-colors" />
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-primary-foreground">
-                  <act.icon className="w-10 h-10 mb-3" />
-                  <h3 className="font-display font-bold text-lg">{act.title}</h3>
-                  <p className="text-xs text-primary-foreground/70 text-center px-4 mt-1 font-body">
-                    {act.desc}
-                  </p>
-                </div>
-              </div>
-            </m.div>
-          ))}
-        </div>
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {items.map((item) => (
+                  <CarouselItem
+                    key={item.slug}
+                    className="pl-2 sm:basis-1/2 md:pl-4 lg:basis-1/3 xl:basis-1/5"
+                  >
+                    <ActivityCard item={item} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-0 md:-left-2" aria-label="Anterior" />
+              <CarouselNext className="right-0 md:-right-2" aria-label="Siguiente" />
+            </Carousel>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {items.map((item, i) => (
+              <m.div
+                key={item.slug}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <ActivityCard item={item} />
+              </m.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
-};
-
-export default ActivitiesSection;
+}

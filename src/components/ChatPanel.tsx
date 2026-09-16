@@ -23,6 +23,10 @@ async function pollJob(jobId: string): Promise<{ reply: string } | { error: stri
   let delay = 400;
   while (Date.now() - start < POLL_MAX_MS) {
     const r = await fetch(`/api/chat/job/${jobId}`);
+    if (!r.ok) {
+      const errorData: { error?: string } = await r.json().catch(() => ({}));
+      return { error: errorData.error || `No se pudo consultar el estado (${r.status})` };
+    }
     const data: { status?: string; reply?: string; error?: string } = await r.json();
     if (data.status === "DONE" && data.reply) return { reply: data.reply };
     if (data.status === "ERROR") return { error: data.error || "Error al procesar la respuesta" };
@@ -58,6 +62,22 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
             messages: payload,
           }),
         });
+
+        if (!res.ok) {
+          const errorData: { error?: string } = await res.json().catch(() => ({}));
+          setMessages((p) => [
+            ...p,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content:
+                errorData.error ||
+                "No se pudo enviar el mensaje. Comprueba la configuración del asistente.",
+            },
+          ]);
+          return;
+        }
+
         const data: { jobId?: string; error?: string } = await res.json();
 
         if (!data.jobId) {

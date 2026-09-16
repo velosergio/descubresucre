@@ -1,4 +1,4 @@
-import { ImageIcon, Images, MapPin } from "lucide-react";
+import { Compass, ImageIcon, Images, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -46,6 +46,25 @@ export default function AdminPersonalizarPage() {
                 <CardDescription>
                   Imagen, vídeo o carrusel de fondo en la portada (elige desde la galería o sube
                   archivos nuevos).
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link
+          href="/admin/personalizar/que-hacer"
+          className="block transition-opacity hover:opacity-90"
+        >
+          <Card className="border-border/80">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                <Compass className="size-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-lg">Qué hacer</CardTitle>
+                <CardDescription>
+                  Actividades de la portada, categorías y enlaces a destinos.
                 </CardDescription>
               </div>
             </CardHeader>

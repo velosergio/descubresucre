@@ -1,3 +1,5 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "@/generated/prisma/client";
 import { SUCRE_NATURAL_HUBS } from "@/lib/sucre-natural-hubs";
@@ -13,7 +15,21 @@ export function createTestPrisma() {
   return new PrismaClient({ adapter });
 }
 
+export const QUE_HACER_TEST_PHOTO_URL = "/uploads/gallery/images/qh-test-live.webp";
+
+export async function ensureQueHacerTestPhoto() {
+  const disk = path.join(process.cwd(), "public", QUE_HACER_TEST_PHOTO_URL.replace(/^\//, ""));
+  await mkdir(path.dirname(disk), { recursive: true });
+  await writeFile(disk, Buffer.from("RIFF....WEBP"));
+}
+
 export async function resetTestDatabase(prisma: PrismaClient) {
+  await prisma.queHacerActivityOnDestination.deleteMany();
+  await prisma.queHacerDestinationOnCategory.deleteMany();
+  await prisma.queHacerActivityOnCategory.deleteMany();
+  await prisma.queHacerActivityPhoto.deleteMany();
+  await prisma.queHacerActivity.deleteMany();
+  await prisma.queHacerCategory.deleteMany();
   await prisma.destinationSource.deleteMany();
   await prisma.biodiversityOnDestination.deleteMany();
   await prisma.experienceOnDestination.deleteMany();

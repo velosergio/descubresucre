@@ -36,6 +36,176 @@ export type HeroBannerInitial = {
   carouselSlides: HeroCarouselSlide[];
 };
 
+function GalleryUploadRow({
+  accept,
+  onOpenPicker,
+  onUpload,
+}: {
+  accept: string;
+  onOpenPicker: () => void;
+  onUpload: (f: File | null) => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button type="button" variant="outline" size="sm" onClick={onOpenPicker}>
+        De la galería
+      </Button>
+      <span className="self-center text-xs text-muted-foreground">o</span>
+      {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
+      <label className="cursor-pointer">
+        <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
+          Subir nuevo (se guarda en la galería)
+        </span>
+        <Input
+          type="file"
+          accept={accept}
+          className="sr-only"
+          onChange={(e) => void onUpload(e.target.files?.[0] ?? null)}
+        />
+      </label>
+    </div>
+  );
+}
+
+function HeroImageCustomFields({
+  heroImageUrl,
+  onOpenPicker,
+  onUpload,
+}: {
+  heroImageUrl: string;
+  onOpenPicker: () => void;
+  onUpload: (f: File | null) => void;
+}) {
+  return (
+    <div className="space-y-4 rounded-lg border border-border/80 p-4">
+      <Label>Imagen del hero</Label>
+      <GalleryUploadRow
+        accept="image/jpeg,image/png,image/webp"
+        onOpenPicker={onOpenPicker}
+        onUpload={onUpload}
+      />
+      {heroImageUrl ? (
+        <p className="break-all text-xs text-muted-foreground">
+          Actual: <code>{heroImageUrl}</code>
+        </p>
+      ) : (
+        <p className="text-sm text-amber-600 dark:text-amber-500">
+          Elige o sube una imagen antes de guardar.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function HeroVideoFields({
+  videoSource,
+  onVideoSourceChange,
+  onOpenPicker,
+  onUpload,
+  heroVideoUrl,
+  onHeroVideoUrlChange,
+}: {
+  videoSource: "UPLOAD" | "EXTERNAL_URL";
+  onVideoSourceChange: (v: "UPLOAD" | "EXTERNAL_URL") => void;
+  onOpenPicker: () => void;
+  onUpload: (f: File | null) => void;
+  heroVideoUrl: string;
+  onHeroVideoUrlChange: (v: string) => void;
+}) {
+  return (
+    <div className="space-y-4 rounded-lg border border-border/80 p-4">
+      <Label>Origen del vídeo</Label>
+      <RadioGroup
+        value={videoSource}
+        onValueChange={(v) => onVideoSourceChange(v as "UPLOAD" | "EXTERNAL_URL")}
+        className="flex flex-wrap gap-4"
+      >
+        <div className="flex items-center gap-2">
+          <RadioGroupItem value="UPLOAD" id="vs-upload" />
+          <Label htmlFor="vs-upload">Archivo</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <RadioGroupItem value="EXTERNAL_URL" id="vs-url" />
+          <Label htmlFor="vs-url">URL externa</Label>
+        </div>
+      </RadioGroup>
+      {videoSource === "UPLOAD" ? (
+        <div className="space-y-3">
+          <GalleryUploadRow
+            accept="video/mp4,video/webm"
+            onOpenPicker={onOpenPicker}
+            onUpload={onUpload}
+          />
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="videoUrl">URL del vídeo (MP4 directo, HTTPS)</Label>
+          <Input
+            id="videoUrl"
+            value={heroVideoUrl}
+            onChange={(e) => onHeroVideoUrlChange(e.target.value)}
+            placeholder="https://…"
+            type="url"
+          />
+        </div>
+      )}
+      {heroVideoUrl ? (
+        <p className="break-all text-xs text-muted-foreground">
+          Activo: <code>{heroVideoUrl}</code>
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function HeroCarouselFields({
+  slides,
+  onOpenPicker,
+  onUpload,
+  onAltChange,
+  onRemove,
+}: {
+  slides: HeroCarouselSlide[];
+  onOpenPicker: () => void;
+  onUpload: (f: File | null) => void;
+  onAltChange: (url: string, alt: string) => void;
+  onRemove: (url: string) => void;
+}) {
+  return (
+    <div className="space-y-4 rounded-lg border border-border/80 p-4">
+      <Label>Añadir imágenes al carrusel</Label>
+      <GalleryUploadRow
+        accept="image/jpeg,image/png,image/webp"
+        onOpenPicker={onOpenPicker}
+        onUpload={onUpload}
+      />
+      <ul className="space-y-2">
+        {slides.map((s) => (
+          <li key={s.url} className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="max-w-[200px] truncate font-mono text-xs text-muted-foreground">
+              {s.url}
+            </span>
+            <Input
+              className="max-w-xs flex-1"
+              placeholder="Texto alternativo (opcional)"
+              value={s.alt ?? ""}
+              onChange={(e) => onAltChange(s.url, e.target.value)}
+            />
+            <Button type="button" variant="ghost" size="sm" onClick={() => onRemove(s.url)}>
+              Quitar
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {slides.length < 2 ? (
+        <p className="text-sm text-amber-600 dark:text-amber-500">
+          Se necesitan al menos dos imágenes.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial }) {
   const [pending, startTransition] = useTransition();
   const [mode, setMode] = useState<HeroMode>(initial.heroMode);
@@ -168,166 +338,36 @@ export function HeroBannerSettingsForm({ initial }: { initial: HeroBannerInitial
       </div>
 
       {mode === "IMAGE_CUSTOM" ? (
-        <div className="space-y-4 rounded-lg border border-border/80 p-4">
-          <Label>Imagen del hero</Label>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPickHeroImageOpen(true)}
-            >
-              De la galería
-            </Button>
-            <span className="self-center text-xs text-muted-foreground">o</span>
-            {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
-            <label className="cursor-pointer">
-              <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
-                Subir nuevo (se guarda en la galería)
-              </span>
-              <Input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={(e) => void onUploadHeroImage(e.target.files?.[0] ?? null)}
-              />
-            </label>
-          </div>
-          {heroImageUrl ? (
-            <p className="break-all text-xs text-muted-foreground">
-              Actual: <code>{heroImageUrl}</code>
-            </p>
-          ) : (
-            <p className="text-sm text-amber-600 dark:text-amber-500">
-              Elige o sube una imagen antes de guardar.
-            </p>
-          )}
-        </div>
+        <HeroImageCustomFields
+          heroImageUrl={heroImageUrl}
+          onOpenPicker={() => setPickHeroImageOpen(true)}
+          onUpload={onUploadHeroImage}
+        />
       ) : null}
 
       {mode === "VIDEO" ? (
-        <div className="space-y-4 rounded-lg border border-border/80 p-4">
-          <Label>Origen del vídeo</Label>
-          <RadioGroup
-            value={videoSource}
-            onValueChange={(v) => setVideoSource(v as "UPLOAD" | "EXTERNAL_URL")}
-            className="flex flex-wrap gap-4"
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="UPLOAD" id="vs-upload" />
-              <Label htmlFor="vs-upload">Archivo</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="EXTERNAL_URL" id="vs-url" />
-              <Label htmlFor="vs-url">URL externa</Label>
-            </div>
-          </RadioGroup>
-          {videoSource === "UPLOAD" ? (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPickVideoOpen(true)}
-                >
-                  De la galería
-                </Button>
-                <span className="self-center text-xs text-muted-foreground">o</span>
-                {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
-                <label className="cursor-pointer">
-                  <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
-                    Subir nuevo (se guarda en la galería)
-                  </span>
-                  <Input
-                    type="file"
-                    accept="video/mp4,video/webm"
-                    className="sr-only"
-                    onChange={(e) => void onUploadVideo(e.target.files?.[0] ?? null)}
-                  />
-                </label>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Label htmlFor="videoUrl">URL del vídeo (MP4 directo, HTTPS)</Label>
-              <Input
-                id="videoUrl"
-                value={heroVideoUrl}
-                onChange={(e) => setHeroVideoUrl(e.target.value)}
-                placeholder="https://…"
-                type="url"
-              />
-            </div>
-          )}
-          {heroVideoUrl ? (
-            <p className="break-all text-xs text-muted-foreground">
-              Activo: <code>{heroVideoUrl}</code>
-            </p>
-          ) : null}
-        </div>
+        <HeroVideoFields
+          videoSource={videoSource}
+          onVideoSourceChange={setVideoSource}
+          onOpenPicker={() => setPickVideoOpen(true)}
+          onUpload={onUploadVideo}
+          heroVideoUrl={heroVideoUrl}
+          onHeroVideoUrlChange={setHeroVideoUrl}
+        />
       ) : null}
 
       {mode === "CAROUSEL" ? (
-        <div className="space-y-4 rounded-lg border border-border/80 p-4">
-          <Label>Añadir imágenes al carrusel</Label>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setPickCarouselOpen(true)}
-            >
-              De la galería
-            </Button>
-            <span className="self-center text-xs text-muted-foreground">o</span>
-            {/* biome-ignore lint/a11y/noLabelWithoutControl: wraps shadcn Input (file) */}
-            <label className="cursor-pointer">
-              <span className="inline-flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent">
-                Subir nuevo (se guarda en la galería)
-              </span>
-              <Input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={(e) => void onAddCarousel(e.target.files?.[0] ?? null)}
-              />
-            </label>
-          </div>
-          <ul className="space-y-2">
-            {carouselSlides.map((s) => (
-              <li key={s.url} className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="max-w-[200px] truncate font-mono text-xs text-muted-foreground">
-                  {s.url}
-                </span>
-                <Input
-                  className="max-w-xs flex-1"
-                  placeholder="Texto alternativo (opcional)"
-                  value={s.alt ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setCarouselSlides((prev) =>
-                      prev.map((p) => (p.url === s.url ? { ...p, alt: v || undefined } : p)),
-                    );
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCarouselSlides((p) => p.filter((x) => x.url !== s.url))}
-                >
-                  Quitar
-                </Button>
-              </li>
-            ))}
-          </ul>
-          {carouselSlides.length < 2 ? (
-            <p className="text-sm text-amber-600 dark:text-amber-500">
-              Se necesitan al menos dos imágenes.
-            </p>
-          ) : null}
-        </div>
+        <HeroCarouselFields
+          slides={carouselSlides}
+          onOpenPicker={() => setPickCarouselOpen(true)}
+          onUpload={onAddCarousel}
+          onAltChange={(url, alt) =>
+            setCarouselSlides((prev) =>
+              prev.map((p) => (p.url === url ? { ...p, alt: alt || undefined } : p)),
+            )
+          }
+          onRemove={(url) => setCarouselSlides((prev) => prev.filter((x) => x.url !== url))}
+        />
       ) : null}
 
       <Button type="submit" disabled={pending}>

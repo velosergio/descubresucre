@@ -13,15 +13,18 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import ImperdiblesSection from "@/components/ImperdiblesSection";
 import MapSection from "@/components/MapSection";
+import type { QueHacerHomePayload } from "@/lib/get-que-hacer-home";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
 
 export default function HomePage({
   heroConfig,
   imperdiblesPayload,
+  queHacerPayload,
 }: {
   heroConfig: ResolvedHeroConfig;
   imperdiblesPayload: ImperdiblesHomePayload;
+  queHacerPayload: QueHacerHomePayload;
 }) {
   const [view, setView] = useState<"landing" | "chat">("landing");
   const [chatKey, setChatKey] = useState(0);
@@ -50,7 +53,7 @@ export default function HomePage({
           >
             <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
             <ImperdiblesSection payload={imperdiblesPayload} />
-            <ActivitiesSection />
+            <ActivitiesSection payload={queHacerPayload} />
             <EventsSection />
             <CulturalAgenda />
             <MapSection />

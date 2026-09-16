@@ -18,9 +18,11 @@ describe("ChatPanel", () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce({
+        ok: true,
         json: async () => ({ jobId: "job-1" }),
       })
       .mockResolvedValueOnce({
+        ok: true,
         json: async () => ({ status: "DONE", reply: "Respuesta desde n8n" }),
       });
 
@@ -41,6 +43,8 @@ describe("ChatPanel", () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
+        ok: false,
+        status: 503,
         json: async () => ({ error: "Webhook no configurado" }),
       }),
     );

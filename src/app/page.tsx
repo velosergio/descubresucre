@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
 import { getImperdiblesForHome } from "@/lib/get-imperdibles-home";
+import { getQueHacerForHome } from "@/lib/get-que-hacer-home";
 import { getResolvedHeroConfig } from "@/lib/get-resolved-hero-config";
 import { getSiteOrigin } from "@/lib/site-url";
 
@@ -58,9 +59,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [heroConfig, imperdiblesPayload] = await Promise.all([
+  const [heroConfig, imperdiblesPayload, queHacerPayload] = await Promise.all([
     getResolvedHeroConfig(),
     getImperdiblesForHome(),
+    getQueHacerForHome(),
   ]);
-  return <HomePage heroConfig={heroConfig} imperdiblesPayload={imperdiblesPayload} />;
+  return (
+    <HomePage
+      heroConfig={heroConfig}
+      imperdiblesPayload={imperdiblesPayload}
+      queHacerPayload={queHacerPayload}
+    />
+  );
 }
