@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { getSiteOrigin } from "@/lib/site-url";
 
+/** El Docker build no tiene MariaDB; sin esto Next consulta Prisma al generar el sitemap. */
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteOrigin().replace(/\/$/, "");
   const homeUrl = `${base}/`;

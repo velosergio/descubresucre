@@ -2,6 +2,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import "./sucre-natural.css";
 
+/** El Docker build no tiene MariaDB; sin esto Next prerenderiza y Prisma hace pool timeout. */
+export const dynamic = "force-dynamic";
+
 export default function SucreNaturalLayout({ children }: { children: ReactNode }) {
   return (
     <div className="sn-paper min-h-screen">

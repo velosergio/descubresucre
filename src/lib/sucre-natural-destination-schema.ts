@@ -121,6 +121,7 @@ export const sucreNaturalDestinationSchema = z
     sourceIds: z.array(z.string()).optional().default([]),
     biodiversityIds: z.array(z.string()).optional().default([]),
     experienceIds: z.array(z.string()).optional().default([]),
+    queHacerCategoryIds: z.array(z.string()).optional().default([]),
   })
   .superRefine((data, ctx) => {
     const hasLat = data.mapLat != null;

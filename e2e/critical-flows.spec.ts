@@ -93,3 +93,13 @@ test("sucre natural admin: destacar y despublicar (opcional)", async ({ page }) 
   const publicRes = await page.goto("/imperdibles/e2e-sucre-natural");
   expect(publicRes?.status()).toBe(404);
 });
+
+test("que hacer: portada muestra heading y Playas abre ficha", async ({ page }) => {
+  await page.goto("/");
+  const section = page.locator("#que-hacer");
+  await expect(section.getByRole("heading", { name: /Qué hacer en/ })).toBeVisible();
+  await expect(section.getByRole("link", { name: /Playas/ })).toHaveCount(1);
+  await section.getByRole("link", { name: /Playas/ }).click();
+  await expect(page).toHaveURL(/\/que-hacer\/playas/);
+  await expect(page.getByRole("heading", { name: "Playas" })).toBeVisible();
+});

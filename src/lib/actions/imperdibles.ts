@@ -7,6 +7,7 @@ import { assertAdminAction } from "@/lib/auth-helpers";
 import { IMPERDIBLES_HOME_MAX_ITEMS } from "@/lib/imperdibles-public";
 import { slugifyImperdible } from "@/lib/imperdibles-slug";
 import { prisma } from "@/lib/prisma";
+import { revalidateQueHacerPaths } from "@/lib/que-hacer-revalidate";
 import { slugSchema, sucreNaturalDestinationSchema } from "@/lib/sucre-natural-destination-schema";
 import { revalidateSucreNaturalPaths } from "@/lib/sucre-natural-revalidate";
 
@@ -106,6 +107,7 @@ export async function createImperdibleDestinationAction(input: unknown) {
     });
     await syncDestinationRelations(row.id, raw);
     revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
+    revalidateQueHacerPaths({ destinationSlugs: [row.slug] });
     return { ok: true as const, id: row.id };
   } catch (e: unknown) {
     const code = typeof e === "object" && e && "code" in e ? (e as { code: string }).code : "";
@@ -159,6 +161,9 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
     });
     await syncDestinationRelations(row.id, raw);
     revalidateSucreNaturalPaths({ slug: existing.slug, hubIds: raw.hubIds });
+    revalidateQueHacerPaths({
+      destinationSlugs: existing.slug === row.slug ? [row.slug] : [existing.slug, row.slug],
+    });
     if (existing.slug !== row.slug) {
       revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
     }
@@ -265,6 +270,12 @@ async function syncDestinationRelations(
   if (raw.experienceIds.length) {
     await prisma.experienceOnDestination.createMany({
       data: raw.experienceIds.map((experienceId) => ({ destinationId, experienceId })),
+    });
+  }
+  await prisma.queHacerDestinationOnCategory.deleteMany({ where: { destinationId } });
+  if (raw.queHacerCategoryIds.length) {
+    await prisma.queHacerDestinationOnCategory.createMany({
+      data: raw.queHacerCategoryIds.map((categoryId) => ({ destinationId, categoryId })),
     });
   }
 }

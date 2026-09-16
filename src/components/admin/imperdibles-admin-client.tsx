@@ -39,9 +39,11 @@ export type ImperdiblesSettingsDTO = {
 export function ImperdiblesAdminClient({
   initialSettings,
   initialDestinations,
+  queHacerCategories = [],
 }: {
   initialSettings: ImperdiblesSettingsDTO;
   initialDestinations: ImperdibleAdminRow[];
+  queHacerCategories?: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -270,6 +272,7 @@ export function ImperdiblesAdminClient({
         mode={dialogMode}
         initial={editing}
         mountKey={dialogMountKey}
+        queHacerCategories={queHacerCategories}
       />
 
       <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>

@@ -1,6 +1,11 @@
 import "dotenv/config";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import sharp from "sharp";
+import { encodeRasterImageToWebp, GALLERY_WEBP_MAX_EDGE } from "../src/lib/encode-image-webp";
 import { prisma } from "../src/lib/prisma";
 import { decideSeedMerge, mergeJoinIds } from "../src/lib/sucre-natural-seed-merge";
+import { QUE_HACER_SEED_ITEMS } from "./data/que-hacer-seed";
 import {
   SEED_DESTINATIONS,
   SEED_EXPERIENCES,
@@ -10,7 +15,7 @@ import {
 } from "./data/sucre-natural-seed";
 
 /**
- * Seed: roles base (admin, editor) + Sucre Natural.
+ * Seed: roles base (admin, editor) + Sucre Natural + Qué hacer.
  * Reejecutar es seguro (idempotente por slug; no pisa filas con seedManaged=false).
  * Para crear el primer usuario admin: npm run admin:create
  */
@@ -266,10 +271,151 @@ export async function seedSucreNatural(db: typeof prisma = prisma) {
   }
 }
 
+async function ensureQueHacerSeedImage(
+  db: typeof prisma,
+  slug: string,
+  assetFile: string,
+): Promise<string> {
+  const publicUrl = `/uploads/gallery/images/que-hacer-${slug}.webp`;
+  const destPath = path.join(process.cwd(), "public", publicUrl.replace(/^\//, ""));
+  await mkdir(path.dirname(destPath), { recursive: true });
+  const srcPath = path.join(process.cwd(), "src", "assets", assetFile);
+  let buffer: Buffer;
+  try {
+    buffer = await readFile(srcPath);
+    buffer = await encodeRasterImageToWebp(buffer, { maxEdge: GALLERY_WEBP_MAX_EDGE });
+  } catch {
+    buffer = await sharp({
+      create: { width: 16, height: 16, channels: 3, background: { r: 20, g: 90, b: 95 } },
+    })
+      .webp()
+      .toBuffer();
+  }
+  await writeFile(destPath, buffer);
+  await db.galleryAsset.upsert({
+    where: { publicUrl },
+    create: {
+      kind: "IMAGE",
+      publicUrl,
+      mimeType: "image/webp",
+      sizeBytes: buffer.length,
+      originalName: `que-hacer-${slug}.webp`,
+    },
+    update: { sizeBytes: buffer.length },
+  });
+  return publicUrl;
+}
+
+export async function seedQueHacer(db: typeof prisma = prisma) {
+  let created = 0;
+  let updated = 0;
+  let skippedManaged = 0;
+
+  for (const item of QUE_HACER_SEED_ITEMS) {
+    const photoUrl = await ensureQueHacerSeedImage(db, item.slug, item.assetFile);
+
+    const existingCat = await db.queHacerCategory.findUnique({ where: { slug: item.slug } });
+    const catDecision = decideSeedMerge(existingCat);
+    let categoryId: string;
+    if (catDecision === "create") {
+      const cat = await db.queHacerCategory.create({
+        data: {
+          slug: item.slug,
+          name: item.name,
+          description: item.description,
+          sortOrder: item.sortOrder,
+          seedManaged: true,
+        },
+      });
+      categoryId = cat.id;
+      created += 1;
+    } else if (catDecision === "update") {
+      const cat = await db.queHacerCategory.update({
+        where: { slug: item.slug },
+        data: {
+          name: item.name,
+          description: item.description,
+          sortOrder: item.sortOrder,
+        },
+      });
+      categoryId = cat.id;
+      updated += 1;
+    } else {
+      categoryId = existingCat?.id;
+      skippedManaged += 1;
+    }
+
+    const existingAct = await db.queHacerActivity.findUnique({ where: { slug: item.slug } });
+    const actDecision = decideSeedMerge(existingAct);
+    let activityId: string;
+    if (actDecision === "create") {
+      const act = await db.queHacerActivity.create({
+        data: {
+          slug: item.slug,
+          title: item.name,
+          description: item.description,
+          iconKey: item.iconKey,
+          published: true,
+          sortOrder: item.sortOrder,
+          seedManaged: true,
+          photos: {
+            create: { publicUrl: photoUrl, sortOrder: 0, isCover: true, alt: item.name },
+          },
+        },
+      });
+      activityId = act.id;
+      created += 1;
+    } else if (actDecision === "update") {
+      const act = await db.queHacerActivity.update({
+        where: { slug: item.slug },
+        data: {
+          title: item.name,
+          description: item.description,
+          iconKey: item.iconKey,
+          published: true,
+          sortOrder: item.sortOrder,
+        },
+      });
+      activityId = act.id;
+      const photoCount = await db.queHacerActivityPhoto.count({ where: { activityId } });
+      if (photoCount === 0) {
+        await db.queHacerActivityPhoto.create({
+          data: { activityId, publicUrl: photoUrl, sortOrder: 0, isCover: true, alt: item.name },
+        });
+      }
+      updated += 1;
+    } else {
+      activityId = existingAct?.id;
+      skippedManaged += 1;
+    }
+
+    const existingJoins = await db.queHacerActivityOnCategory.findMany({
+      where: { activityId },
+    });
+    const merged = mergeJoinIds(
+      existingJoins.map((j) => j.categoryId),
+      [categoryId],
+    );
+    const have = new Set(existingJoins.map((j) => j.categoryId));
+    const toAdd = merged.filter((id) => !have.has(id));
+    if (toAdd.length) {
+      await db.queHacerActivityOnCategory.createMany({
+        data: toAdd.map((id) => ({ activityId, categoryId: id })),
+        skipDuplicates: true,
+      });
+    }
+  }
+
+  console.info(
+    `Que hacer seed: created=${created} updated=${updated} skippedManaged=${skippedManaged}`,
+  );
+}
+
 async function main() {
   await seedRoles();
   console.info("Seed OK: roles admin y editor listos.");
   await seedSucreNatural();
+  await seedQueHacer();
   console.info("Crea un admin con: npm run admin:create");
 }
 

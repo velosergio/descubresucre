@@ -21,7 +21,7 @@ Base de datos:
 ```bash
 npm run db:migrate       # prisma migrate dev
 npm run db:generate      # regenera el cliente en src/generated/prisma
-npm run db:seed          # roles admin/editor + carga Sucre Natural (hubs, fichas, especies, experiencias, fuentes)
+npm run db:seed          # roles admin/editor + Sucre Natural + Qué hacer (categorías y actividades)
 npm run admin:create     # crea el primer usuario admin (interactivo)
 ```
 

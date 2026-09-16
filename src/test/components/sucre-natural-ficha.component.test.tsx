@@ -28,6 +28,7 @@ const base: FichaDestinoView = {
   gallery: [],
   sources: [],
   hubs: [{ id: "playas", title: "Playas de Sucre" }],
+  queHacerActivities: [],
 };
 
 describe("FichaDestino", () => {

@@ -55,6 +55,7 @@ export type ImperdibleAdminRow = {
   responsibleTipsText: string;
   biodiversityChipLabelsText: string;
   hubIds: string[];
+  queHacerCategoryIds: string[];
   galleryUrls: string[];
   sourceIds: string[];
 };
@@ -86,6 +87,7 @@ const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
   responsibleTipsText: "",
   biodiversityChipLabelsText: "",
   hubIds: [],
+  queHacerCategoryIds: [],
   galleryUrls: [],
   sourceIds: [],
 });
@@ -121,6 +123,7 @@ function formFromInitial(
     responsibleTipsText: initial.responsibleTipsText,
     biodiversityChipLabelsText: initial.biodiversityChipLabelsText,
     hubIds: initial.hubIds,
+    queHacerCategoryIds: initial.queHacerCategoryIds,
     galleryUrls: initial.galleryUrls,
     sourceIds: initial.sourceIds,
   };
@@ -130,10 +133,12 @@ function DestinationFormInner({
   mode,
   initial,
   onOpenChange,
+  queHacerCategories,
 }: {
   mode: "create" | "edit";
   initial: ImperdibleAdminRow | null;
   onOpenChange: (v: boolean) => void;
+  queHacerCategories: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -204,6 +209,7 @@ function DestinationFormInner({
           .map((t) => t.trim())
           .filter(Boolean),
         hubIds: form.hubIds,
+        queHacerCategoryIds: form.queHacerCategoryIds,
         galleryUrls: form.galleryUrls,
         sourceIds: form.sourceIds,
       };
@@ -430,6 +436,39 @@ function DestinationFormInner({
           </div>
         </div>
 
+        <div className="space-y-2">
+          <Label>Categorías Qué hacer</Label>
+          {queHacerCategories.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Crea categorías en Personalizar → Qué hacer.
+            </p>
+          ) : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {queHacerCategories.map((cat) => (
+                <div key={cat.id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    id={`qh-dest-cat-${cat.id}`}
+                    checked={form.queHacerCategoryIds.includes(cat.id)}
+                    onCheckedChange={(c) =>
+                      setForm((s) => ({
+                        ...s,
+                        queHacerCategoryIds:
+                          c === true
+                            ? [...s.queHacerCategoryIds, cat.id]
+                            : s.queHacerCategoryIds.filter((id) => id !== cat.id),
+                      }))
+                    }
+                    disabled={pending}
+                  />
+                  <Label htmlFor={`qh-dest-cat-${cat.id}`} className="cursor-pointer font-normal">
+                    {cat.name}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <Label>Municipio</Label>
@@ -627,12 +666,14 @@ export function ImperdiblesDestinationDialog({
   mode,
   initial,
   mountKey,
+  queHacerCategories = [],
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   mode: "create" | "edit";
   initial: ImperdibleAdminRow | null;
   mountKey: number;
+  queHacerCategories?: { id: string; name: string }[];
 }) {
   const formKey = `${mode}-${initial?.id ?? "new"}-${mountKey}`;
 
@@ -645,6 +686,7 @@ export function ImperdiblesDestinationDialog({
             mode={mode}
             initial={initial}
             onOpenChange={onOpenChange}
+            queHacerCategories={queHacerCategories}
           />
         ) : null}
       </DialogContent>

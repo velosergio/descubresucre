@@ -6,12 +6,16 @@
     "useIgnoreFile": true
   },
   "files": {
+    "ignoreUnknown": true,
     "includes": [
       "**",
       "!.next",
       "!dist",
       "!node_modules",
       "!.agents",
+      "!.claude",
+      "!.cursor",
+      "!.github/skills",
       "!mcps",
       "!src/generated",
       "!coverage",

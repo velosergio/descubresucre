@@ -53,6 +53,7 @@ export type FichaDestinoView = {
   gallery: FichaGalleryItem[];
   sources: FichaSource[];
   hubs: { id: string; title: string }[];
+  queHacerActivities: { slug: string; title: string }[];
 };
 
 const ACTIVITY_ICONS: Record<string, typeof Waves> = {
@@ -168,6 +169,30 @@ function BiodiversidadSection({ chips }: { chips: BiodiversityChip[] }) {
                 {chip.label}
               </span>
             )}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+function QueHacerRelacionadasSection({
+  activities,
+}: {
+  activities: { slug: string; title: string }[];
+}) {
+  if (activities.length === 0) return null;
+  return (
+    <Section title="Qué hacer">
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {activities.map((act) => (
+          <li key={act.slug}>
+            <Link
+              href={`/que-hacer/${act.slug}`}
+              className="inline-flex rounded-xl bg-white/70 px-3 py-2 font-body outline-none hover:bg-white focus-visible:ring-2 focus-visible:ring-[hsl(var(--sn-accent))]"
+            >
+              {act.title}
+            </Link>
           </li>
         ))}
       </ul>
@@ -325,6 +350,7 @@ export function FichaDestino({ ficha }: { ficha: FichaDestinoView }) {
         />
         <BiodiversidadSection chips={ficha.biodiversityChips} />
         <ViveElDestinoSection activities={ficha.liveActivities} />
+        <QueHacerRelacionadasSection activities={ficha.queHacerActivities} />
         <TurismoResponsableSection tips={ficha.responsibleTips} />
         <OptionalTextSection title="Cómo llegar" text={ficha.howToArrive} />
         <OptionalTextSection title="Clima" text={ficha.climate} />

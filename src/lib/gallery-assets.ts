@@ -11,7 +11,7 @@ type GalleryRowLike = {
   createdAt: Date;
 };
 
-async function galleryFileExists(publicUrl: string): Promise<boolean> {
+export async function galleryPublicUrlExists(publicUrl: string): Promise<boolean> {
   const clean = publicUrl.trim();
   if (!clean.startsWith("/uploads/gallery/") || clean.includes("..")) return false;
   const diskPath = path.join(process.cwd(), "public", clean.replace(/^\//, ""));
@@ -24,14 +24,14 @@ async function galleryFileExists(publicUrl: string): Promise<boolean> {
 }
 
 export async function collectGalleryOrphanIds(rows: GalleryRowLike[]): Promise<string[]> {
-  const exists = await Promise.all(rows.map((r) => galleryFileExists(r.publicUrl)));
+  const exists = await Promise.all(rows.map((r) => galleryPublicUrlExists(r.publicUrl)));
   return rows.filter((_, i) => !exists[i]).map((r) => r.id);
 }
 
 export async function mapExistingGalleryRowsToDTO(
   rows: GalleryRowLike[],
 ): Promise<GalleryAssetDTO[]> {
-  const exists = await Promise.all(rows.map((r) => galleryFileExists(r.publicUrl)));
+  const exists = await Promise.all(rows.map((r) => galleryPublicUrlExists(r.publicUrl)));
   return rows
     .filter((_, i) => exists[i])
     .map((r) => ({
