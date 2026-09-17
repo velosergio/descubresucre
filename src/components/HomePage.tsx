@@ -21,10 +21,12 @@ export default function HomePage({
   heroConfig,
   imperdiblesPayload,
   queHacerPayload,
+  mapsApiKey,
 }: {
   heroConfig: ResolvedHeroConfig;
   imperdiblesPayload: ImperdiblesHomePayload;
   queHacerPayload: QueHacerHomePayload;
+  mapsApiKey: string | null;
 }) {
   const [view, setView] = useState<"landing" | "chat">("landing");
   const [chatKey, setChatKey] = useState(0);
@@ -56,7 +58,7 @@ export default function HomePage({
             <ActivitiesSection payload={queHacerPayload} />
             <EventsSection />
             <CulturalAgenda />
-            <MapSection />
+            <MapSection mapsApiKey={mapsApiKey} />
             <ConvocatoriasSection />
             <Footer />
           </m.div>

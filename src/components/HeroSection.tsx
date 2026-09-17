@@ -190,7 +190,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
             <button
               type="submit"
               className="shrink-0 rounded-xl bg-primary p-3 text-primary-foreground transition-colors hover:bg-primary/90"
-              aria-label="Enviar"
+              aria-label="Enviar búsqueda"
             >
               <Send className="h-5 w-5" />
             </button>

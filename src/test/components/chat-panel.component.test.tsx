@@ -32,7 +32,7 @@ describe("ChatPanel", () => {
     render(<ChatPanel onClose={() => undefined} />);
     const user = userEvent.setup();
     await user.type(screen.getByPlaceholderText("Escribe tu pregunta…"), "Hola");
-    await user.click(screen.getByRole("button", { name: "Enviar" }));
+    await user.click(screen.getByRole("button", { name: "Enviar mensaje" }));
 
     await waitFor(() => {
       expect(screen.getByText("Respuesta desde n8n")).toBeInTheDocument();

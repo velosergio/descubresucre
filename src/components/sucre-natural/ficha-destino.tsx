@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 import { FichaBreadcrumb } from "@/components/sucre-natural/ficha-breadcrumb";
 import { PolaroidImage } from "@/components/sucre-natural/polaroid-image";
-import { buildGoogleMapsEmbedViewUrl } from "@/lib/google-maps-embed";
+import { buildGoogleMapsEmbedPlaceUrl, getGoogleMapsApiKey } from "@/lib/google-maps-embed";
 import type {
   BiodiversityChip,
   FichaGalleryItem,
@@ -322,8 +322,8 @@ export function FichaDestino({ ficha }: { ficha: FichaDestinoView }) {
   const lng = ficha.mapLng;
   const embedUrl =
     lat != null && lng != null
-      ? buildGoogleMapsEmbedViewUrl({
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
+      ? buildGoogleMapsEmbedPlaceUrl({
+          apiKey: getGoogleMapsApiKey() ?? "",
           lat,
           lng,
           zoom: ficha.mapZoom,

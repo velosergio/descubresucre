@@ -3,6 +3,7 @@ import HomePage from "@/components/HomePage";
 import { getImperdiblesForHome } from "@/lib/get-imperdibles-home";
 import { getQueHacerForHome } from "@/lib/get-que-hacer-home";
 import { getResolvedHeroConfig } from "@/lib/get-resolved-hero-config";
+import { getGoogleMapsApiKey } from "@/lib/google-maps-embed";
 import { getSiteOrigin } from "@/lib/site-url";
 
 const siteOrigin = getSiteOrigin();
@@ -69,6 +70,7 @@ export default async function Page() {
       heroConfig={heroConfig}
       imperdiblesPayload={imperdiblesPayload}
       queHacerPayload={queHacerPayload}
+      mapsApiKey={getGoogleMapsApiKey()}
     />
   );
 }

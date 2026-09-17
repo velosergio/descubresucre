@@ -21,11 +21,19 @@ await esbuild.build({
   target: "node20",
   outfile,
   legalComments: "none",
-  external: ["sharp", "@prisma/adapter-mariadb", "dotenv", "dotenv/config"],
+  external: ["sharp", "@prisma/adapter-mariadb"],
   plugins: [
     {
       name: "seed-prisma-cjs",
       setup(build) {
+        build.onResolve({ filter: /^dotenv(\/config)?$/ }, () => ({
+          path: "seed-dotenv-stub",
+          namespace: "seed-stub",
+        }));
+        build.onLoad({ filter: /.*/, namespace: "seed-stub" }, () => ({
+          contents: "export {}",
+          loader: "js",
+        }));
         build.onLoad({ filter: /[\\/]src[\\/]lib[\\/]prisma\.ts$/ }, () => ({
           contents: `
             import { createRequire } from "node:module";

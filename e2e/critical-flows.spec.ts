@@ -36,7 +36,7 @@ test("flujo chatbot request -> polling -> respuesta", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Abrir chat" }).click();
   await page.getByPlaceholder("Escribe tu pregunta…").fill("Quiero planes en Sincelejo");
-  await page.getByRole("button", { name: "Enviar" }).click();
+  await page.getByRole("button", { name: "Enviar mensaje" }).click();
 
   await expect(page.getByText("Respuesta e2e desde callback simulado.")).toBeVisible();
 });

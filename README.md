@@ -178,7 +178,7 @@
 
   ## Integraciones y notas técnicas
 
-  - La home embebe el mapa de destinos con **Maps Embed API** (misma clave `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` que el detalle). Sin clave, muestra el enlace «Abrir en Google Maps».
+  - La home usa **Maps JavaScript API** (pines en cada destino). La clave se lee en el servidor (`GOOGLE_MAPS_API_KEY` o `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`) para que funcione en Docker. Sin clave, muestra el enlace «Abrir en Google Maps».
   - El detalle de destinos imperdibles usa Google Maps Embed cuando existe `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (si no, muestra enlace externo).
   - El asistente de chat está integrado con **n8n** (webhook + callback asíncrono); la URL del webhook se configura en el dashboard, no en el cliente público.
   - Hay proveedor de React Query configurado globalmente para otras integraciones con API.

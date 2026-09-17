@@ -3,12 +3,14 @@
  * Idempotente (no duplica slugs; no pisa seedManaged=false).
  *
  * Local: npm run db:seed
- * EasyPanel (cwd /app, tras el deploy): node scripts/seed.mjs
+ * EasyPanel (consola ash/sh del contenedor, ya en /app): node scripts/seed.mjs
+ *
+ * DATABASE_URL sale del entorno del servicio; no usamos dotenv aquí porque
+ * el standalone de Next no deja ese paquete en /app/node_modules.
  */
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import "dotenv/config";
 
 const bundled = join(dirname(fileURLToPath(import.meta.url)), "seed.prod.mjs");
 

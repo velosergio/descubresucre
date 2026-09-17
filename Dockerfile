@@ -78,8 +78,7 @@ COPY --from=builder /app/scripts/seed.mjs ./scripts/seed.mjs
 COPY --from=builder /app/scripts/seed.prod.mjs ./scripts/seed.prod.mjs
 COPY --from=builder /app/src/assets ./src/assets
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
-RUN cp -a /opt/extra-deps/node_modules/sharp ./node_modules/ \
-  && if [ -d /opt/extra-deps/node_modules/@img ]; then cp -a /opt/extra-deps/node_modules/@img ./node_modules/; fi \
+RUN cp -a /opt/extra-deps/node_modules/. ./node_modules/ \
   && rm -rf /opt/extra-deps
 
 EXPOSE 3000

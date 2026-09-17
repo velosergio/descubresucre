@@ -1,3 +1,5 @@
+"use client";
+
 import * as m from "framer-motion/m";
 import {
   ExternalLink,
@@ -9,7 +11,8 @@ import {
   Waves,
 } from "lucide-react";
 import { useState } from "react";
-import { buildGoogleMapsEmbedViewUrl, buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
+import { GoogleDestinationsMap } from "@/components/GoogleDestinationsMap";
+import { buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -124,7 +127,7 @@ const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
   { key: "gastronomía", label: "Gastronomía", icon: <UtensilsCrossed className="w-4 h-4" /> },
 ];
 
-const MapSection = () => {
+const MapSection = ({ mapsApiKey }: { mapsApiKey: string | null }) => {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
 
@@ -134,16 +137,8 @@ const MapSection = () => {
       : destinations.filter((d) => d.category === activeCategory);
 
   const mapCenter = selectedDest
-    ? { lat: selectedDest.lat, lng: selectedDest.lng, zoom: 12 }
-    : { lat: 9.45, lng: -75.5, zoom: 9 };
-
-  const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
-  const embedUrl = buildGoogleMapsEmbedViewUrl({
-    apiKey: mapsKey,
-    lat: mapCenter.lat,
-    lng: mapCenter.lng,
-    zoom: mapCenter.zoom,
-  });
+    ? { lat: selectedDest.lat, lng: selectedDest.lng }
+    : { lat: 9.45, lng: -75.5 };
   const externalMapsUrl = buildGoogleMapsSearchUrl(mapCenter.lat, mapCenter.lng);
 
   return (
@@ -191,18 +186,15 @@ const MapSection = () => {
             className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border"
             style={{ height: 500 }}
           >
-            {embedUrl ? (
-              <iframe
-                key={`${mapCenter.lat}-${mapCenter.lng}-${mapCenter.zoom}`}
-                width="100%"
-                height="100%"
-                src={embedUrl}
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Mapa de Sucre"
-                sandbox="allow-scripts allow-popups allow-forms"
+            {mapsApiKey ? (
+              <GoogleDestinationsMap
+                apiKey={mapsApiKey}
+                destinations={filtered}
+                selectedId={selectedDest?.id ?? null}
+                onSelect={(id) => {
+                  const dest = destinations.find((d) => d.id === id);
+                  if (dest) setSelectedDest(dest);
+                }}
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-3 bg-card px-6 text-center">

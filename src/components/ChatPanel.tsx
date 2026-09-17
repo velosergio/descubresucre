@@ -268,7 +268,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
             type="submit"
             disabled={isLoading || !input.trim()}
             className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-opacity disabled:opacity-45 hover:opacity-95"
-            aria-label="Enviar"
+            aria-label="Enviar mensaje"
           >
             <Send className="size-5" />
           </button>

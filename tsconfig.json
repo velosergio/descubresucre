@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"],
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest", "google.maps"],
     "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,

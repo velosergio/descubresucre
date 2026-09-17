@@ -11,7 +11,11 @@ import {
   type ImperdibleDetail,
   type ImperdibleQueHacerRef,
 } from "@/lib/get-imperdible-detail";
-import { buildGoogleMapsEmbedViewUrl, buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
+import {
+  buildGoogleMapsEmbedPlaceUrl,
+  buildGoogleMapsSearchUrl,
+  getGoogleMapsApiKey,
+} from "@/lib/google-maps-embed";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { getSiteOrigin } from "@/lib/site-url";
 
@@ -60,9 +64,10 @@ function ImperdibleLocationSection({
   zoom: number;
 }) {
   const hasCoords = lat != null && lng != null;
+  const mapsKey = getGoogleMapsApiKey() ?? "";
   const embedUrl = hasCoords
-    ? buildGoogleMapsEmbedViewUrl({
-        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
+    ? buildGoogleMapsEmbedPlaceUrl({
+        apiKey: mapsKey,
         lat,
         lng,
         zoom,
