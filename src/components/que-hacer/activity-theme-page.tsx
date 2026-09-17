@@ -1,12 +1,12 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { BiodiversityGroupedList } from "@/components/sucre-natural/biodiversidad-grouped-list";
 import { PolaroidImage } from "@/components/sucre-natural/polaroid-image";
 import type { QueHacerDetail } from "@/lib/get-que-hacer-detail";
-import { resolveQueHacerIcon } from "@/lib/que-hacer-icons";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { resolveQueHacerIcon } from "@/lib/que-hacer-icons";
 
 function CatalogPendingNote({ message }: { message: string }) {
   return <p className="font-body text-[hsl(var(--sn-ink)/0.7)]">{message}</p>;
@@ -90,7 +90,9 @@ export function ActivityThemePage({ detail }: { detail: QueHacerDetail }) {
                     <PolaroidImage src={ex.imageUrl} alt={ex.title} />
                     <h3 className="mt-3 font-display text-lg font-bold">{ex.title}</h3>
                     {ex.tagline ? (
-                      <p className="font-body text-sm text-[hsl(var(--sn-ink)/0.7)]">{ex.tagline}</p>
+                      <p className="font-body text-sm text-[hsl(var(--sn-ink)/0.7)]">
+                        {ex.tagline}
+                      </p>
                     ) : null}
                   </Link>
                 </li>
@@ -117,7 +119,9 @@ export function ActivityThemePage({ detail }: { detail: QueHacerDetail }) {
                   >
                     <PolaroidImage src={dest.cardImageUrl} alt={dest.title} />
                     <h3 className="mt-3 font-display text-lg font-bold">{dest.title}</h3>
-                    <p className="font-body text-sm text-[hsl(var(--sn-ink)/0.7)]">{dest.subtitle}</p>
+                    <p className="font-body text-sm text-[hsl(var(--sn-ink)/0.7)]">
+                      {dest.subtitle}
+                    </p>
                     {dest.municipality ? (
                       <p className="mt-1 font-body text-xs uppercase tracking-wide text-[hsl(var(--sn-ink)/0.55)]">
                         {dest.municipality}

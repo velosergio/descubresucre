@@ -26,9 +26,7 @@ describe("queHacerActivitySchema", () => {
       }).success,
     ).toBe(false);
 
-    expect(queHacerActivitySchema.safeParse({ ...base, iconKey: "no-existe" }).success).toBe(
-      false,
-    );
+    expect(queHacerActivitySchema.safeParse({ ...base, iconKey: "no-existe" }).success).toBe(false);
 
     expect(
       queHacerActivitySchema.safeParse({
@@ -50,9 +48,7 @@ describe("queHacerActivitySchema", () => {
   });
 
   it("rechaza modo de listado inválido y accent mal formado", () => {
-    expect(queHacerActivitySchema.safeParse({ ...base, listingMode: "HUBS" }).success).toBe(
-      false,
-    );
+    expect(queHacerActivitySchema.safeParse({ ...base, listingMode: "HUBS" }).success).toBe(false);
     expect(
       queHacerActivitySchema.safeParse({ ...base, accentHsl: "hsl(174, 62%, 35%)" }).success,
     ).toBe(false);

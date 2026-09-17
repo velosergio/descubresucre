@@ -171,8 +171,7 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
       data: destinationWriteData(raw, slug, false),
     });
     await syncDestinationRelations(row.id, raw);
-    const destSlugs =
-      existing.slug === row.slug ? [row.slug] : [existing.slug, row.slug];
+    const destSlugs = existing.slug === row.slug ? [row.slug] : [existing.slug, row.slug];
     const activitySlugs = [
       ...existing.queHacerActivities.map((j) => j.activity.slug),
       ...(await activitySlugsFor(raw.activityIds)),

@@ -1,14 +1,11 @@
 import { galleryPublicUrlExists } from "@/lib/gallery-assets";
-import {
-  getBiodiversityHub,
-  getExperiencesHub,
-} from "@/lib/get-sucre-natural-public";
+import { getBiodiversityHub, getExperiencesHub } from "@/lib/get-sucre-natural-public";
+import { toServedMediaUrl } from "@/lib/media-url";
 import { prisma } from "@/lib/prisma";
 import { resolveQueHacerIcon } from "@/lib/que-hacer-icons";
 import type { QueHacerListingModeId } from "@/lib/que-hacer-listing-mode";
 import { DEFAULT_ACTIVITY_ACCENT_HSL } from "@/lib/que-hacer-listing-mode";
 import { filterLivePhotos, isActivityPubliclyVisible } from "@/lib/que-hacer-photos";
-import { toServedMediaUrl } from "@/lib/media-url";
 
 export type QueHacerDetailPhoto = {
   publicUrl: string;

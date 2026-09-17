@@ -382,6 +382,7 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
     }
 
     if (!activityId) continue;
+    const confirmedActivityId = activityId;
 
     const hubLinks = await db.imperdibleDestinationHub.findMany({
       where: { hubId: item.slug },
@@ -389,7 +390,7 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
     });
     if (hubLinks.length) {
       const existing = await db.queHacerActivityOnDestination.findMany({
-        where: { activityId },
+        where: { activityId: confirmedActivityId },
       });
       const merged = mergeJoinIds(
         existing.map((j) => j.destinationId),
@@ -400,7 +401,7 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
       if (toAdd.length) {
         await db.queHacerActivityOnDestination.createMany({
           data: toAdd.map((destinationId, i) => ({
-            activityId: activityId!,
+            activityId: confirmedActivityId,
             destinationId,
             sortOrder: i,
           })),

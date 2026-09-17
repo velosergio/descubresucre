@@ -94,8 +94,4 @@ export const QUE_HACER_TEMAS_SEED: readonly QueHacerTemaSeedItem[] = [
 ];
 
 /** Mock 007 seedManaged slugs to unpublish (not canonical themes). */
-export const QUE_HACER_MOCK_SLUGS_TO_UNPUBLISH = [
-  "cultura",
-  "gastronomia",
-  "naturaleza",
-] as const;
+export const QUE_HACER_MOCK_SLUGS_TO_UNPUBLISH = ["cultura", "gastronomia", "naturaleza"] as const;

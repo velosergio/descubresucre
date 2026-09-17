@@ -19,8 +19,8 @@ import { toServedMediaUrl } from "@/lib/media-url";
 import { QUE_HACER_ICONS } from "@/lib/que-hacer-icons";
 import {
   DEFAULT_ACTIVITY_ACCENT_HSL,
-  type QueHacerListingModeId,
   QUE_HACER_LISTING_MODES,
+  type QueHacerListingModeId,
 } from "@/lib/que-hacer-listing-mode";
 import { QUE_HACER_MAX_PHOTOS } from "@/lib/que-hacer-photos";
 

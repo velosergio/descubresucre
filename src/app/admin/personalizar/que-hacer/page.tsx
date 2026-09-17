@@ -1,9 +1,6 @@
 import { QueHacerAdmin } from "@/components/admin/que-hacer-admin";
 import { prisma } from "@/lib/prisma";
-import {
-  DEFAULT_ACTIVITY_ACCENT_HSL,
-  isQueHacerListingMode,
-} from "@/lib/que-hacer-listing-mode";
+import { DEFAULT_ACTIVITY_ACCENT_HSL, isQueHacerListingMode } from "@/lib/que-hacer-listing-mode";
 
 export default async function AdminQueHacerPage() {
   const [activities, destinations] = await Promise.all([

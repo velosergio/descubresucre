@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  defaultListingModeForSlug,
-  isQueHacerListingMode,
-} from "@/lib/que-hacer-listing-mode";
+import { defaultListingModeForSlug, isQueHacerListingMode } from "@/lib/que-hacer-listing-mode";
 
 describe("que-hacer-listing-mode", () => {
   it("acepta los tres modos y rechaza el resto", () => {

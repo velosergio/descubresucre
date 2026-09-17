@@ -3,7 +3,7 @@ import { isQueHacerIconKey } from "@/lib/que-hacer-icons";
 import {
   ACCENT_HSL_REGEX,
   isQueHacerListingMode,
-  QUE_HACER_LISTING_MODES,
+  type QUE_HACER_LISTING_MODES,
 } from "@/lib/que-hacer-listing-mode";
 import { QUE_HACER_MAX_PHOTOS } from "@/lib/que-hacer-photos";
 import {
