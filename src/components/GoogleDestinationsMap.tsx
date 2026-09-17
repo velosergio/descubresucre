@@ -30,7 +30,10 @@ export function GoogleDestinationsMap({
   const markersRef = useRef<Map<number, google.maps.Marker>>(new Map());
   const onSelectRef = useRef(onSelect);
   const [mapReady, setMapReady] = useState(false);
-  onSelectRef.current = onSelect;
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -69,6 +72,7 @@ export function GoogleDestinationsMap({
     markersRef.current.clear();
 
     const bounds = new google.maps.LatLngBounds();
+    const listeners: google.maps.MapsEventListener[] = [];
     for (const dest of destinations) {
       const marker = new google.maps.Marker({
         map,
@@ -76,9 +80,11 @@ export function GoogleDestinationsMap({
         title: dest.name,
         animation: dest.id === selectedId ? google.maps.Animation.BOUNCE : null,
       });
-      marker.addListener("click", () => {
-        onSelectRef.current(dest.id);
-      });
+      listeners.push(
+        marker.addListener("click", () => {
+          onSelectRef.current(dest.id);
+        }),
+      );
       markersRef.current.set(dest.id, marker);
       bounds.extend({ lat: dest.lat, lng: dest.lng });
     }
@@ -87,14 +93,18 @@ export function GoogleDestinationsMap({
     if (selected) {
       map.panTo({ lat: selected.lat, lng: selected.lng });
       map.setZoom(12);
-      return;
-    }
-    if (destinations.length === 0) {
+    } else if (destinations.length === 0) {
       map.setCenter(DEFAULT_CENTER);
       map.setZoom(9);
-      return;
+    } else {
+      map.fitBounds(bounds, 48);
     }
-    map.fitBounds(bounds, 48);
+
+    return () => {
+      for (const listener of listeners) {
+        listener.remove();
+      }
+    };
   }, [destinations, mapReady, selectedId]);
 
   return (

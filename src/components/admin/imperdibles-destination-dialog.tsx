@@ -3,7 +3,7 @@
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
@@ -148,6 +148,10 @@ function DestinationFormInner({
   const [previewMd, setPreviewMd] = useState(false);
   const [form, setForm] = useState<Omit<ImperdibleAdminRow, "id"> & { id?: string }>(() =>
     mode === "edit" && initial ? formFromInitial(initial) : emptyForm(),
+  );
+  const selectedQueHacerCategoryIds = useMemo(
+    () => new Set(form.queHacerCategoryIds),
+    [form.queHacerCategoryIds],
   );
 
   const mapsHelperUrl =
@@ -449,7 +453,7 @@ function DestinationFormInner({
                 <div key={cat.id} className="flex items-center gap-2 text-sm">
                   <Checkbox
                     id={`qh-dest-cat-${cat.id}`}
-                    checked={form.queHacerCategoryIds.includes(cat.id)}
+                    checked={selectedQueHacerCategoryIds.has(cat.id)}
                     onCheckedChange={(c) =>
                       setForm((s) => ({
                         ...s,

@@ -21,7 +21,10 @@ await esbuild.build({
   target: "node20",
   outfile,
   legalComments: "none",
-  external: ["sharp", "@prisma/adapter-mariadb"],
+  banner: {
+    js: 'import { createRequire as __seedCreateRequire } from "node:module";\nconst require = __seedCreateRequire(import.meta.url);',
+  },
+  external: ["sharp"],
   plugins: [
     {
       name: "seed-prisma-cjs",

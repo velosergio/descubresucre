@@ -22,7 +22,9 @@ const mapsMock = vi.hoisted(() => {
 
   class FakeMarker {
     setMap() {}
-    addListener() {}
+    addListener() {
+      return { remove: vi.fn() };
+    }
   }
 
   class FakePoint {

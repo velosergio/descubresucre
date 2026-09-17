@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -49,6 +49,7 @@ export function ExperienciasNaturalezaAdmin({
   };
   const [form, setForm] = useState(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const selectedDestinationIds = useMemo(() => new Set(form.destinationIds), [form.destinationIds]);
 
   function payload() {
     return {
@@ -127,7 +128,7 @@ export function ExperienciasNaturalezaAdmin({
             <div key={d.id} className="flex items-center gap-2 text-sm">
               <Checkbox
                 id={`exp-dest-${d.id}`}
-                checked={form.destinationIds.includes(d.id)}
+                checked={selectedDestinationIds.has(d.id)}
                 onCheckedChange={(c) =>
                   setForm((s) => ({
                     ...s,

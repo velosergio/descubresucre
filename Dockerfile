@@ -78,7 +78,16 @@ COPY --from=builder /app/scripts/seed.mjs ./scripts/seed.mjs
 COPY --from=builder /app/scripts/seed.prod.mjs ./scripts/seed.prod.mjs
 COPY --from=builder /app/src/assets ./src/assets
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
-RUN cp -a /opt/extra-deps/node_modules/. ./node_modules/ \
+# El standalone pisa /app/node_modules y BusyBox `cp` no fusiona un @prisma ya existente.
+# /app/scripts/node_modules es carpeta nueva: Node ESM (seed/admin) la resuelve primero.
+RUN mkdir -p ./scripts/node_modules ./node_modules/@prisma \
+  && cp -a /opt/extra-deps/node_modules/. ./scripts/node_modules/ \
+  && cp -a /opt/extra-deps/node_modules/. ./node_modules/ \
+  && if [ -d /opt/extra-deps/node_modules/@prisma ]; then \
+       cp -a /opt/extra-deps/node_modules/@prisma/. ./node_modules/@prisma/; \
+       mkdir -p ./scripts/node_modules/@prisma; \
+       cp -a /opt/extra-deps/node_modules/@prisma/. ./scripts/node_modules/@prisma/; \
+     fi \
   && rm -rf /opt/extra-deps
 
 EXPOSE 3000

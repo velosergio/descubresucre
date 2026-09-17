@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useState, useTransition } from "react";
+import { type Dispatch, type SetStateAction, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
 import { Button } from "@/components/ui/button";
@@ -135,6 +135,8 @@ function QueHacerIdChecklist({
   idPrefix: string;
   onToggle: (id: string, checked: boolean) => void;
 }) {
+  const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+
   return (
     <div className="space-y-1">
       <p className="text-sm font-medium">{title}</p>
@@ -145,7 +147,7 @@ function QueHacerIdChecklist({
           <div key={item.id} className="flex items-center gap-2 text-sm">
             <Checkbox
               id={`${idPrefix}-${item.id}`}
-              checked={selectedIds.includes(item.id)}
+              checked={selectedIdSet.has(item.id)}
               onCheckedChange={(chk) => onToggle(item.id, chk === true)}
             />
             <Label htmlFor={`${idPrefix}-${item.id}`} className="cursor-pointer font-normal">
