@@ -60,7 +60,7 @@ describeIfDb("admin Sucre Natural destinos", () => {
       slug: "playa-prueba",
       published: true,
       showOnHome: false,
-      hubIds: ["playas"],
+      activityIds: [],
       municipality: "Tolú",
       bodyMarkdown: "",
     });
@@ -74,7 +74,7 @@ describeIfDb("admin Sucre Natural destinos", () => {
       slug: "playa-prueba",
       published: false,
       showOnHome: false,
-      hubIds: ["playas"],
+      activityIds: [],
       municipality: "Tolú",
       bodyMarkdown: "",
     });
@@ -87,7 +87,7 @@ describeIfDb("admin Sucre Natural destinos", () => {
       slug: "playa-seed",
       published: true,
       showOnHome: false,
-      hubIds: ["playas"],
+      activityIds: [],
       municipality: "Tolú",
       bodyMarkdown: "",
     });
@@ -117,7 +117,7 @@ describeIfDb("admin Sucre Natural destinos", () => {
       slug: "extra-home",
       published: true,
       showOnHome: true,
-      hubIds: ["playas"],
+      activityIds: [],
       municipality: "Tolú",
       bodyMarkdown: "",
     });

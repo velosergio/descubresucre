@@ -7,7 +7,7 @@ const valid = {
   slug: "playa-el-frances",
   published: true,
   showOnHome: false,
-  hubIds: ["playas"],
+  activityIds: ["act-playas"],
   municipality: "Tolú",
 };
 
@@ -58,7 +58,7 @@ describe("sucreNaturalDestinationSchema", () => {
     ).toBe(false);
   });
 
-  it("rechaza iconKey fuera de whitelist y hub desconocido", () => {
+  it("rechaza iconKey fuera de whitelist y exige municipio o actividad", () => {
     expect(
       sucreNaturalDestinationSchema.safeParse({
         ...valid,
@@ -66,7 +66,11 @@ describe("sucreNaturalDestinationSchema", () => {
       }).success,
     ).toBe(false);
     expect(
-      sucreNaturalDestinationSchema.safeParse({ ...valid, hubIds: ["volcanes"] }).success,
+      sucreNaturalDestinationSchema.safeParse({
+        ...valid,
+        municipality: "",
+        activityIds: [],
+      }).success,
     ).toBe(false);
   });
 });

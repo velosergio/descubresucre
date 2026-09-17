@@ -27,7 +27,7 @@ export default async function SucreNaturalLandingPage() {
 
       <section aria-labelledby="hubs-heading">
         <h2 id="hubs-heading" className="sr-only">
-          Hubs temáticos
+          Temas de Qué hacer
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {data.hubs.map((hub) => (

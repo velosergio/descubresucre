@@ -26,7 +26,6 @@ import {
 } from "@/lib/actions/imperdibles";
 import { buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
 import { toServedMediaUrl } from "@/lib/media-url";
-import { SUCRE_NATURAL_HUBS } from "@/lib/sucre-natural-hubs";
 
 export type ImperdibleAdminRow = {
   id: string;
@@ -55,8 +54,7 @@ export type ImperdibleAdminRow = {
   liveActivitiesText: string;
   responsibleTipsText: string;
   biodiversityChipLabelsText: string;
-  hubIds: string[];
-  queHacerCategoryIds: string[];
+  activityIds: string[];
   galleryUrls: string[];
   sourceIds: string[];
 };
@@ -90,8 +88,7 @@ const emptyForm = (): DestinationFormState => ({
   liveActivitiesText: "",
   responsibleTipsText: "",
   biodiversityChipLabelsText: "",
-  hubIds: [],
-  queHacerCategoryIds: [],
+  activityIds: [],
   galleryUrls: [],
   sourceIds: [],
 });
@@ -124,8 +121,7 @@ function formFromInitial(initial: ImperdibleAdminRow): DestinationFormState {
     liveActivitiesText: initial.liveActivitiesText,
     responsibleTipsText: initial.responsibleTipsText,
     biodiversityChipLabelsText: initial.biodiversityChipLabelsText,
-    hubIds: initial.hubIds,
-    queHacerCategoryIds: initial.queHacerCategoryIds,
+    activityIds: initial.activityIds,
     galleryUrls: initial.galleryUrls,
     sourceIds: initial.sourceIds,
   };
@@ -364,81 +360,45 @@ function DestinationVisibilityFields({
   );
 }
 
-function DestinationHubsField({
+function DestinationActivitiesField({
   form,
   setForm,
   pending,
+  activities,
 }: {
   form: DestinationFormState;
   setForm: SetDestinationForm;
   pending: boolean;
+  activities: { id: string; title: string }[];
 }) {
+  const selected = useMemo(() => new Set(form.activityIds), [form.activityIds]);
   return (
     <div className="space-y-2">
-      <Label>Hubs Sucre Natural</Label>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {SUCRE_NATURAL_HUBS.map((hub) => (
-          <div key={hub.id} className="flex items-center gap-2 text-sm">
-            <Checkbox
-              id={`hub-${hub.id}`}
-              checked={form.hubIds.includes(hub.id)}
-              onCheckedChange={(c) =>
-                setForm((s) => ({
-                  ...s,
-                  hubIds:
-                    c === true ? [...s.hubIds, hub.id] : s.hubIds.filter((id) => id !== hub.id),
-                }))
-              }
-              disabled={pending}
-            />
-            <Label htmlFor={`hub-${hub.id}`} className="cursor-pointer font-normal">
-              {hub.iconLabel}
-            </Label>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DestinationCategoriesField({
-  setForm,
-  pending,
-  queHacerCategories,
-  selectedQueHacerCategoryIds,
-}: {
-  setForm: SetDestinationForm;
-  pending: boolean;
-  queHacerCategories: { id: string; name: string }[];
-  selectedQueHacerCategoryIds: Set<string>;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label>Categorías Qué hacer</Label>
-      {queHacerCategories.length === 0 ? (
+      <Label>Actividades Qué hacer</Label>
+      {activities.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Crea categorías en Personalizar → Qué hacer.
+          Crea actividades en Personalizar → Qué hacer.
         </p>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
-          {queHacerCategories.map((cat) => (
-            <div key={cat.id} className="flex items-center gap-2 text-sm">
+          {activities.map((act) => (
+            <div key={act.id} className="flex items-center gap-2 text-sm">
               <Checkbox
-                id={`qh-dest-cat-${cat.id}`}
-                checked={selectedQueHacerCategoryIds.has(cat.id)}
+                id={`qh-act-${act.id}`}
+                checked={selected.has(act.id)}
                 onCheckedChange={(c) =>
                   setForm((s) => ({
                     ...s,
-                    queHacerCategoryIds:
+                    activityIds:
                       c === true
-                        ? [...s.queHacerCategoryIds, cat.id]
-                        : s.queHacerCategoryIds.filter((id) => id !== cat.id),
+                        ? [...s.activityIds, act.id]
+                        : s.activityIds.filter((id) => id !== act.id),
                   }))
                 }
                 disabled={pending}
               />
-              <Label htmlFor={`qh-dest-cat-${cat.id}`} className="cursor-pointer font-normal">
-                {cat.name}
+              <Label htmlFor={`qh-act-${act.id}`} className="cursor-pointer font-normal">
+                {act.title}
               </Label>
             </div>
           ))}
@@ -626,12 +586,12 @@ function DestinationFormInner({
   mode,
   initial,
   onOpenChange,
-  queHacerCategories,
+  activities,
 }: {
   mode: "create" | "edit";
   initial: ImperdibleAdminRow | null;
   onOpenChange: (v: boolean) => void;
-  queHacerCategories: { id: string; name: string }[];
+  activities: { id: string; title: string }[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -640,10 +600,6 @@ function DestinationFormInner({
   const [previewMd, setPreviewMd] = useState(false);
   const [form, setForm] = useState<DestinationFormState>(() =>
     mode === "edit" && initial ? formFromInitial(initial) : emptyForm(),
-  );
-  const selectedQueHacerCategoryIds = useMemo(
-    () => new Set(form.queHacerCategoryIds),
-    [form.queHacerCategoryIds],
   );
 
   async function onUploadCard(f: File | null) {
@@ -699,8 +655,7 @@ function DestinationFormInner({
           .split("\n")
           .map((t) => t.trim())
           .filter(Boolean),
-        hubIds: form.hubIds,
-        queHacerCategoryIds: form.queHacerCategoryIds,
+        activityIds: form.activityIds,
         galleryUrls: form.galleryUrls,
         sourceIds: form.sourceIds,
       };
@@ -748,12 +703,11 @@ function DestinationFormInner({
         />
         <DestinationMapFields form={form} setForm={setForm} pending={pending} />
         <DestinationVisibilityFields form={form} setForm={setForm} pending={pending} />
-        <DestinationHubsField form={form} setForm={setForm} pending={pending} />
-        <DestinationCategoriesField
+        <DestinationActivitiesField
+          form={form}
           setForm={setForm}
           pending={pending}
-          queHacerCategories={queHacerCategories}
-          selectedQueHacerCategoryIds={selectedQueHacerCategoryIds}
+          activities={activities}
         />
         <DestinationDetailsFields form={form} setForm={setForm} pending={pending} />
         <DestinationGalleryField
@@ -809,14 +763,14 @@ export function ImperdiblesDestinationDialog({
   mode,
   initial,
   mountKey,
-  queHacerCategories = [],
+  activities = [],
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   mode: "create" | "edit";
   initial: ImperdibleAdminRow | null;
   mountKey: number;
-  queHacerCategories?: { id: string; name: string }[];
+  activities?: { id: string; title: string }[];
 }) {
   const formKey = `${mode}-${initial?.id ?? "new"}-${mountKey}`;
 
@@ -829,7 +783,7 @@ export function ImperdiblesDestinationDialog({
             mode={mode}
             initial={initial}
             onOpenChange={onOpenChange}
-            queHacerCategories={queHacerCategories}
+            activities={activities}
           />
         ) : null}
       </DialogContent>

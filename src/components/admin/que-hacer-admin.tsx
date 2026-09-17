@@ -12,15 +12,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   createQueHacerActivityAction,
-  createQueHacerCategoryAction,
   deleteQueHacerActivityAction,
-  deleteQueHacerCategoryAction,
   updateQueHacerActivityAction,
-  updateQueHacerCategoryAction,
 } from "@/lib/actions/que-hacer";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { QUE_HACER_ICONS } from "@/lib/que-hacer-icons";
+import {
+  DEFAULT_ACTIVITY_ACCENT_HSL,
+  type QueHacerListingModeId,
+  QUE_HACER_LISTING_MODES,
+} from "@/lib/que-hacer-listing-mode";
 import { QUE_HACER_MAX_PHOTOS } from "@/lib/que-hacer-photos";
+
+const LISTING_MODE_LABELS: Record<QueHacerListingModeId, string> = {
+  DESTINATIONS: "Destinos",
+  BIODIVERSITY: "Biodiversidad",
+  EXPERIENCES: "Experiencias",
+};
 
 export type QueHacerActivityAdminRow = {
   id: string;
@@ -28,21 +36,16 @@ export type QueHacerActivityAdminRow = {
   title: string;
   description: string;
   iconKey: string;
+  tagline: string;
+  introMarkdown: string;
+  accentHsl: string;
+  listingMode: QueHacerListingModeId;
   published: boolean;
   sortOrder: number;
   photoUrls: string[];
   photoAlts: (string | null)[];
   coverUrl: string;
-  categoryIds: string[];
   destinationIds: string[];
-};
-
-export type QueHacerCategoryAdminRow = {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  sortOrder: number;
 };
 
 const emptyActivity: Omit<QueHacerActivityAdminRow, "id"> = {
@@ -50,20 +53,16 @@ const emptyActivity: Omit<QueHacerActivityAdminRow, "id"> = {
   title: "",
   description: "",
   iconKey: "compass",
+  tagline: "",
+  introMarkdown: "",
+  accentHsl: DEFAULT_ACTIVITY_ACCENT_HSL,
+  listingMode: "DESTINATIONS",
   published: false,
   sortOrder: 0,
   photoUrls: [],
   photoAlts: [],
   coverUrl: "",
-  categoryIds: [],
   destinationIds: [],
-};
-
-const emptyCategory: Omit<QueHacerCategoryAdminRow, "id"> = {
-  slug: "",
-  name: "",
-  description: "",
-  sortOrder: 0,
 };
 
 function QueHacerPhotoList({
@@ -160,13 +159,11 @@ function QueHacerIdChecklist({
   );
 }
 
-function QueHacerActivitiesPanel({
+export function QueHacerAdmin({
   initialActivities,
-  initialCategories,
   destinations,
 }: {
   initialActivities: QueHacerActivityAdminRow[];
-  initialCategories: QueHacerCategoryAdminRow[];
   destinations: { id: string; title: string }[];
 }) {
   const router = useRouter();
@@ -181,6 +178,9 @@ function QueHacerActivitiesPanel({
         ...form,
         slug: form.slug || undefined,
         coverUrl: form.coverUrl || undefined,
+        tagline: form.tagline || undefined,
+        introMarkdown: form.introMarkdown || undefined,
+        accentHsl: form.accentHsl || undefined,
       };
       const res = editingId
         ? await updateQueHacerActivityAction(editingId, payload)
@@ -195,7 +195,7 @@ function QueHacerActivitiesPanel({
   }
 
   return (
-    <>
+    <div className="space-y-8">
       <div className="space-y-3 rounded-xl border p-4">
         <h2 className="font-display text-lg font-semibold">
           {editingId ? "Editar actividad" : "Nueva actividad"}
@@ -215,6 +215,49 @@ function QueHacerActivitiesPanel({
           value={form.description}
           onChange={(e) => setForm((s) => ({ ...s, description: e.target.value }))}
         />
+        <Input
+          placeholder="Lema (tagline)"
+          value={form.tagline}
+          onChange={(e) => setForm((s) => ({ ...s, tagline: e.target.value }))}
+        />
+        <Textarea
+          placeholder="Introducción (Markdown)"
+          value={form.introMarkdown}
+          onChange={(e) => setForm((s) => ({ ...s, introMarkdown: e.target.value }))}
+          rows={4}
+        />
+        <div className="space-y-1">
+          <Label htmlFor="qh-listing-mode">Tipo de listado</Label>
+          <select
+            id="qh-listing-mode"
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={form.listingMode}
+            onChange={(e) =>
+              setForm((s) => ({
+                ...s,
+                listingMode: e.target.value as QueHacerListingModeId,
+              }))
+            }
+          >
+            {QUE_HACER_LISTING_MODES.map((mode) => (
+              <option key={mode} value={mode}>
+                {LISTING_MODE_LABELS[mode]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="qh-accent">Color de acento (HSL)</Label>
+          <Input
+            id="qh-accent"
+            placeholder={DEFAULT_ACTIVITY_ACCENT_HSL}
+            value={form.accentHsl}
+            onChange={(e) => setForm((s) => ({ ...s, accentHsl: e.target.value }))}
+          />
+          <p className="text-xs text-muted-foreground">
+            Formato: componentes HSL sin envoltorio, p. ej. {DEFAULT_ACTIVITY_ACCENT_HSL}
+          </p>
+        </div>
         <div className="space-y-1">
           <Label htmlFor="qh-icon">Pictograma</Label>
           <select
@@ -267,22 +310,6 @@ function QueHacerActivitiesPanel({
         </div>
 
         <QueHacerIdChecklist
-          title="Categorías"
-          emptyLabel="Aún no hay categorías."
-          items={initialCategories.map((c) => ({ id: c.id, label: c.name }))}
-          selectedIds={form.categoryIds}
-          idPrefix="qh-cat"
-          onToggle={(id, checked) =>
-            setForm((s) => ({
-              ...s,
-              categoryIds: checked
-                ? [...s.categoryIds, id]
-                : s.categoryIds.filter((cid) => cid !== id),
-            }))
-          }
-        />
-
-        <QueHacerIdChecklist
           title="Destinos publicados"
           emptyLabel="No hay destinos publicados."
           items={destinations.map((d) => ({ id: d.id, label: d.title }))}
@@ -325,7 +352,7 @@ function QueHacerActivitiesPanel({
               {row.title}{" "}
               <span className="text-muted-foreground">
                 /{row.slug}
-                {row.published ? "" : " · borrador"}
+                {row.published ? "" : " · borrador"} · {LISTING_MODE_LABELS[row.listingMode]}
               </span>
             </span>
             <span className="flex gap-2">
@@ -384,167 +411,6 @@ function QueHacerActivitiesPanel({
           })
         }
       />
-    </>
-  );
-}
-
-function QueHacerCategoriesPanel({
-  initialCategories,
-}: {
-  initialCategories: QueHacerCategoryAdminRow[];
-}) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-  const [catForm, setCatForm] = useState(emptyCategory);
-  const [editingCatId, setEditingCatId] = useState<string | null>(null);
-
-  function saveCategory() {
-    startTransition(async () => {
-      const payload = {
-        name: catForm.name,
-        slug: catForm.slug || undefined,
-        description: catForm.description || null,
-        sortOrder: catForm.sortOrder,
-      };
-      const res = editingCatId
-        ? await updateQueHacerCategoryAction(editingCatId, payload)
-        : await createQueHacerCategoryAction(payload);
-      if (res.ok) {
-        toast.success(editingCatId ? "Categoría actualizada" : "Categoría creada");
-        setEditingCatId(null);
-        setCatForm(emptyCategory);
-        router.refresh();
-      } else toast.error(res.error);
-    });
-  }
-
-  return (
-    <>
-      <div className="space-y-3 rounded-xl border p-4">
-        <h2 className="font-display text-lg font-semibold">
-          {editingCatId ? "Editar categoría" : "Nueva categoría"}
-        </h2>
-        <Input
-          placeholder="Nombre"
-          value={catForm.name}
-          onChange={(e) => setCatForm((s) => ({ ...s, name: e.target.value }))}
-        />
-        <Input
-          placeholder="Slug"
-          value={catForm.slug}
-          onChange={(e) => setCatForm((s) => ({ ...s, slug: e.target.value }))}
-        />
-        <Textarea
-          placeholder="Descripción (opcional)"
-          value={catForm.description}
-          onChange={(e) => setCatForm((s) => ({ ...s, description: e.target.value }))}
-        />
-        <Input
-          type="number"
-          placeholder="Orden"
-          value={catForm.sortOrder}
-          onChange={(e) => setCatForm((s) => ({ ...s, sortOrder: Number(e.target.value) }))}
-        />
-        <Button type="button" onClick={saveCategory} disabled={pending}>
-          Guardar categoría
-        </Button>
-        {editingCatId ? (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              setEditingCatId(null);
-              setCatForm(emptyCategory);
-            }}
-          >
-            Cancelar
-          </Button>
-        ) : null}
-      </div>
-      <ul className="space-y-2">
-        {initialCategories.map((row) => (
-          <li
-            key={row.id}
-            className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
-          >
-            <span>
-              {row.name} <span className="text-muted-foreground">/{row.slug}</span>
-            </span>
-            <span className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEditingCatId(row.id);
-                  setCatForm({ ...row });
-                }}
-              >
-                Editar
-              </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={() =>
-                  startTransition(async () => {
-                    const res = await deleteQueHacerCategoryAction(row.id);
-                    if (res.ok) {
-                      toast.success("Eliminada");
-                      router.refresh();
-                    } else toast.error(res.error);
-                  })
-                }
-              >
-                Borrar
-              </Button>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
-export function QueHacerAdmin({
-  initialActivities,
-  initialCategories,
-  destinations,
-}: {
-  initialActivities: QueHacerActivityAdminRow[];
-  initialCategories: QueHacerCategoryAdminRow[];
-  destinations: { id: string; title: string }[];
-}) {
-  const [tab, setTab] = useState<"actividades" | "categorias">("actividades");
-
-  return (
-    <div className="space-y-8">
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant={tab === "actividades" ? "default" : "outline"}
-          onClick={() => setTab("actividades")}
-        >
-          Actividades
-        </Button>
-        <Button
-          type="button"
-          variant={tab === "categorias" ? "default" : "outline"}
-          onClick={() => setTab("categorias")}
-        >
-          Categorías
-        </Button>
-      </div>
-
-      {tab === "actividades" ? (
-        <QueHacerActivitiesPanel
-          initialActivities={initialActivities}
-          initialCategories={initialCategories}
-          destinations={destinations}
-        />
-      ) : (
-        <QueHacerCategoriesPanel initialCategories={initialCategories} />
-      )}
     </div>
   );
 }

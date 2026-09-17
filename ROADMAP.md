@@ -4,11 +4,11 @@ Huecos respecto al [Anexo 2](docs/Anexo%202%20Investigación%20en%20curso-%20Ser
 
 ## Contenido CMS (hoy mock → admin)
 
-- **Actividades** (“Qué hacer”): CRUD + categorías M-N + fotos (carrusel) + iconos Lucide; en home, slide si hay >5
+- **[✅ Hecho — 008]** Actividades (“Qué hacer”): unifican los antiguos hubs temáticos; cada tarjeta es un tema con modo de listado; admin desde Actividades; URL canónica `/que-hacer/[slug]` (+ redirect desde `/sucre-natural/[hub]`)
 - **Eventos + Agenda cultural**: unificar; CRUD; listado por mes con navegación; “Agregar a calendario” (Google / iOS)
-- **[✅ Hecho] Destinos turísticos (Imperdibles)**: CRUD admin, tarjetas en home, detalle Markdown y coords. Pendiente: unir con “Qué hacer”, MapSection (aún mock) y las fichas Sucre Natural
-- **Fichas de destino (Sucre Natural)**: páginas interactivas con la estética de `docs/fichas_destinos` (no PDFs estáticos). CMS estructurado: 30 segundos, qué lo hace especial, biodiversidad, vive el destino, turismo responsable, cómo llegar, mapa, galería. Cada ficha alimenta el CMS, el mapa y el RAG
-- **Micrositios temáticos**: hubs Playas, Ciénagas, Ríos, Paisajes, Biodiversidad, Senderos y Experiencias en naturaleza; listan y filtran las fichas; paleta e iconos por tema
+- **[✅ Hecho] Destinos turísticos (Imperdibles)**: CRUD admin, tarjetas en home, detalle Markdown y coords. Pendiente: MapSection unificado (aún mock)
+- **[✅ Hecho] Fichas de destino (Sucre Natural)**: páginas interactivas. Los hubs públicos se absorben en Actividades (008); se deja de llamar «micrositios»
+- **[✅ Hecho — 008]** Temas / Qué hacer (ex-hubs): ver Actividades arriba
 - **Mapa interactivo**: una sola fuente CMS (destinos + fichas + actores + eventos) con geolocalización; sin mocks
 - **Convocatorias**: CRUD con enlaces externos
 - **Footer**: quitar datos mock de la Gobernación / teléfonos

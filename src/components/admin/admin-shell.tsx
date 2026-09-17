@@ -10,7 +10,6 @@ import {
   Leaf,
   LogOut,
   MapPin,
-  Palmtree,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -53,7 +52,6 @@ const personalizarNav: {
   { href: "/admin/personalizar/banner", label: "Banner principal", icon: ImageIcon },
   { href: "/admin/personalizar/destinos-imperdibles", label: "Destinos imperdibles", icon: MapPin },
   { href: "/admin/personalizar/que-hacer", label: "Qué hacer", icon: Compass },
-  { href: "/admin/personalizar/sucre-natural", label: "Sucre Natural", icon: Palmtree },
   { href: "/admin/personalizar/biodiversidad", label: "Biodiversidad", icon: Leaf },
   {
     href: "/admin/personalizar/experiencias-naturaleza",
