@@ -4,6 +4,7 @@ import * as m from "framer-motion/m";
 import { Bot, Send, User, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { Label } from "@/components/ui/label";
 
 interface Message {
   id: string;
@@ -37,8 +38,7 @@ async function pollJob(jobId: string): Promise<{ reply: string } | { error: stri
 }
 
 export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
-  const sessionKeyRef = useRef<string | null>(null);
-  if (sessionKeyRef.current === null) sessionKeyRef.current = crypto.randomUUID();
+  const [sessionKey] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +59,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            sessionKey: sessionKeyRef.current,
+            sessionKey,
             messages: payload,
           }),
         });
@@ -120,7 +120,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
         setIsLoading(false);
       }
     },
-    [],
+    [sessionKey],
   );
 
   const handleSend = useCallback(
@@ -253,7 +253,11 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
 
       <div className="shrink-0 border-t border-border/80 bg-background/95 px-4 py-4 backdrop-blur md:px-8">
         <form onSubmit={handleSubmit} className="mx-auto flex max-w-3xl gap-2">
+          <Label htmlFor="chat-panel-input" className="sr-only">
+            Escribe tu pregunta
+          </Label>
           <input
+            id="chat-panel-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu pregunta…"

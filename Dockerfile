@@ -15,6 +15,8 @@ RUN npm ci && npx prisma generate
 
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# Empaqueta prisma/seed.ts → scripts/seed.prod.mjs (Node puro, para `node scripts/seed.mjs` en el runner).
+RUN node scripts/bundle-seed.mjs
 RUN npm run build
 
 FROM node:26-alpine AS runner
@@ -41,20 +43,23 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
 
 # Lo que el trace del standalone no incluye: Prisma con su driver (los usa la app en runtime)
-# y las dependencias de `scripts/create-admin.mjs`. Se piden por nombre y npm resuelve las
-# transitivas —mariadb, denque, kleur…—, así que mover una dependencia entre directa y
-# transitiva en package.json ya no rompe la imagen. Versiones, otra vez, leídas del lock.
+# y las dependencias de `scripts/create-admin.mjs` / `scripts/seed.mjs` (sharp para las fotos).
+# Se piden por nombre y npm resuelve las transitivas —mariadb, denque, kleur…—, así que mover
+# una dependencia entre directa y transitiva en package.json ya no rompe la imagen. Versiones,
+# otra vez, leídas del lock.
 WORKDIR /opt/extra-deps
 RUN PKGS="$(node -e "const p=require('/tmp/package-lock.json').packages; const names=['@prisma/client','@prisma/adapter-mariadb','bcrypt','prompts','dotenv']; console.log(names.map((n) => n + '@' + p['node_modules/' + n].version).join(' '))")" \
+  && SHARP="$(node -p "require('/tmp/package-lock.json').packages['node_modules/sharp'].version")" \
   && npm install --no-package-lock --no-save --ignore-scripts ${PKGS} \
+  && npm install --no-package-lock --no-save "sharp@${SHARP}" \
   && rm /tmp/package-lock.json
 
 WORKDIR /app
 # Primero las dependencias extra: el standalone se copia después y gana en caso de solape,
-# para no alterar el árbol que Next resolvió en el build.
+# para no alterar el árbol que Next resolvió en el build. sharp se vuelve a copiar al final
+# porque el seed y las subidas WebP lo necesitan nativo (musl) y el trace puede omitirlo.
 RUN mkdir -p node_modules \
-  && cp -r /opt/extra-deps/node_modules/. ./node_modules/ \
-  && rm -rf /opt/extra-deps
+  && cp -r /opt/extra-deps/node_modules/. ./node_modules/
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
@@ -66,11 +71,16 @@ RUN mkdir -p /app/public/uploads/hero/images \
   /app/public/uploads/gallery/images \
   /app/public/uploads/gallery/video
 
-# Código del proyecto que el standalone no arrastra: el script admin (se ejecuta con
-# `node scripts/create-admin.mjs`, sin tsx) y el cliente Prisma generado, que la app importa
-# como `@/generated/prisma/client`. Sus dependencias ya se instalaron arriba.
+# Código del proyecto que el standalone no arrastra: admin/seed (Node puro, sin tsx),
+# fotos del seed y el cliente Prisma generado (`@/generated/prisma/client`).
 COPY --from=builder /app/scripts/create-admin.mjs ./scripts/create-admin.mjs
+COPY --from=builder /app/scripts/seed.mjs ./scripts/seed.mjs
+COPY --from=builder /app/scripts/seed.prod.mjs ./scripts/seed.prod.mjs
+COPY --from=builder /app/src/assets ./src/assets
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
+RUN cp -a /opt/extra-deps/node_modules/sharp ./node_modules/ \
+  && if [ -d /opt/extra-deps/node_modules/@img ]; then cp -a /opt/extra-deps/node_modules/@img ./node_modules/; fi \
+  && rm -rf /opt/extra-deps
 
 EXPOSE 3000
 CMD ["sh", "-c", "cd /opt/prisma && ./node_modules/.bin/prisma migrate deploy && cd /app && exec node server.js"]

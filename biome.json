@@ -18,6 +18,7 @@
       "!.github/skills",
       "!mcps",
       "!src/generated",
+      "!scripts/seed.prod.mjs",
       "!coverage",
       "!playwright-report",
       "!test-results"

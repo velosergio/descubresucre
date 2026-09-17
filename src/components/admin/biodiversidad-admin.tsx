@@ -85,15 +85,21 @@ export function BiodiversidadAdmin({
           value={form.slug}
           onChange={(e) => setForm((s) => ({ ...s, slug: e.target.value }))}
         />
-        <select
-          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-          value={form.kind}
-          onChange={(e) => setForm((s) => ({ ...s, kind: e.target.value as BioAdminRow["kind"] }))}
-        >
-          <option value="FAUNA">Fauna</option>
-          <option value="FLORA">Flora</option>
-          <option value="ECOSYSTEM">Ecosistema</option>
-        </select>
+        <div className="space-y-1">
+          <Label htmlFor="bio-kind">Tipo</Label>
+          <select
+            id="bio-kind"
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+            value={form.kind}
+            onChange={(e) =>
+              setForm((s) => ({ ...s, kind: e.target.value as BioAdminRow["kind"] }))
+            }
+          >
+            <option value="FAUNA">Fauna</option>
+            <option value="FLORA">Flora</option>
+            <option value="ECOSYSTEM">Ecosistema</option>
+          </select>
+        </div>
         <Input
           placeholder="Grupo (mamiferos, aves…)"
           value={form.groupKey}

@@ -11,6 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { Label } from "@/components/ui/label";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { cn } from "@/lib/utils";
@@ -176,7 +177,11 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
         >
           <div className="glass-input flex items-center gap-2 rounded-2xl p-2">
             <Sparkles className="ml-3 h-5 w-5 shrink-0 text-tropical-gold" />
+            <Label htmlFor="hero-search-input" className="sr-only">
+              ¿Qué te gustaría descubrir sobre Sucre?
+            </Label>
             <input
+              id="hero-search-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="¿Qué te gustaría descubrir sobre Sucre?"
@@ -185,6 +190,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
             <button
               type="submit"
               className="shrink-0 rounded-xl bg-primary p-3 text-primary-foreground transition-colors hover:bg-primary/90"
+              aria-label="Enviar"
             >
               <Send className="h-5 w-5" />
             </button>
@@ -202,7 +208,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
               key={s}
               type="button"
               onClick={() => onChatMessage(s)}
-              className="font-body rounded-full bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground/70 backdrop-blur-sm transition-all hover:bg-primary-foreground/20 hover:text-primary-foreground"
+              className="font-body rounded-full bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground/70 backdrop-blur-sm transition-colors hover:bg-primary-foreground/20 hover:text-primary-foreground"
             >
               {s}
             </button>

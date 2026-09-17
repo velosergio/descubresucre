@@ -24,6 +24,7 @@ import {
   createImperdibleDestinationAction,
   updateImperdibleDestinationAction,
 } from "@/lib/actions/imperdibles";
+import { buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { SUCRE_NATURAL_HUBS } from "@/lib/sucre-natural-hubs";
 
@@ -151,7 +152,7 @@ function DestinationFormInner({
 
   const mapsHelperUrl =
     form.mapLat != null && form.mapLng != null
-      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${form.mapLat},${form.mapLng}`)}`
+      ? buildGoogleMapsSearchUrl(form.mapLat, form.mapLng)
       : "https://www.google.com/maps";
   const previewSrc = toServedMediaUrl(form.cardImageUrl);
 

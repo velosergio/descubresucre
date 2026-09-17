@@ -53,8 +53,8 @@ function DestinationCard({
       <div className="absolute bottom-0 left-0 right-0 p-6">
         <h3 className="mb-2 font-display text-xl font-bold text-primary-foreground">{title}</h3>
         <p className="mb-4 font-body text-sm text-primary-foreground/70">{subtitle}</p>
-        <span className="inline-flex items-center gap-2 font-body text-sm font-medium text-tropical-gold transition-all group-hover:gap-3">
-          Explorar <ArrowRight className="h-4 w-4" />
+        <span className="inline-flex items-center gap-2 font-body text-sm font-medium text-tropical-gold">
+          Explorar <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </span>
       </div>
     </Link>

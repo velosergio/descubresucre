@@ -107,56 +107,58 @@ export async function seedSucreNatural(db: typeof prisma = prisma) {
     }
   }
 
-  for (const dest of SEED_DESTINATIONS) {
-    try {
-      const existing = await db.imperdibleDestination.findUnique({
-        where: { slug: dest.slug },
-      });
-      const decision = decideSeedMerge(existing);
-      const payload = {
-        title: dest.title,
-        subtitle: dest.subtitle,
-        bodyMarkdown: dest.specialWhy,
-        municipality: dest.municipality,
-        region: dest.region,
-        locationLabel: dest.locationLabel,
-        ecosystems: dest.ecosystems,
-        approach: dest.approach,
-        specialWhy: dest.specialWhy,
-        howToArrive: dest.howToArrive,
-        climate: dest.climate,
-        recommendedTime: dest.recommendedTime,
-        audience: dest.audience,
-        mapNote: dest.mapNote,
-        liveActivities: dest.liveActivities,
-        responsibleTips: dest.responsibleTips,
-        biodiversityChipLabels: dest.biodiversityChipLabels,
-        published: true,
-        showOnHome: false,
-        seedManaged: true,
-      };
-      if (decision === "create") {
-        const row = await db.imperdibleDestination.create({
-          data: { slug: dest.slug, ...payload },
+  await Promise.all(
+    SEED_DESTINATIONS.map(async (dest) => {
+      try {
+        const existing = await db.imperdibleDestination.findUnique({
+          where: { slug: dest.slug },
         });
-        await connectDestJoins(row.id, dest.hubIds, dest.sourceSlugs);
-        created += 1;
-      } else if (decision === "update" && existing) {
-        await db.imperdibleDestination.update({
-          where: { id: existing.id },
-          data: payload,
-        });
-        await connectDestJoins(existing.id, dest.hubIds, dest.sourceSlugs);
-        updated += 1;
-      } else if (existing) {
-        await connectDestJoins(existing.id, dest.hubIds, dest.sourceSlugs);
-        skippedManaged += 1;
+        const decision = decideSeedMerge(existing);
+        const payload = {
+          title: dest.title,
+          subtitle: dest.subtitle,
+          bodyMarkdown: dest.specialWhy,
+          municipality: dest.municipality,
+          region: dest.region,
+          locationLabel: dest.locationLabel,
+          ecosystems: dest.ecosystems,
+          approach: dest.approach,
+          specialWhy: dest.specialWhy,
+          howToArrive: dest.howToArrive,
+          climate: dest.climate,
+          recommendedTime: dest.recommendedTime,
+          audience: dest.audience,
+          mapNote: dest.mapNote,
+          liveActivities: dest.liveActivities,
+          responsibleTips: dest.responsibleTips,
+          biodiversityChipLabels: dest.biodiversityChipLabels,
+          published: true,
+          showOnHome: false,
+          seedManaged: true,
+        };
+        if (decision === "create") {
+          const row = await db.imperdibleDestination.create({
+            data: { slug: dest.slug, ...payload },
+          });
+          await connectDestJoins(row.id, dest.hubIds, dest.sourceSlugs);
+          created += 1;
+        } else if (decision === "update" && existing) {
+          await db.imperdibleDestination.update({
+            where: { id: existing.id },
+            data: payload,
+          });
+          await connectDestJoins(existing.id, dest.hubIds, dest.sourceSlugs);
+          updated += 1;
+        } else if (existing) {
+          await connectDestJoins(existing.id, dest.hubIds, dest.sourceSlugs);
+          skippedManaged += 1;
+        }
+      } catch (e) {
+        itemErrors += 1;
+        console.error("seedSucreNatural destination", dest.slug, e);
       }
-    } catch (e) {
-      itemErrors += 1;
-      console.error("seedSucreNatural destination", dest.slug, e);
-    }
-  }
+    }),
+  );
 
   const destIdBySlug = new Map(
     (await db.imperdibleDestination.findMany({ select: { id: true, slug: true } })).map((d) => [

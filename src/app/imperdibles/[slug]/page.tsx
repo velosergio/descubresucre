@@ -6,7 +6,12 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import { FichaDestino } from "@/components/sucre-natural/ficha-destino";
 import { Button } from "@/components/ui/button";
-import { getImperdibleBySlug } from "@/lib/get-imperdible-detail";
+import {
+  getImperdibleBySlug,
+  type ImperdibleDetail,
+  type ImperdibleQueHacerRef,
+} from "@/lib/get-imperdible-detail";
+import { buildGoogleMapsEmbedViewUrl, buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { getSiteOrigin } from "@/lib/site-url";
 
@@ -24,24 +29,83 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ImperdibleDetailPage({ params }: Props) {
-  const { slug } = await params;
-  const dest = await getImperdibleBySlug(slug);
-  if (!dest) notFound();
+function ImperdibleQueHacerLinks({ activities }: { activities: ImperdibleQueHacerRef[] }) {
+  if (activities.length === 0) return null;
+  return (
+    <section className="mt-12 space-y-3">
+      <h2 className="font-display text-xl font-semibold text-foreground">Qué hacer</h2>
+      <ul className="grid gap-2 sm:grid-cols-2">
+        {activities.map((act) => (
+          <li key={act.slug}>
+            <Link
+              href={`/que-hacer/${act.slug}`}
+              className="block rounded-xl border border-border/80 bg-card p-3 font-body outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              {act.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
-  if (dest.hasStructuredFicha) {
-    return <FichaDestino ficha={dest} />;
-  }
-
-  const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim();
-  const hasCoords = dest.mapLat != null && dest.mapLng != null;
-  const embedUrl =
-    mapsKey &&
-    hasCoords &&
-    `https://www.google.com/maps/embed/v1/view?key=${encodeURIComponent(mapsKey)}&center=${dest.mapLat},${dest.mapLng}&zoom=${dest.mapZoom}`;
-  const externalMapsUrl = hasCoords
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${dest.mapLat},${dest.mapLng}`)}`
+function ImperdibleLocationSection({
+  lat,
+  lng,
+  zoom,
+}: {
+  lat: number | null;
+  lng: number | null;
+  zoom: number;
+}) {
+  const hasCoords = lat != null && lng != null;
+  const embedUrl = hasCoords
+    ? buildGoogleMapsEmbedViewUrl({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
+        lat,
+        lng,
+        zoom,
+      })
     : null;
+  const externalMapsUrl = hasCoords ? buildGoogleMapsSearchUrl(lat, lng) : null;
+
+  return (
+    <section className="mt-12 space-y-4">
+      <h2 className="font-display text-xl font-semibold text-foreground">Ubicación</h2>
+      {embedUrl ? (
+        <div className="aspect-video w-full overflow-hidden rounded-lg border border-border/80">
+          <iframe
+            title="Mapa"
+            className="h-full w-full"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            sandbox="allow-scripts allow-popups allow-forms"
+            src={embedUrl}
+          />
+        </div>
+      ) : hasCoords ? (
+        <p className="text-sm text-muted-foreground">
+          Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps.
+        </p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Este destino aún no tiene coordenadas de mapa.
+        </p>
+      )}
+      {externalMapsUrl ? (
+        <Button variant="outline" size="sm" asChild className="gap-2">
+          <a href={externalMapsUrl} target="_blank" rel="noreferrer">
+            <ExternalLink className="size-4" />
+            Abrir en Google Maps
+          </a>
+        </Button>
+      ) : null}
+    </section>
+  );
+}
+
+function ImperdibleClassicArticle({ dest }: { dest: ImperdibleDetail }) {
   const cardSrc = dest.cardImageUrl ? toServedMediaUrl(dest.cardImageUrl) : null;
 
   return (
@@ -81,57 +145,21 @@ export default async function ImperdibleDetailPage({ params }: Props) {
         <div className="prose prose-lg dark:prose-invert max-w-none font-body">
           <ReactMarkdown>{dest.bodyMarkdown}</ReactMarkdown>
         </div>
-
-        {dest.queHacerActivities.length > 0 ? (
-          <section className="mt-12 space-y-3">
-            <h2 className="font-display text-xl font-semibold text-foreground">Qué hacer</h2>
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {dest.queHacerActivities.map((act) => (
-                <li key={act.slug}>
-                  <Link
-                    href={`/que-hacer/${act.slug}`}
-                    className="block rounded-xl border border-border/80 bg-card p-3 font-body outline-none hover:border-primary focus-visible:ring-2 focus-visible:ring-primary"
-                  >
-                    {act.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        <section className="mt-12 space-y-4">
-          <h2 className="font-display text-xl font-semibold text-foreground">Ubicación</h2>
-          {embedUrl ? (
-            <div className="aspect-video w-full overflow-hidden rounded-lg border border-border/80">
-              <iframe
-                title="Mapa"
-                className="h-full w-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                sandbox="allow-scripts allow-popups allow-forms"
-                src={embedUrl}
-              />
-            </div>
-          ) : hasCoords ? (
-            <p className="text-sm text-muted-foreground">
-              Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps.
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Este destino aún no tiene coordenadas de mapa.
-            </p>
-          )}
-          {externalMapsUrl ? (
-            <Button variant="outline" size="sm" asChild className="gap-2">
-              <a href={externalMapsUrl} target="_blank" rel="noreferrer">
-                <ExternalLink className="size-4" />
-                Abrir en Google Maps
-              </a>
-            </Button>
-          ) : null}
-        </section>
+        <ImperdibleQueHacerLinks activities={dest.queHacerActivities} />
+        <ImperdibleLocationSection lat={dest.mapLat} lng={dest.mapLng} zoom={dest.mapZoom} />
       </div>
     </article>
   );
+}
+
+export default async function ImperdibleDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const dest = await getImperdibleBySlug(slug);
+  if (!dest) notFound();
+
+  if (dest.hasStructuredFicha) {
+    return <FichaDestino ficha={dest} />;
+  }
+
+  return <ImperdibleClassicArticle dest={dest} />;
 }

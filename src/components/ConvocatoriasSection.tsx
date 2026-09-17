@@ -95,8 +95,9 @@ const ConvocatoriasSection = () => {
                 </span>
               </div>
               <div className="mt-4 pt-4 border-t border-border">
-                <span className="inline-flex items-center gap-2 text-primary text-sm font-body font-medium group-hover:gap-3 transition-all">
-                  Más información <ArrowRight className="w-4 h-4" />
+                <span className="inline-flex items-center gap-2 text-primary text-sm font-body font-medium">
+                  Más información{" "}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </div>
             </m.div>

@@ -1,6 +1,15 @@
 import * as m from "framer-motion/m";
-import { Landmark, MapPin, Navigation, TreePine, UtensilsCrossed, Waves } from "lucide-react";
+import {
+  ExternalLink,
+  Landmark,
+  MapPin,
+  Navigation,
+  TreePine,
+  UtensilsCrossed,
+  Waves,
+} from "lucide-react";
 import { useState } from "react";
+import { buildGoogleMapsEmbedViewUrl, buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -128,7 +137,14 @@ const MapSection = () => {
     ? { lat: selectedDest.lat, lng: selectedDest.lng, zoom: 12 }
     : { lat: 9.45, lng: -75.5, zoom: 9 };
 
-  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${mapCenter.lng - 0.5}%2C${mapCenter.lat - 0.3}%2C${mapCenter.lng + 0.5}%2C${mapCenter.lat + 0.3}&layer=mapnik&marker=${mapCenter.lat}%2C${mapCenter.lng}`;
+  const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+  const embedUrl = buildGoogleMapsEmbedViewUrl({
+    apiKey: mapsKey,
+    lat: mapCenter.lat,
+    lng: mapCenter.lng,
+    zoom: mapCenter.zoom,
+  });
+  const externalMapsUrl = buildGoogleMapsSearchUrl(mapCenter.lat, mapCenter.lng);
 
   return (
     <section id="mapa" className="section-padding bg-muted/50">
@@ -175,17 +191,35 @@ const MapSection = () => {
             className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border"
             style={{ height: 500 }}
           >
-            <iframe
-              key={`${mapCenter.lat}-${mapCenter.lng}`}
-              width="100%"
-              height="100%"
-              src={mapSrc}
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              title="Mapa de Sucre"
-              sandbox="allow-scripts allow-popups allow-forms"
-            />
+            {embedUrl ? (
+              <iframe
+                key={`${mapCenter.lat}-${mapCenter.lng}-${mapCenter.zoom}`}
+                width="100%"
+                height="100%"
+                src={embedUrl}
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Mapa de Sucre"
+                sandbox="allow-scripts allow-popups allow-forms"
+              />
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-3 bg-card px-6 text-center">
+                <p className="font-body text-sm text-muted-foreground">
+                  Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps.
+                </p>
+                <a
+                  href={externalMapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-body font-medium text-foreground hover:border-primary/40 hover:bg-primary/10"
+                >
+                  <ExternalLink className="size-4" />
+                  Abrir en Google Maps
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Destination list */}

@@ -138,6 +138,7 @@
   - `npm run test:watch`: corre pruebas en modo observación
   - `npm run db:generate`: regenera Prisma Client
   - `npm run db:migrate` / `db:push` / `db:seed`: Prisma
+  - `npm run db:seed:prod`: seed en la imagen Docker (`node scripts/seed.mjs`)
 
   ## Pruebas y calidad
 
@@ -177,7 +178,7 @@
 
   ## Integraciones y notas técnicas
 
-  - La home incluye mapa de destinos con OpenStreetMap embebido mediante `iframe`.
+  - La home embebe el mapa de destinos con **Maps Embed API** (misma clave `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` que el detalle). Sin clave, muestra el enlace «Abrir en Google Maps».
   - El detalle de destinos imperdibles usa Google Maps Embed cuando existe `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (si no, muestra enlace externo).
   - El asistente de chat está integrado con **n8n** (webhook + callback asíncrono); la URL del webhook se configura en el dashboard, no en el cliente público.
   - Hay proveedor de React Query configurado globalmente para otras integraciones con API.
