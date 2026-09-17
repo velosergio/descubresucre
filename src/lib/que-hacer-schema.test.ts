@@ -3,79 +3,69 @@ import { queHacerActivitySchema, queHacerCategorySchema } from "@/lib/que-hacer-
 
 const validPhoto = "/uploads/gallery/images/a.webp";
 
+const base = {
+  title: "Playas",
+  description: "Mar",
+  iconKey: "waves",
+  listingMode: "DESTINATIONS",
+  published: false,
+  photoUrls: [validPhoto] as string[],
+};
+
 describe("queHacerActivitySchema", () => {
   it("rechaza slug inválido, publicar sin foto, icono fuera y URL con ..", () => {
     expect(
-      queHacerActivitySchema.safeParse({
-        title: "Playas",
-        description: "Mar",
-        slug: "Playas!",
-        iconKey: "waves",
-        published: false,
-        photoUrls: [],
-      }).success,
+      queHacerActivitySchema.safeParse({ ...base, slug: "Playas!", photoUrls: [] }).success,
     ).toBe(false);
 
     expect(
       queHacerActivitySchema.safeParse({
-        title: "Playas",
-        description: "Mar",
-        iconKey: "waves",
+        ...base,
         published: true,
         photoUrls: [],
       }).success,
     ).toBe(false);
 
-    expect(
-      queHacerActivitySchema.safeParse({
-        title: "Playas",
-        description: "Mar",
-        iconKey: "no-existe",
-        published: false,
-        photoUrls: [validPhoto],
-      }).success,
-    ).toBe(false);
+    expect(queHacerActivitySchema.safeParse({ ...base, iconKey: "no-existe" }).success).toBe(
+      false,
+    );
 
     expect(
       queHacerActivitySchema.safeParse({
-        title: "Playas",
-        description: "Mar",
-        iconKey: "waves",
-        published: false,
+        ...base,
         photoUrls: ["/uploads/gallery/images/../secret.webp"],
       }).success,
     ).toBe(false);
   });
 
-  it("acepta publicación con foto e icono del catálogo", () => {
+  it("acepta publicación con foto, modo e icono del catálogo", () => {
     const parsed = queHacerActivitySchema.safeParse({
-      title: "Playas",
+      ...base,
       description: "Tolú, Coveñas",
-      iconKey: "waves",
       published: true,
-      photoUrls: [validPhoto],
+      accentHsl: "174 62% 35%",
+      tagline: "Mar y naturaleza",
     });
     expect(parsed.success).toBe(true);
   });
 
-  it("rechaza título vacío", () => {
+  it("rechaza modo de listado inválido y accent mal formado", () => {
+    expect(queHacerActivitySchema.safeParse({ ...base, listingMode: "HUBS" }).success).toBe(
+      false,
+    );
     expect(
-      queHacerActivitySchema.safeParse({
-        title: "  ",
-        description: "Mar",
-        iconKey: "waves",
-        published: false,
-        photoUrls: [],
-      }).success,
+      queHacerActivitySchema.safeParse({ ...base, accentHsl: "hsl(174, 62%, 35%)" }).success,
     ).toBe(false);
+  });
+
+  it("rechaza título vacío", () => {
+    expect(queHacerActivitySchema.safeParse({ ...base, title: "  " }).success).toBe(false);
   });
 
   it("rechaza más de 12 fotos", () => {
     expect(
       queHacerActivitySchema.safeParse({
-        title: "Playas",
-        description: "Mar",
-        iconKey: "waves",
+        ...base,
         published: true,
         photoUrls: Array.from({ length: 13 }, (_, i) => `/uploads/gallery/images/${i}.webp`),
       }).success,

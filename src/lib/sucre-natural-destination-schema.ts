@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isSucreNaturalHubId, SUCRE_NATURAL_HUB_IDS } from "@/lib/sucre-natural-hubs";
+import { SUCRE_NATURAL_HUB_IDS } from "@/lib/sucre-natural-hubs";
 
 export const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -116,12 +116,11 @@ export const sucreNaturalDestinationSchema = z
       .default([]),
     responsibleTips: z.array(z.string().max(400)).optional().default([]),
     biodiversityChipLabels: z.array(z.string().max(80)).optional().default([]),
-    hubIds: z.array(z.string()).default([]),
+    activityIds: z.array(z.string()).optional().default([]),
     galleryUrls: z.array(galleryImageUrlSchema).optional().default([]),
     sourceIds: z.array(z.string()).optional().default([]),
     biodiversityIds: z.array(z.string()).optional().default([]),
     experienceIds: z.array(z.string()).optional().default([]),
-    queHacerCategoryIds: z.array(z.string()).optional().default([]),
   })
   .superRefine((data, ctx) => {
     const hasLat = data.mapLat != null;
@@ -141,19 +140,11 @@ export const sucreNaturalDestinationSchema = z
       ctx.addIssue({ code: "custom", message: "Longitud fuera de rango (−180 a 180)." });
     }
     const municipality = data.municipality?.trim();
-    if (!municipality && data.hubIds.length === 0) {
+    if (!municipality && data.activityIds.length === 0) {
       ctx.addIssue({
         code: "custom",
-        message: "Indica el municipio o asigna al menos un tema de Sucre Natural.",
+        message: "Indica el municipio o asigna al menos una actividad de Qué hacer.",
       });
-    }
-    for (const id of data.hubIds) {
-      if (!isSucreNaturalHubId(id)) {
-        ctx.addIssue({
-          code: "custom",
-          message: `Hub desconocido: ${id}. Solo se admiten los siete temas de Sucre Natural.`,
-        });
-      }
     }
   });
 

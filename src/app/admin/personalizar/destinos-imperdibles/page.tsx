@@ -3,20 +3,19 @@ import { getOrCreateSectionSettings } from "@/lib/get-imperdibles-home";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminDestinosImperdiblesPage() {
-  const [settings, rows, queHacerCategories] = await Promise.all([
+  const [settings, rows, activities] = await Promise.all([
     getOrCreateSectionSettings(),
     prisma.imperdibleDestination.findMany({
       orderBy: { sortOrder: "asc" },
       include: {
-        hubs: true,
         galleryItems: { orderBy: { sortOrder: "asc" } },
         sources: true,
-        queHacerCategories: true,
+        queHacerActivities: { orderBy: { sortOrder: "asc" } },
       },
     }),
-    prisma.queHacerCategory.findMany({
-      select: { id: true, name: true },
-      orderBy: { sortOrder: "asc" },
+    prisma.queHacerActivity.findMany({
+      select: { id: true, title: true },
+      orderBy: [{ sortOrder: "asc" }, { title: "asc" }],
     }),
   ]);
 
@@ -56,8 +55,7 @@ export default async function AdminDestinosImperdiblesPage() {
     biodiversityChipLabelsText: Array.isArray(d.biodiversityChipLabels)
       ? (d.biodiversityChipLabels as unknown[]).filter((t) => typeof t === "string").join("\n")
       : "",
-    hubIds: d.hubs.map((h) => h.hubId),
-    queHacerCategoryIds: d.queHacerCategories.map((j) => j.categoryId),
+    activityIds: d.queHacerActivities.map((j) => j.activityId),
     galleryUrls: d.galleryItems.map((g) => g.publicUrl),
     sourceIds: d.sources.map((s) => s.sourceId),
   }));
@@ -86,7 +84,7 @@ export default async function AdminDestinosImperdiblesPage() {
           carouselIntervalMs: settings.carouselIntervalMs,
         }}
         initialDestinations={initialDestinations}
-        queHacerCategories={queHacerCategories}
+        activities={activities}
       />
     </div>
   );

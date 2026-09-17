@@ -14,7 +14,7 @@ export function HubCard({ id, title, tagline, coverImageUrl }: Props) {
   const Icon = def.icon;
   return (
     <Link
-      href={`/sucre-natural/${id}`}
+      href={`/que-hacer/${id}`}
       className="group block rounded-2xl border border-[hsl(var(--sn-ink)/0.08)] bg-white/70 p-4 shadow-sm outline-none transition hover:-translate-y-1 hover:shadow-md focus-visible:ring-2 focus-visible:ring-[hsl(var(--sn-accent))]"
       data-hub={id}
     >

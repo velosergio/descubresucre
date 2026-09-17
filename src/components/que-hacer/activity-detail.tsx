@@ -82,18 +82,6 @@ export function ActivityDetail({ detail }: { detail: QueHacerDetail }) {
               {detail.title}
             </h1>
           </div>
-          {detail.categories.length > 0 ? (
-            <ul className="flex flex-wrap gap-2">
-              {detail.categories.map((cat) => (
-                <li
-                  key={cat.slug}
-                  className="rounded-full bg-muted px-3 py-1 font-body text-sm text-foreground"
-                >
-                  {cat.name}
-                </li>
-              ))}
-            </ul>
-          ) : null}
           <p className="max-w-2xl font-body text-lg text-muted-foreground">{detail.description}</p>
         </header>
 

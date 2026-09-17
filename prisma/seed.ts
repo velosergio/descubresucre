@@ -5,7 +5,10 @@ import sharp from "sharp";
 import { encodeRasterImageToWebp, GALLERY_WEBP_MAX_EDGE } from "../src/lib/encode-image-webp";
 import { prisma } from "../src/lib/prisma";
 import { decideSeedMerge, mergeJoinIds } from "../src/lib/sucre-natural-seed-merge";
-import { QUE_HACER_SEED_ITEMS } from "./data/que-hacer-seed";
+import {
+  QUE_HACER_MOCK_SLUGS_TO_UNPUBLISH,
+  QUE_HACER_TEMAS_SEED,
+} from "./data/que-hacer-temas-seed";
 import {
   SEED_DESTINATIONS,
   SEED_EXPERIENCES,
@@ -316,58 +319,30 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
   let created = 0;
   let updated = 0;
   let skippedManaged = 0;
+  let unpublishedMock = 0;
+  let hubJoins = 0;
 
-  for (const item of QUE_HACER_SEED_ITEMS) {
+  for (const item of QUE_HACER_TEMAS_SEED) {
     const photoUrl = await ensureQueHacerSeedImage(db, item.slug, item.assetFile);
-
-    const existingCat = await db.queHacerCategory.findUnique({ where: { slug: item.slug } });
-    const catDecision = decideSeedMerge(existingCat);
-    let categoryId: string;
-    if (catDecision === "create") {
-      const cat = await db.queHacerCategory.create({
-        data: {
-          slug: item.slug,
-          name: item.name,
-          description: item.description,
-          sortOrder: item.sortOrder,
-          seedManaged: true,
-        },
-      });
-      categoryId = cat.id;
-      created += 1;
-    } else if (catDecision === "update") {
-      const cat = await db.queHacerCategory.update({
-        where: { slug: item.slug },
-        data: {
-          name: item.name,
-          description: item.description,
-          sortOrder: item.sortOrder,
-        },
-      });
-      categoryId = cat.id;
-      updated += 1;
-    } else if (existingCat) {
-      categoryId = existingCat.id;
-      skippedManaged += 1;
-    } else {
-      continue;
-    }
-
     const existingAct = await db.queHacerActivity.findUnique({ where: { slug: item.slug } });
     const actDecision = decideSeedMerge(existingAct);
-    let activityId: string;
+    let activityId: string | null = null;
+
     if (actDecision === "create") {
       const act = await db.queHacerActivity.create({
         data: {
           slug: item.slug,
-          title: item.name,
+          title: item.title,
           description: item.description,
+          tagline: item.tagline,
           iconKey: item.iconKey,
+          accentHsl: item.accentHsl,
+          listingMode: item.listingMode,
           published: true,
           sortOrder: item.sortOrder,
           seedManaged: true,
           photos: {
-            create: { publicUrl: photoUrl, sortOrder: 0, isCover: true, alt: item.name },
+            create: { publicUrl: photoUrl, sortOrder: 0, isCover: true, alt: item.title },
           },
         },
       });
@@ -377,9 +352,12 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
       const act = await db.queHacerActivity.update({
         where: { slug: item.slug },
         data: {
-          title: item.name,
+          title: item.title,
           description: item.description,
+          tagline: item.tagline,
           iconKey: item.iconKey,
+          accentHsl: item.accentHsl,
+          listingMode: item.listingMode,
           published: true,
           sortOrder: item.sortOrder,
         },
@@ -388,36 +366,63 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
       const photoCount = await db.queHacerActivityPhoto.count({ where: { activityId } });
       if (photoCount === 0) {
         await db.queHacerActivityPhoto.create({
-          data: { activityId, publicUrl: photoUrl, sortOrder: 0, isCover: true, alt: item.name },
+          data: {
+            activityId,
+            publicUrl: photoUrl,
+            sortOrder: 0,
+            isCover: true,
+            alt: item.title,
+          },
         });
       }
       updated += 1;
     } else if (existingAct) {
       activityId = existingAct.id;
       skippedManaged += 1;
-    } else {
-      continue;
     }
 
-    const existingJoins = await db.queHacerActivityOnCategory.findMany({
-      where: { activityId },
+    if (!activityId) continue;
+
+    const hubLinks = await db.imperdibleDestinationHub.findMany({
+      where: { hubId: item.slug },
+      select: { destinationId: true },
     });
-    const merged = mergeJoinIds(
-      existingJoins.map((j) => j.categoryId),
-      [categoryId],
-    );
-    const have = new Set(existingJoins.map((j) => j.categoryId));
-    const toAdd = merged.filter((id) => !have.has(id));
-    if (toAdd.length) {
-      await db.queHacerActivityOnCategory.createMany({
-        data: toAdd.map((id) => ({ activityId, categoryId: id })),
-        skipDuplicates: true,
+    if (hubLinks.length) {
+      const existing = await db.queHacerActivityOnDestination.findMany({
+        where: { activityId },
       });
+      const merged = mergeJoinIds(
+        existing.map((j) => j.destinationId),
+        hubLinks.map((h) => h.destinationId),
+      );
+      const have = new Set(existing.map((j) => j.destinationId));
+      const toAdd = merged.filter((id) => !have.has(id));
+      if (toAdd.length) {
+        await db.queHacerActivityOnDestination.createMany({
+          data: toAdd.map((destinationId, i) => ({
+            activityId: activityId!,
+            destinationId,
+            sortOrder: i,
+          })),
+          skipDuplicates: true,
+        });
+        hubJoins += toAdd.length;
+      }
     }
   }
 
+  const mockResult = await db.queHacerActivity.updateMany({
+    where: {
+      seedManaged: true,
+      slug: { in: [...QUE_HACER_MOCK_SLUGS_TO_UNPUBLISH] },
+      published: true,
+    },
+    data: { published: false },
+  });
+  unpublishedMock = mockResult.count;
+
   console.info(
-    `Que hacer seed: created=${created} updated=${updated} skippedManaged=${skippedManaged}`,
+    `Que hacer temas seed: created=${created} updated=${updated} unpublishedMock=${unpublishedMock} skippedManaged=${skippedManaged} hubJoins=${hubJoins}`,
   );
 }
 

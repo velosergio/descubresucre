@@ -106,8 +106,14 @@ export async function createImperdibleDestinationAction(input: unknown) {
       data: destinationWriteData(raw, slug, false),
     });
     await syncDestinationRelations(row.id, raw);
-    revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
-    revalidateQueHacerPaths({ destinationSlugs: [row.slug] });
+    const activitySlugs = await activitySlugsFor(raw.activityIds);
+    revalidateSucreNaturalPaths({ slug: row.slug });
+    for (const activitySlug of activitySlugs) {
+      revalidateQueHacerPaths({ activitySlug, destinationSlugs: [row.slug] });
+    }
+    if (!activitySlugs.length) {
+      revalidateQueHacerPaths({ destinationSlugs: [row.slug] });
+    }
     return { ok: true as const, id: row.id };
   } catch (e: unknown) {
     const code = typeof e === "object" && e && "code" in e ? (e as { code: string }).code : "";
@@ -130,7 +136,12 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? "Datos inválidos" };
   }
 
-  const existing = await prisma.imperdibleDestination.findUnique({ where: { id } });
+  const existing = await prisma.imperdibleDestination.findUnique({
+    where: { id },
+    include: {
+      queHacerActivities: { include: { activity: { select: { slug: true } } } },
+    },
+  });
   if (!existing) return { ok: false as const, error: "El destino no existe." };
 
   const raw = parsed.data;
@@ -160,12 +171,23 @@ export async function updateImperdibleDestinationAction(id: string, input: unkno
       data: destinationWriteData(raw, slug, false),
     });
     await syncDestinationRelations(row.id, raw);
-    revalidateSucreNaturalPaths({ slug: existing.slug, hubIds: raw.hubIds });
-    revalidateQueHacerPaths({
-      destinationSlugs: existing.slug === row.slug ? [row.slug] : [existing.slug, row.slug],
-    });
+    const destSlugs =
+      existing.slug === row.slug ? [row.slug] : [existing.slug, row.slug];
+    const activitySlugs = [
+      ...existing.queHacerActivities.map((j) => j.activity.slug),
+      ...(await activitySlugsFor(raw.activityIds)),
+    ];
+    revalidateSucreNaturalPaths({ slug: existing.slug });
     if (existing.slug !== row.slug) {
-      revalidateSucreNaturalPaths({ slug: row.slug, hubIds: raw.hubIds });
+      revalidateSucreNaturalPaths({ slug: row.slug });
+    }
+    const uniqueActivitySlugs = [...new Set(activitySlugs)];
+    if (uniqueActivitySlugs.length) {
+      for (const activitySlug of uniqueActivitySlugs) {
+        revalidateQueHacerPaths({ activitySlug, destinationSlugs: destSlugs });
+      }
+    } else {
+      revalidateQueHacerPaths({ destinationSlugs: destSlugs });
     }
     return { ok: true as const };
   } catch (e: unknown) {
@@ -185,13 +207,37 @@ export async function deleteImperdibleDestinationAction(id: string) {
   if (!id?.trim()) return { ok: false as const, error: "Identificador inválido." };
 
   try {
-    const row = await prisma.imperdibleDestination.delete({ where: { id } });
-    revalidateSucreNaturalPaths({ slug: row.slug });
+    const existing = await prisma.imperdibleDestination.findUnique({
+      where: { id },
+      include: {
+        queHacerActivities: { include: { activity: { select: { slug: true } } } },
+      },
+    });
+    if (!existing) return { ok: false as const, error: "El destino no existe." };
+    await prisma.imperdibleDestination.delete({ where: { id } });
+    revalidateSucreNaturalPaths({ slug: existing.slug });
+    const activitySlugs = existing.queHacerActivities.map((j) => j.activity.slug);
+    if (activitySlugs.length) {
+      for (const activitySlug of activitySlugs) {
+        revalidateQueHacerPaths({ activitySlug, destinationSlugs: [existing.slug] });
+      }
+    } else {
+      revalidateQueHacerPaths({ destinationSlugs: [existing.slug] });
+    }
     return { ok: true as const };
   } catch (e) {
     console.error("deleteImperdibleDestinationAction", e);
     return { ok: false as const, error: "No se pudo eliminar." };
   }
+}
+
+async function activitySlugsFor(ids: string[]): Promise<string[]> {
+  if (!ids.length) return [];
+  const rows = await prisma.queHacerActivity.findMany({
+    where: { id: { in: ids } },
+    select: { slug: true },
+  });
+  return rows.map((r) => r.slug);
 }
 
 function emptyToNull(value: string | null | undefined) {
@@ -238,12 +284,20 @@ async function syncDestinationRelations(
   destinationId: string,
   raw: z.infer<typeof sucreNaturalDestinationSchema>,
 ) {
+  // Deprecado: ya no se escriben hubs; se limpia la tabla puente.
   await prisma.imperdibleDestinationHub.deleteMany({ where: { destinationId } });
-  if (raw.hubIds.length) {
-    await prisma.imperdibleDestinationHub.createMany({
-      data: raw.hubIds.map((hubId) => ({ destinationId, hubId })),
+
+  await prisma.queHacerActivityOnDestination.deleteMany({ where: { destinationId } });
+  if (raw.activityIds.length) {
+    await prisma.queHacerActivityOnDestination.createMany({
+      data: raw.activityIds.map((activityId, i) => ({
+        activityId,
+        destinationId,
+        sortOrder: i,
+      })),
     });
   }
+
   await prisma.imperdibleGalleryItem.deleteMany({ where: { destinationId } });
   if (raw.galleryUrls.length) {
     await prisma.imperdibleGalleryItem.createMany({
@@ -272,10 +326,6 @@ async function syncDestinationRelations(
       data: raw.experienceIds.map((experienceId) => ({ destinationId, experienceId })),
     });
   }
+  // Deprecado: categorías Qué hacer en destinos.
   await prisma.queHacerDestinationOnCategory.deleteMany({ where: { destinationId } });
-  if (raw.queHacerCategoryIds.length) {
-    await prisma.queHacerDestinationOnCategory.createMany({
-      data: raw.queHacerCategoryIds.map((categoryId) => ({ destinationId, categoryId })),
-    });
-  }
 }

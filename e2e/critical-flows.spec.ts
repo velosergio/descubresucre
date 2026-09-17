@@ -53,7 +53,7 @@ test("sucre natural: portada → Playas → El Francés", async ({ page }) => {
   await playas.focus();
   await expect(playas).toBeFocused();
   await playas.press("Enter");
-  await expect(page).toHaveURL(/\/sucre-natural\/playas/);
+  await expect(page).toHaveURL(/\/que-hacer\/playas/);
   await expect(page.getByRole("heading", { name: "Playas de Sucre" })).toBeVisible();
 
   await page
@@ -104,5 +104,6 @@ test("que hacer: portada muestra heading y Playas abre ficha", async ({ page }) 
   await expect(section.getByRole("link", { name: /Playas/ })).toHaveCount(1);
   await section.getByRole("link", { name: /Playas/ }).click();
   await expect(page).toHaveURL(/\/que-hacer\/playas/);
-  await expect(page.getByRole("heading", { name: "Playas" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Playas/ })).toBeVisible();
+  await expect(page.getByText(/micrositio/i)).toHaveCount(0);
 });

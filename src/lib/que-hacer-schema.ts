@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { isQueHacerIconKey } from "@/lib/que-hacer-icons";
+import {
+  ACCENT_HSL_REGEX,
+  isQueHacerListingMode,
+  QUE_HACER_LISTING_MODES,
+} from "@/lib/que-hacer-listing-mode";
 import { QUE_HACER_MAX_PHOTOS } from "@/lib/que-hacer-photos";
 import {
   galleryImageUrlSchema,
@@ -28,6 +33,33 @@ export const queHacerActivitySchema = z
       .trim()
       .min(1, "Elige un pictograma del catálogo.")
       .refine((k) => isQueHacerIconKey(k), "Pictograma no permitido."),
+    tagline: z
+      .string()
+      .max(500)
+      .optional()
+      .transform((s) => {
+        const t = s?.trim();
+        return t ? t : null;
+      }),
+    introMarkdown: z
+      .string()
+      .optional()
+      .transform((s) => {
+        const t = s?.trim();
+        return t ? t : null;
+      }),
+    accentHsl: z
+      .string()
+      .optional()
+      .transform((s) => {
+        const t = s?.trim();
+        return t ? t : null;
+      })
+      .refine((s) => s == null || ACCENT_HSL_REGEX.test(s), "El color de acento no es válido."),
+    listingMode: z
+      .string()
+      .refine((m) => isQueHacerListingMode(m), "Selecciona un tipo de listado válido.")
+      .transform((m) => m as (typeof QUE_HACER_LISTING_MODES)[number]),
     published: z.coerce.boolean(),
     sortOrder: z.coerce.number().int().default(0),
     photoUrls: z
@@ -35,7 +67,6 @@ export const queHacerActivitySchema = z
       .max(QUE_HACER_MAX_PHOTOS, "Puedes añadir hasta 12 fotos."),
     coverUrl: z.string().optional(),
     photoAlts: z.array(z.string().max(300).nullable()).optional().default([]),
-    categoryIds: z.array(z.string()).optional().default([]),
     destinationIds: z.array(z.string()).optional().default([]),
   })
   .superRefine((data, ctx) => {

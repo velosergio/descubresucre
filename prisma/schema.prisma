@@ -337,21 +337,31 @@ model QueHacerCategory {
   @@index([sortOrder])
 }
 
-/// Actividad pública de la sección «Qué hacer en Sucre».
+enum QueHacerListingMode {
+  DESTINATIONS
+  BIODIVERSITY
+  EXPERIENCES
+}
+
+/// Actividad pública de la sección «Qué hacer en Sucre» (tema / ex-hub).
 model QueHacerActivity {
-  id           String                          @id @default(cuid())
-  slug         String                          @unique @db.VarChar(160)
-  title        String                          @db.VarChar(120)
-  description  String                          @db.Text
-  iconKey      String                          @db.VarChar(64)
-  published    Boolean                         @default(false)
-  sortOrder    Int                             @default(0)
-  seedManaged  Boolean                         @default(false)
-  createdAt    DateTime                        @default(now())
-  updatedAt    DateTime                        @updatedAt
-  categories   QueHacerActivityOnCategory[]
-  destinations QueHacerActivityOnDestination[]
-  photos       QueHacerActivityPhoto[]
+  id            String              @id @default(cuid())
+  slug          String              @unique @db.VarChar(160)
+  title         String              @db.VarChar(120)
+  description   String              @db.Text
+  tagline       String?             @db.VarChar(500)
+  introMarkdown String?             @db.Text
+  iconKey       String              @db.VarChar(64)
+  accentHsl     String?             @db.VarChar(64)
+  listingMode   QueHacerListingMode @default(DESTINATIONS)
+  published     Boolean             @default(false)
+  sortOrder     Int                 @default(0)
+  seedManaged   Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  categories    QueHacerActivityOnCategory[]
+  destinations  QueHacerActivityOnDestination[]
+  photos        QueHacerActivityPhoto[]
 
   @@index([published, sortOrder])
 }

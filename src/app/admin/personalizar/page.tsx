@@ -1,4 +1,4 @@
-import { Compass, ImageIcon, Images, MapPin } from "lucide-react";
+import { Binoculars, Compass, ImageIcon, Images, Leaf, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -64,7 +64,7 @@ export default function AdminPersonalizarPage() {
               <div className="space-y-1">
                 <CardTitle className="text-lg">Qué hacer</CardTitle>
                 <CardDescription>
-                  Actividades de la portada, categorías y enlaces a destinos.
+                  Actividades temáticas de la portada, listados y destinos asociados.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -84,6 +84,44 @@ export default function AdminPersonalizarPage() {
                 <CardTitle className="text-lg">Destinos imperdibles</CardTitle>
                 <CardDescription>
                   Tarjetas de la portada, detalle en Markdown y ubicación en Google Maps.
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link
+          href="/admin/personalizar/biodiversidad"
+          className="block transition-opacity hover:opacity-90"
+        >
+          <Card className="border-border/80">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                <Leaf className="size-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-lg">Biodiversidad</CardTitle>
+                <CardDescription>
+                  Fichas de fauna, flora y ecosistemas del catálogo.
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link
+          href="/admin/personalizar/experiencias-naturaleza"
+          className="block transition-opacity hover:opacity-90"
+        >
+          <Card className="border-border/80">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                <Binoculars className="size-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-lg">Experiencias naturaleza</CardTitle>
+                <CardDescription>
+                  Experiencias de naturaleza asociadas a los listados temáticos.
                 </CardDescription>
               </div>
             </CardHeader>

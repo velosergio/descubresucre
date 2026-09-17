@@ -27,16 +27,16 @@ export type ImperdiblesSettingsDTO = {
   carouselIntervalMs: number;
 };
 
-const EMPTY_QUE_HACER_CATEGORIES: { id: string; name: string }[] = [];
+const EMPTY_ACTIVITIES: { id: string; title: string }[] = [];
 
 export function ImperdiblesAdminClient({
   initialSettings,
   initialDestinations,
-  queHacerCategories = EMPTY_QUE_HACER_CATEGORIES,
+  activities = EMPTY_ACTIVITIES,
 }: {
   initialSettings: ImperdiblesSettingsDTO;
   initialDestinations: ImperdibleAdminRow[];
-  queHacerCategories?: { id: string; name: string }[];
+  activities?: { id: string; title: string }[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -265,7 +265,7 @@ export function ImperdiblesAdminClient({
         mode={dialogMode}
         initial={editing}
         mountKey={dialogMountKey}
-        queHacerCategories={queHacerCategories}
+        activities={activities}
       />
 
       <ConfirmDeleteDialog

@@ -18,7 +18,7 @@ const assertAdminActionMock = vi.fn();
 vi.mock("next/cache", () => ({ revalidatePath: revalidatePathMock }));
 vi.mock("@/lib/auth-helpers", () => ({ assertAdminAction: assertAdminActionMock }));
 
-describeIfDb("Qué hacer categorías M-N", () => {
+describeIfDb("Qué hacer asociación dual actividad↔destino", () => {
   beforeAll(async () => {
     await prisma!.$connect();
     await ensureQueHacerTestPhoto();
@@ -39,19 +39,32 @@ describeIfDb("Qué hacer categorías M-N", () => {
     vi.resetModules();
   });
 
-  it("actividad en 2 categorías, destino en 1; borrar categoría conserva filas", async () => {
+  it("asocia destino desde actividad y desde destino; borrar categoría legado no borra filas", async () => {
     const {
       createQueHacerCategoryAction,
       deleteQueHacerCategoryAction,
       createQueHacerActivityAction,
     } = await import("@/lib/actions/que-hacer");
-    const { createImperdibleDestinationAction } = await import("@/lib/actions/imperdibles");
+    const { createImperdibleDestinationAction, updateImperdibleDestinationAction } = await import(
+      "@/lib/actions/imperdibles"
+    );
 
     const c1 = await createQueHacerCategoryAction({ name: "Mar", slug: "mar", sortOrder: 1 });
-    const c2 = await createQueHacerCategoryAction({ name: "Tierra", slug: "tierra", sortOrder: 2 });
-    expect(c1.ok && c2.ok).toBe(true);
+    expect(c1.ok).toBe(true);
     const catMar = await prisma!.queHacerCategory.findUnique({ where: { slug: "mar" } });
-    const catTierra = await prisma!.queHacerCategory.findUnique({ where: { slug: "tierra" } });
+
+    const act = await createQueHacerActivityAction({
+      title: "Snorkel",
+      description: "Arrecife",
+      slug: "snorkel",
+      iconKey: "fish",
+      listingMode: "DESTINATIONS",
+      published: true,
+      photoUrls: [QUE_HACER_TEST_PHOTO_URL],
+      destinationIds: [],
+    });
+    expect(act.ok).toBe(true);
+    const actRow = await prisma!.queHacerActivity.findUnique({ where: { slug: "snorkel" } });
 
     const dest = await createImperdibleDestinationAction({
       title: "Tolú",
@@ -59,34 +72,32 @@ describeIfDb("Qué hacer categorías M-N", () => {
       slug: "tolu-qh",
       published: true,
       showOnHome: false,
-      hubIds: ["playas"],
+      activityIds: [actRow!.id],
       municipality: "Tolú",
       bodyMarkdown: "",
-      queHacerCategoryIds: [catMar!.id],
     });
     expect(dest.ok).toBe(true);
-    const destRow = await prisma!.imperdibleDestination.findUnique({ where: { slug: "tolu-qh" } });
+    const destRow = await prisma!.imperdibleDestination.findUnique({
+      where: { slug: "tolu-qh" },
+      include: { queHacerActivities: true },
+    });
+    expect(destRow?.queHacerActivities).toHaveLength(1);
+    expect(destRow?.queHacerActivities[0]?.activityId).toBe(actRow!.id);
 
-    const act = await createQueHacerActivityAction({
-      title: "Snorkel",
-      description: "Arrecife",
-      slug: "snorkel",
-      iconKey: "fish",
+    const cleared = await updateImperdibleDestinationAction(destRow!.id, {
+      title: "Tolú",
+      subtitle: "Golfo",
+      slug: "tolu-qh",
       published: true,
-      photoUrls: [QUE_HACER_TEST_PHOTO_URL],
-      categoryIds: [catMar!.id, catTierra!.id],
+      showOnHome: false,
+      activityIds: [],
+      municipality: "Tolú",
+      bodyMarkdown: "",
     });
-    expect(act.ok).toBe(true);
-    const actRow = await prisma!.queHacerActivity.findUnique({
-      where: { slug: "snorkel" },
-      include: { categories: true },
-    });
-    expect(actRow?.categories).toHaveLength(2);
-
-    const joinsDest = await prisma!.queHacerDestinationOnCategory.findMany({
-      where: { destinationId: destRow!.id },
-    });
-    expect(joinsDest).toHaveLength(1);
+    expect(cleared.ok).toBe(true);
+    expect(
+      await prisma!.queHacerActivityOnDestination.count({ where: { destinationId: destRow!.id } }),
+    ).toBe(0);
 
     const deleted = await deleteQueHacerCategoryAction(catMar!.id);
     expect(deleted.ok).toBe(true);
@@ -96,6 +107,5 @@ describeIfDb("Qué hacer categorías M-N", () => {
     expect(
       await prisma!.imperdibleDestination.findUnique({ where: { slug: "tolu-qh" } }),
     ).not.toBeNull();
-    expect(await prisma!.queHacerCategory.findUnique({ where: { slug: "mar" } })).toBeNull();
   });
 });

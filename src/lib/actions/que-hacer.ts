@@ -3,6 +3,7 @@
 import { assertAdminAction } from "@/lib/auth-helpers";
 import { galleryPublicUrlExists } from "@/lib/gallery-assets";
 import { prisma } from "@/lib/prisma";
+import { DEFAULT_ACTIVITY_ACCENT_HSL } from "@/lib/que-hacer-listing-mode";
 import { revalidateQueHacerPaths } from "@/lib/que-hacer-revalidate";
 import { queHacerActivitySchema, queHacerCategorySchema, slugSchema } from "@/lib/que-hacer-schema";
 import { slugifyQueHacer } from "@/lib/que-hacer-slug";
@@ -32,7 +33,6 @@ async function syncActivityRelations(
   photoUrls: string[],
   coverUrl: string | undefined,
   photoAlts: (string | null)[],
-  categoryIds: string[],
   destinationIds: string[],
 ) {
   await prisma.queHacerActivityPhoto.deleteMany({ where: { activityId } });
@@ -45,12 +45,6 @@ async function syncActivityRelations(
         alt: photoAlts[i]?.trim() || null,
         isCover: coverUrl ? publicUrl === coverUrl.trim() : i === 0,
       })),
-    });
-  }
-  await prisma.queHacerActivityOnCategory.deleteMany({ where: { activityId } });
-  if (categoryIds.length) {
-    await prisma.queHacerActivityOnCategory.createMany({
-      data: categoryIds.map((categoryId) => ({ activityId, categoryId })),
     });
   }
   await prisma.queHacerActivityOnDestination.deleteMany({ where: { activityId } });
@@ -101,6 +95,10 @@ export async function createQueHacerActivityAction(input: unknown) {
         title: raw.title,
         description: raw.description,
         iconKey: raw.iconKey,
+        tagline: raw.tagline,
+        introMarkdown: raw.introMarkdown,
+        accentHsl: raw.accentHsl ?? DEFAULT_ACTIVITY_ACCENT_HSL,
+        listingMode: raw.listingMode,
         published: raw.published,
         sortOrder: raw.sortOrder,
         seedManaged: false,
@@ -111,7 +109,6 @@ export async function createQueHacerActivityAction(input: unknown) {
       raw.photoUrls,
       raw.coverUrl,
       raw.photoAlts ?? [],
-      raw.categoryIds,
       raw.destinationIds,
     );
     revalidateQueHacerPaths({
@@ -163,6 +160,10 @@ export async function updateQueHacerActivityAction(id: string, input: unknown) {
         title: raw.title,
         description: raw.description,
         iconKey: raw.iconKey,
+        tagline: raw.tagline,
+        introMarkdown: raw.introMarkdown,
+        accentHsl: raw.accentHsl ?? DEFAULT_ACTIVITY_ACCENT_HSL,
+        listingMode: raw.listingMode,
         published: raw.published,
         sortOrder: raw.sortOrder,
         seedManaged: false,
@@ -173,7 +174,6 @@ export async function updateQueHacerActivityAction(id: string, input: unknown) {
       raw.photoUrls,
       raw.coverUrl,
       raw.photoAlts ?? [],
-      raw.categoryIds,
       raw.destinationIds,
     );
     const destSlugs = [
