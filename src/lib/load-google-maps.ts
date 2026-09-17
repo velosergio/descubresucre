@@ -5,7 +5,9 @@ const LOAD_TIMEOUT_MS = 20_000;
 const SCRIPT_SELECTOR =
   'script[data-google-maps="true"], script[src*="maps.googleapis.com/maps/api/js"]';
 
-type MapsWindow = Window & Record<string, unknown>;
+type MapsWindow = Window & {
+  __descubresucreGoogleMapsInit?: () => void;
+};
 
 function mapsConstructorReady(): boolean {
   return typeof window.google?.maps?.Map === "function";
