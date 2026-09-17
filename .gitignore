@@ -32,7 +32,6 @@ test-results
 *.sw?
 
 /src/generated/prisma
-/scripts/seed.prod.mjs
 
 # Subidas locales del hero (mantener .gitkeep)
 /public/uploads/hero/images/*

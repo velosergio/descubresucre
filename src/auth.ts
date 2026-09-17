@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
+import { safeAuthRedirectUrl } from "@/lib/safe-relative-path";
 
 const loadRoleNames = cache(async (userId: string) => {
   const row = await prisma.user.findUnique({
@@ -72,6 +73,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.roles = token.roles ?? [];
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return safeAuthRedirectUrl(url, baseUrl);
     },
   },
   events: {

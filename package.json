@@ -23,7 +23,6 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "db:seed:prod": "node scripts/seed.mjs",
     "admin:create": "node scripts/create-admin.mjs",
     "setup": "npm install && npm run db:generate",
     "doctor": "npx react-doctor@latest"

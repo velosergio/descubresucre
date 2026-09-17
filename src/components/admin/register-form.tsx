@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerUserAction } from "@/lib/actions/register";
+import { safeRelativePath } from "@/lib/safe-relative-path";
 
 interface RegisterFormProps {
   googleEnabled: boolean;
@@ -68,7 +69,7 @@ function registerFormReducer(
 export function RegisterForm({ googleEnabled }: RegisterFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/cuenta/pendiente";
+  const callbackUrl = safeRelativePath(searchParams.get("callbackUrl")) ?? "/cuenta/pendiente";
   const [form, dispatch] = useReducer(registerFormReducer, INITIAL_FORM);
 
   async function onSubmit(e: React.FormEvent) {

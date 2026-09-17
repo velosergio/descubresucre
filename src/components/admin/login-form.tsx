@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { safeRelativePath } from "@/lib/safe-relative-path";
 
 interface LoginFormProps {
   googleEnabled: boolean;
@@ -59,7 +60,7 @@ function loginFormReducer(state: LoginFormState, action: LoginFormAction): Login
 export function LoginForm({ googleEnabled }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin";
+  const callbackUrl = safeRelativePath(searchParams.get("callbackUrl")) ?? "/admin";
   const [form, dispatch] = useReducer(loginFormReducer, INITIAL_FORM);
 
   async function onCredentials(e: React.FormEvent) {

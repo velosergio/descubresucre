@@ -4,16 +4,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -168,18 +159,13 @@ export function RolesManager({ roles }: { roles: RoleRow[] }) {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={Boolean(deleteId)} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar rol?</AlertDialogTitle>
-            <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmDelete()}>Eliminar</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={Boolean(deleteId)}
+        onOpenChange={() => setDeleteId(null)}
+        title="¿Eliminar rol?"
+        description="Esta acción no se puede deshacer."
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import Autoplay from "embla-carousel-autoplay";
 import * as m from "framer-motion/m";
-import { Pause, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -47,7 +46,6 @@ function ActivityCard({ item }: { item: QueHacerHomeCard }) {
 
 export default function ActivitiesSection({ payload }: { payload: QueHacerHomePayload }) {
   const { items, useCardCarousel } = payload;
-  const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [bgIndex, setBgIndex] = useState(0);
 
@@ -69,15 +67,13 @@ export default function ActivitiesSection({ payload }: { payload: QueHacerHomePa
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  const autoplayOff = paused || reducedMotion;
-
   useEffect(() => {
-    if (autoplayOff || items.length < 2) return;
+    if (reducedMotion || items.length < 2) return;
     const id = window.setInterval(() => {
       setBgIndex((i) => (i + 1) % items.length);
     }, QUE_HACER_AUTOPLAY_MS);
     return () => window.clearInterval(id);
-  }, [autoplayOff, items.length]);
+  }, [reducedMotion, items.length]);
 
   if (items.length === 0) return null;
 
@@ -108,28 +104,13 @@ export default function ActivitiesSection({ payload }: { payload: QueHacerHomePa
           <p className="mx-auto max-w-xl font-body text-muted-foreground">
             Actividades para todos los gustos en el corazón del Caribe colombiano
           </p>
-          {reducedMotion ? null : (
-            <button
-              type="button"
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1.5 font-body text-sm text-foreground outline-none hover:bg-background focus-visible:ring-2 focus-visible:ring-primary"
-              onClick={() => setPaused((p) => !p)}
-              aria-label={paused ? "Reanudar autoplay" : "Pausar autoplay"}
-            >
-              {paused ? (
-                <Play className="size-4" aria-hidden />
-              ) : (
-                <Pause className="size-4" aria-hidden />
-              )}
-              {paused ? "Reanudar" : "Pausar"}
-            </button>
-          )}
         </m.div>
 
         {useCardCarousel ? (
           <div className="relative px-10 md:px-14">
             <Carousel
               opts={{ align: "start", loop: true }}
-              plugins={autoplayOff ? [] : [autoplayPlugin]}
+              plugins={reducedMotion ? [] : [autoplayPlugin]}
               className="w-full"
             >
               <CarouselContent className="-ml-2 md:-ml-4">

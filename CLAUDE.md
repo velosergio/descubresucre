@@ -22,7 +22,6 @@ Base de datos:
 npm run db:migrate       # prisma migrate dev
 npm run db:generate      # regenera el cliente en src/generated/prisma
 npm run db:seed          # roles admin/editor + Sucre Natural + Qué hacer (categorías y actividades)
-npm run db:seed:prod     # mismo seed en la imagen Docker (`node scripts/seed.mjs`, sin tsx)
 npm run admin:create     # crea el primer usuario admin (interactivo)
 ```
 
@@ -49,7 +48,6 @@ node --env-file=.env.test ./node_modules/@playwright/test/cli.js test e2e/critic
 Notas operativas:
 
 - `.npmrc` tiene `ignore-scripts=true` (decisión deliberada de cadena de suministro). Por eso **no existe** un `postinstall`: `prisma generate` se invoca siempre de forma explícita — `npm run setup` en un clone nuevo, o `npm run db:generate` tras tocar el schema. Los hooks `pre`/`post` de npm tampoco se ejecutan con esa flag, así que no intentes resolverlo con un `predev`/`prebuild`.
-- Tras un deploy en EasyPanel (servicio `sucre`), el seed **no** corre solo. En la consola del contenedor, con cwd `/app`: `node scripts/seed.mjs`. Luego reinicia el servicio para que Next sirva la home con las actividades nuevas.
 - Si al arrancar falta `@/generated/prisma/client`, es que nadie corrió `db:generate`. Distinto es "Cannot read properties of undefined" en un delegado (p. ej. `chatbotSettings`): eso es el cliente cacheado que documenta `src/lib/prisma.ts`, y también se cura regenerando.
 - `src/generated/prisma` está en `.gitignore`: es artefacto, nunca se edita ni se commitea.
 - Los tests de integración **se saltan solos** (`describe.skip`) si falta `TEST_DATABASE_URL`; un run "verde" sin `.env.test` no prueba nada. Tras tocar `prisma/schema.prisma`, vuelve a correr `npm run test:db:prepare`.

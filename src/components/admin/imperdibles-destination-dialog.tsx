@@ -3,7 +3,7 @@
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { type Dispatch, type SetStateAction, useMemo, useState, useTransition } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
@@ -61,7 +61,10 @@ export type ImperdibleAdminRow = {
   sourceIds: string[];
 };
 
-const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
+type DestinationFormState = Omit<ImperdibleAdminRow, "id"> & { id?: string };
+type SetDestinationForm = Dispatch<SetStateAction<DestinationFormState>>;
+
+const emptyForm = (): DestinationFormState => ({
   slug: "",
   title: "",
   subtitle: "",
@@ -93,9 +96,7 @@ const emptyForm = (): Omit<ImperdibleAdminRow, "id"> => ({
   sourceIds: [],
 });
 
-function formFromInitial(
-  initial: ImperdibleAdminRow,
-): Omit<ImperdibleAdminRow, "id"> & { id?: string } {
+function formFromInitial(initial: ImperdibleAdminRow): DestinationFormState {
   return {
     id: initial.id,
     slug: initial.slug,
@@ -130,6 +131,497 @@ function formFromInitial(
   };
 }
 
+function DestinationBasicFields({
+  form,
+  setForm,
+  pending,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+}) {
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Título</Label>
+        <Input
+          value={form.title}
+          onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Slug (URL)</Label>
+        <Input
+          placeholder="se genera desde el título si lo dejas vacío"
+          value={form.slug}
+          onChange={(e) => setForm((s) => ({ ...s, slug: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Subtítulo</Label>
+        <Input
+          value={form.subtitle}
+          onChange={(e) => setForm((s) => ({ ...s, subtitle: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+    </>
+  );
+}
+
+function DestinationCardImageField({
+  form,
+  pending,
+  onOpenPicker,
+  onUploadCard,
+}: {
+  form: DestinationFormState;
+  pending: boolean;
+  onOpenPicker: () => void;
+  onUploadCard: (f: File | null) => void;
+}) {
+  const previewSrc = toServedMediaUrl(form.cardImageUrl);
+  return (
+    <div className="space-y-2">
+      <Label>Imagen de la tarjeta</Label>
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" size="sm" disabled={pending} onClick={onOpenPicker}>
+          <ImageIcon className="mr-2 size-4" />
+          Galería
+        </Button>
+        <Input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          disabled={pending}
+          className="max-w-[200px]"
+          onChange={(e) => onUploadCard(e.target.files?.[0] ?? null)}
+        />
+      </div>
+      {form.cardImageUrl ? (
+        <div className="relative mt-2 aspect-video w-full max-w-xs overflow-hidden rounded-md border">
+          <Image src={previewSrc} alt="" fill className="object-cover" sizes="320px" unoptimized />
+        </div>
+      ) : (
+        <p className="text-xs text-muted-foreground">Elige o sube una imagen.</p>
+      )}
+    </div>
+  );
+}
+
+function DestinationBodyField({
+  form,
+  setForm,
+  pending,
+  previewMd,
+  onTogglePreview,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+  previewMd: boolean;
+  onTogglePreview: () => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <Label>Cuerpo (Markdown)</Label>
+        <Button type="button" variant="ghost" size="sm" onClick={onTogglePreview}>
+          {previewMd ? "Editar" : "Vista previa"}
+        </Button>
+      </div>
+      {previewMd ? (
+        <div className="prose prose-sm dark:prose-invert min-h-[120px] max-w-none rounded-md border bg-muted/40 p-3 text-sm">
+          <ReactMarkdown>{form.bodyMarkdown || "—"}</ReactMarkdown>
+        </div>
+      ) : (
+        <Textarea
+          rows={8}
+          value={form.bodyMarkdown}
+          onChange={(e) => setForm((s) => ({ ...s, bodyMarkdown: e.target.value }))}
+          disabled={pending}
+          className="font-mono text-sm"
+        />
+      )}
+    </div>
+  );
+}
+
+function DestinationMapFields({
+  form,
+  setForm,
+  pending,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+}) {
+  const mapsHelperUrl =
+    form.mapLat != null && form.mapLng != null
+      ? buildGoogleMapsSearchUrl(form.mapLat, form.mapLng)
+      : "https://www.google.com/maps";
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <Label>Latitud</Label>
+          <Input
+            type="number"
+            step="any"
+            value={form.mapLat ?? ""}
+            onChange={(e) =>
+              setForm((s) => ({
+                ...s,
+                mapLat: e.target.value === "" ? null : Number(e.target.value),
+              }))
+            }
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Longitud</Label>
+          <Input
+            type="number"
+            step="any"
+            value={form.mapLng ?? ""}
+            onChange={(e) =>
+              setForm((s) => ({
+                ...s,
+                mapLng: e.target.value === "" ? null : Number(e.target.value),
+              }))
+            }
+            disabled={pending}
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Zoom del mapa (detalle)</Label>
+        <Input
+          type="number"
+          min={1}
+          max={21}
+          value={form.mapZoom}
+          onChange={(e) => setForm((s) => ({ ...s, mapZoom: Number(e.target.value) }))}
+          disabled={pending}
+        />
+      </div>
+      <a
+        href={mapsHelperUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-block text-sm text-primary underline"
+      >
+        Abrir en Google Maps (referencia de coordenadas)
+      </a>
+    </>
+  );
+}
+
+function DestinationVisibilityFields({
+  form,
+  setForm,
+  pending,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+}) {
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Orden (manual)</Label>
+        <Input
+          type="number"
+          value={form.sortOrder}
+          onChange={(e) => setForm((s) => ({ ...s, sortOrder: Number(e.target.value) }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="pub"
+          checked={form.published}
+          onCheckedChange={(c) => setForm((s) => ({ ...s, published: c === true }))}
+          disabled={pending}
+        />
+        <Label htmlFor="pub" className="cursor-pointer font-normal">
+          Publicado
+        </Label>
+      </div>
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="home"
+          checked={form.showOnHome}
+          onCheckedChange={(c) => setForm((s) => ({ ...s, showOnHome: c === true }))}
+          disabled={pending}
+        />
+        <Label htmlFor="home" className="cursor-pointer font-normal">
+          Destacar en la home (máx. 20)
+        </Label>
+      </div>
+    </>
+  );
+}
+
+function DestinationHubsField({
+  form,
+  setForm,
+  pending,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>Hubs Sucre Natural</Label>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {SUCRE_NATURAL_HUBS.map((hub) => (
+          <div key={hub.id} className="flex items-center gap-2 text-sm">
+            <Checkbox
+              id={`hub-${hub.id}`}
+              checked={form.hubIds.includes(hub.id)}
+              onCheckedChange={(c) =>
+                setForm((s) => ({
+                  ...s,
+                  hubIds:
+                    c === true ? [...s.hubIds, hub.id] : s.hubIds.filter((id) => id !== hub.id),
+                }))
+              }
+              disabled={pending}
+            />
+            <Label htmlFor={`hub-${hub.id}`} className="cursor-pointer font-normal">
+              {hub.iconLabel}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DestinationCategoriesField({
+  setForm,
+  pending,
+  queHacerCategories,
+  selectedQueHacerCategoryIds,
+}: {
+  setForm: SetDestinationForm;
+  pending: boolean;
+  queHacerCategories: { id: string; name: string }[];
+  selectedQueHacerCategoryIds: Set<string>;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>Categorías Qué hacer</Label>
+      {queHacerCategories.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Crea categorías en Personalizar → Qué hacer.
+        </p>
+      ) : (
+        <div className="grid gap-2 sm:grid-cols-2">
+          {queHacerCategories.map((cat) => (
+            <div key={cat.id} className="flex items-center gap-2 text-sm">
+              <Checkbox
+                id={`qh-dest-cat-${cat.id}`}
+                checked={selectedQueHacerCategoryIds.has(cat.id)}
+                onCheckedChange={(c) =>
+                  setForm((s) => ({
+                    ...s,
+                    queHacerCategoryIds:
+                      c === true
+                        ? [...s.queHacerCategoryIds, cat.id]
+                        : s.queHacerCategoryIds.filter((id) => id !== cat.id),
+                  }))
+                }
+                disabled={pending}
+              />
+              <Label htmlFor={`qh-dest-cat-${cat.id}`} className="cursor-pointer font-normal">
+                {cat.name}
+              </Label>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DestinationDetailsFields({
+  form,
+  setForm,
+  pending,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+}) {
+  return (
+    <>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Municipio</Label>
+          <Input
+            value={form.municipality}
+            onChange={(e) => setForm((s) => ({ ...s, municipality: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Región</Label>
+          <Input
+            value={form.region}
+            onChange={(e) => setForm((s) => ({ ...s, region: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Ubicación (etiqueta)</Label>
+        <Input
+          value={form.locationLabel}
+          onChange={(e) => setForm((s) => ({ ...s, locationLabel: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Ecosistemas</Label>
+        <Input
+          value={form.ecosystems}
+          onChange={(e) => setForm((s) => ({ ...s, ecosystems: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Enfoque</Label>
+        <Input
+          value={form.approach}
+          onChange={(e) => setForm((s) => ({ ...s, approach: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Qué lo hace especial</Label>
+        <Textarea
+          rows={4}
+          value={form.specialWhy}
+          onChange={(e) => setForm((s) => ({ ...s, specialWhy: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Cómo llegar</Label>
+        <Textarea
+          rows={3}
+          value={form.howToArrive}
+          onChange={(e) => setForm((s) => ({ ...s, howToArrive: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Clima</Label>
+          <Input
+            value={form.climate}
+            onChange={(e) => setForm((s) => ({ ...s, climate: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Tiempo recomendado</Label>
+          <Input
+            value={form.recommendedTime}
+            onChange={(e) => setForm((s) => ({ ...s, recommendedTime: e.target.value }))}
+            disabled={pending}
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Para quién</Label>
+        <Input
+          value={form.audience}
+          onChange={(e) => setForm((s) => ({ ...s, audience: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Nota de mapa</Label>
+        <Input
+          value={form.mapNote}
+          onChange={(e) => setForm((s) => ({ ...s, mapNote: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Vive el destino (una actividad por línea)</Label>
+        <Textarea
+          rows={4}
+          value={form.liveActivitiesText}
+          onChange={(e) => setForm((s) => ({ ...s, liveActivitiesText: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Turismo responsable (una pauta por línea)</Label>
+        <Textarea
+          rows={4}
+          value={form.responsibleTipsText}
+          onChange={(e) => setForm((s) => ({ ...s, responsibleTipsText: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Chips de biodiversidad (uno por línea)</Label>
+        <Textarea
+          rows={3}
+          value={form.biodiversityChipLabelsText}
+          onChange={(e) => setForm((s) => ({ ...s, biodiversityChipLabelsText: e.target.value }))}
+          disabled={pending}
+        />
+      </div>
+    </>
+  );
+}
+
+function DestinationGalleryField({
+  form,
+  setForm,
+  pending,
+  onOpenPicker,
+}: {
+  form: DestinationFormState;
+  setForm: SetDestinationForm;
+  pending: boolean;
+  onOpenPicker: () => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>Galería de la ficha</Label>
+      <Button type="button" variant="outline" size="sm" disabled={pending} onClick={onOpenPicker}>
+        Añadir imagen de galería
+      </Button>
+      <ul className="space-y-1 text-xs text-muted-foreground">
+        {form.galleryUrls.map((url) => (
+          <li key={url} className="flex items-center justify-between gap-2">
+            <span className="truncate">{url}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                setForm((s) => ({ ...s, galleryUrls: s.galleryUrls.filter((u) => u !== url) }))
+              }
+            >
+              Quitar
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function DestinationFormInner({
   mode,
   initial,
@@ -146,19 +638,13 @@ function DestinationFormInner({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerTarget, setPickerTarget] = useState<"card" | "gallery">("card");
   const [previewMd, setPreviewMd] = useState(false);
-  const [form, setForm] = useState<Omit<ImperdibleAdminRow, "id"> & { id?: string }>(() =>
+  const [form, setForm] = useState<DestinationFormState>(() =>
     mode === "edit" && initial ? formFromInitial(initial) : emptyForm(),
   );
   const selectedQueHacerCategoryIds = useMemo(
     () => new Set(form.queHacerCategoryIds),
     [form.queHacerCategoryIds],
   );
-
-  const mapsHelperUrl =
-    form.mapLat != null && form.mapLng != null
-      ? buildGoogleMapsSearchUrl(form.mapLat, form.mapLng)
-      : "https://www.google.com/maps";
-  const previewSrc = toServedMediaUrl(form.cardImageUrl);
 
   async function onUploadCard(f: File | null) {
     if (!f) return;
@@ -243,390 +729,42 @@ function DestinationFormInner({
       </DialogHeader>
 
       <div className="space-y-4 py-2">
-        <div className="space-y-2">
-          <Label>Título</Label>
-          <Input
-            value={form.title}
-            onChange={(e) => setForm((s) => ({ ...s, title: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Slug (URL)</Label>
-          <Input
-            placeholder="se genera desde el título si lo dejas vacío"
-            value={form.slug}
-            onChange={(e) => setForm((s) => ({ ...s, slug: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Subtítulo</Label>
-          <Input
-            value={form.subtitle}
-            onChange={(e) => setForm((s) => ({ ...s, subtitle: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Imagen de la tarjeta</Label>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={pending}
-              onClick={() => {
-                setPickerTarget("card");
-                setPickerOpen(true);
-              }}
-            >
-              <ImageIcon className="mr-2 size-4" />
-              Galería
-            </Button>
-            <Input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={pending}
-              className="max-w-[200px]"
-              onChange={(e) => void onUploadCard(e.target.files?.[0] ?? null)}
-            />
-          </div>
-          {form.cardImageUrl ? (
-            <div className="relative mt-2 aspect-video w-full max-w-xs overflow-hidden rounded-md border">
-              <Image
-                src={previewSrc}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="320px"
-                unoptimized
-              />
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">Elige o sube una imagen.</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <Label>Cuerpo (Markdown)</Label>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewMd((v) => !v)}>
-              {previewMd ? "Editar" : "Vista previa"}
-            </Button>
-          </div>
-          {previewMd ? (
-            <div className="prose prose-sm dark:prose-invert min-h-[120px] max-w-none rounded-md border bg-muted/40 p-3 text-sm">
-              <ReactMarkdown>{form.bodyMarkdown || "—"}</ReactMarkdown>
-            </div>
-          ) : (
-            <Textarea
-              rows={8}
-              value={form.bodyMarkdown}
-              onChange={(e) => setForm((s) => ({ ...s, bodyMarkdown: e.target.value }))}
-              disabled={pending}
-              className="font-mono text-sm"
-            />
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label>Latitud</Label>
-            <Input
-              type="number"
-              step="any"
-              value={form.mapLat ?? ""}
-              onChange={(e) =>
-                setForm((s) => ({
-                  ...s,
-                  mapLat: e.target.value === "" ? null : Number(e.target.value),
-                }))
-              }
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Longitud</Label>
-            <Input
-              type="number"
-              step="any"
-              value={form.mapLng ?? ""}
-              onChange={(e) =>
-                setForm((s) => ({
-                  ...s,
-                  mapLng: e.target.value === "" ? null : Number(e.target.value),
-                }))
-              }
-              disabled={pending}
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Zoom del mapa (detalle)</Label>
-          <Input
-            type="number"
-            min={1}
-            max={21}
-            value={form.mapZoom}
-            onChange={(e) => setForm((s) => ({ ...s, mapZoom: Number(e.target.value) }))}
-            disabled={pending}
-          />
-        </div>
-        <a
-          href={mapsHelperUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-block text-sm text-primary underline"
-        >
-          Abrir en Google Maps (referencia de coordenadas)
-        </a>
-
-        <div className="space-y-2">
-          <Label>Orden (manual)</Label>
-          <Input
-            type="number"
-            value={form.sortOrder}
-            onChange={(e) => setForm((s) => ({ ...s, sortOrder: Number(e.target.value) }))}
-            disabled={pending}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="pub"
-            checked={form.published}
-            onCheckedChange={(c) => setForm((s) => ({ ...s, published: c === true }))}
-            disabled={pending}
-          />
-          <Label htmlFor="pub" className="cursor-pointer font-normal">
-            Publicado
-          </Label>
-        </div>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="home"
-            checked={form.showOnHome}
-            onCheckedChange={(c) => setForm((s) => ({ ...s, showOnHome: c === true }))}
-            disabled={pending}
-          />
-          <Label htmlFor="home" className="cursor-pointer font-normal">
-            Destacar en la home (máx. 20)
-          </Label>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Hubs Sucre Natural</Label>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {SUCRE_NATURAL_HUBS.map((hub) => (
-              <div key={hub.id} className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  id={`hub-${hub.id}`}
-                  checked={form.hubIds.includes(hub.id)}
-                  onCheckedChange={(c) =>
-                    setForm((s) => ({
-                      ...s,
-                      hubIds:
-                        c === true ? [...s.hubIds, hub.id] : s.hubIds.filter((id) => id !== hub.id),
-                    }))
-                  }
-                  disabled={pending}
-                />
-                <Label htmlFor={`hub-${hub.id}`} className="cursor-pointer font-normal">
-                  {hub.iconLabel}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Categorías Qué hacer</Label>
-          {queHacerCategories.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Crea categorías en Personalizar → Qué hacer.
-            </p>
-          ) : (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {queHacerCategories.map((cat) => (
-                <div key={cat.id} className="flex items-center gap-2 text-sm">
-                  <Checkbox
-                    id={`qh-dest-cat-${cat.id}`}
-                    checked={selectedQueHacerCategoryIds.has(cat.id)}
-                    onCheckedChange={(c) =>
-                      setForm((s) => ({
-                        ...s,
-                        queHacerCategoryIds:
-                          c === true
-                            ? [...s.queHacerCategoryIds, cat.id]
-                            : s.queHacerCategoryIds.filter((id) => id !== cat.id),
-                      }))
-                    }
-                    disabled={pending}
-                  />
-                  <Label htmlFor={`qh-dest-cat-${cat.id}`} className="cursor-pointer font-normal">
-                    {cat.name}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label>Municipio</Label>
-            <Input
-              value={form.municipality}
-              onChange={(e) => setForm((s) => ({ ...s, municipality: e.target.value }))}
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Región</Label>
-            <Input
-              value={form.region}
-              onChange={(e) => setForm((s) => ({ ...s, region: e.target.value }))}
-              disabled={pending}
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Ubicación (etiqueta)</Label>
-          <Input
-            value={form.locationLabel}
-            onChange={(e) => setForm((s) => ({ ...s, locationLabel: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Ecosistemas</Label>
-          <Input
-            value={form.ecosystems}
-            onChange={(e) => setForm((s) => ({ ...s, ecosystems: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Enfoque</Label>
-          <Input
-            value={form.approach}
-            onChange={(e) => setForm((s) => ({ ...s, approach: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Qué lo hace especial</Label>
-          <Textarea
-            rows={4}
-            value={form.specialWhy}
-            onChange={(e) => setForm((s) => ({ ...s, specialWhy: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Cómo llegar</Label>
-          <Textarea
-            rows={3}
-            value={form.howToArrive}
-            onChange={(e) => setForm((s) => ({ ...s, howToArrive: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label>Clima</Label>
-            <Input
-              value={form.climate}
-              onChange={(e) => setForm((s) => ({ ...s, climate: e.target.value }))}
-              disabled={pending}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Tiempo recomendado</Label>
-            <Input
-              value={form.recommendedTime}
-              onChange={(e) => setForm((s) => ({ ...s, recommendedTime: e.target.value }))}
-              disabled={pending}
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label>Para quién</Label>
-          <Input
-            value={form.audience}
-            onChange={(e) => setForm((s) => ({ ...s, audience: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Nota de mapa</Label>
-          <Input
-            value={form.mapNote}
-            onChange={(e) => setForm((s) => ({ ...s, mapNote: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Vive el destino (una actividad por línea)</Label>
-          <Textarea
-            rows={4}
-            value={form.liveActivitiesText}
-            onChange={(e) => setForm((s) => ({ ...s, liveActivitiesText: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Turismo responsable (una pauta por línea)</Label>
-          <Textarea
-            rows={4}
-            value={form.responsibleTipsText}
-            onChange={(e) => setForm((s) => ({ ...s, responsibleTipsText: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Chips de biodiversidad (uno por línea)</Label>
-          <Textarea
-            rows={3}
-            value={form.biodiversityChipLabelsText}
-            onChange={(e) => setForm((s) => ({ ...s, biodiversityChipLabelsText: e.target.value }))}
-            disabled={pending}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Galería de la ficha</Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={pending}
-            onClick={() => {
-              setPickerTarget("gallery");
-              setPickerOpen(true);
-            }}
-          >
-            Añadir imagen de galería
-          </Button>
-          <ul className="space-y-1 text-xs text-muted-foreground">
-            {form.galleryUrls.map((url) => (
-              <li key={url} className="flex items-center justify-between gap-2">
-                <span className="truncate">{url}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    setForm((s) => ({ ...s, galleryUrls: s.galleryUrls.filter((u) => u !== url) }))
-                  }
-                >
-                  Quitar
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <DestinationBasicFields form={form} setForm={setForm} pending={pending} />
+        <DestinationCardImageField
+          form={form}
+          pending={pending}
+          onOpenPicker={() => {
+            setPickerTarget("card");
+            setPickerOpen(true);
+          }}
+          onUploadCard={(f) => void onUploadCard(f)}
+        />
+        <DestinationBodyField
+          form={form}
+          setForm={setForm}
+          pending={pending}
+          previewMd={previewMd}
+          onTogglePreview={() => setPreviewMd((v) => !v)}
+        />
+        <DestinationMapFields form={form} setForm={setForm} pending={pending} />
+        <DestinationVisibilityFields form={form} setForm={setForm} pending={pending} />
+        <DestinationHubsField form={form} setForm={setForm} pending={pending} />
+        <DestinationCategoriesField
+          setForm={setForm}
+          pending={pending}
+          queHacerCategories={queHacerCategories}
+          selectedQueHacerCategoryIds={selectedQueHacerCategoryIds}
+        />
+        <DestinationDetailsFields form={form} setForm={setForm} pending={pending} />
+        <DestinationGalleryField
+          form={form}
+          setForm={setForm}
+          pending={pending}
+          onOpenPicker={() => {
+            setPickerTarget("gallery");
+            setPickerOpen(true);
+          }}
+        />
       </div>
 
       <DialogFooter>

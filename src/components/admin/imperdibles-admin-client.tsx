@@ -4,20 +4,11 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import {
   type ImperdibleAdminRow,
   ImperdiblesDestinationDialog,
 } from "@/components/admin/imperdibles-destination-dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,10 +27,12 @@ export type ImperdiblesSettingsDTO = {
   carouselIntervalMs: number;
 };
 
+const EMPTY_QUE_HACER_CATEGORIES: { id: string; name: string }[] = [];
+
 export function ImperdiblesAdminClient({
   initialSettings,
   initialDestinations,
-  queHacerCategories = [],
+  queHacerCategories = EMPTY_QUE_HACER_CATEGORIES,
 }: {
   initialSettings: ImperdiblesSettingsDTO;
   initialDestinations: ImperdibleAdminRow[];
@@ -275,20 +268,13 @@ export function ImperdiblesAdminClient({
         queHacerCategories={queHacerCategories}
       />
 
-      <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este destino?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se quitará de la portada y la URL de detalle dejará de existir.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmDelete()}>Eliminar</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDeleteDialog
+        open={deleteId !== null}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        title="¿Eliminar este destino?"
+        description="Se quitará de la portada y la URL de detalle dejará de existir."
+        onConfirm={confirmDelete}
+      />
     </>
   );
 }

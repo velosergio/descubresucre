@@ -41,6 +41,6 @@ describe("ActivitiesSection", () => {
     render(<ActivitiesSection payload={{ items, useCardCarousel: true }} />);
     expect(screen.getByRole("button", { name: "Anterior" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Siguiente" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Pausar autoplay" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Pausar|Reanudar/ })).not.toBeInTheDocument();
   });
 });

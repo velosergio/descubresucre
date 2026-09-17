@@ -138,7 +138,6 @@
   - `npm run test:watch`: corre pruebas en modo observación
   - `npm run db:generate`: regenera Prisma Client
   - `npm run db:migrate` / `db:push` / `db:seed`: Prisma
-  - `npm run db:seed:prod`: seed en la imagen Docker (`node scripts/seed.mjs`)
 
   ## Pruebas y calidad
 
