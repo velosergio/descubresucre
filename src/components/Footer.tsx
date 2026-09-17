@@ -1,5 +1,8 @@
-import { Mail, MapPin, Phone } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Link from "next/link";
+
+const siteLinkClass =
+  "block hover:text-tropical-gold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-tropical-gold";
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground/80 py-12 px-4">
@@ -13,40 +16,33 @@ const Footer = () => (
         </p>
       </div>
       <div>
-        <h4 className="font-display font-semibold text-primary-foreground mb-3">Contacto</h4>
-        <div className="space-y-2 font-body text-sm">
-          <p className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-tropical-gold" /> Sincelejo, Sucre, Colombia
-          </p>
-          <p className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-tropical-gold" /> turismo@sucre.gov.co
-          </p>
-          <p className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-tropical-gold" /> +57 (5) 282 0000
-          </p>
-        </div>
+        <h4 className="font-display font-semibold text-primary-foreground mb-3">Ubicación</h4>
+        <p className="flex items-center gap-2 font-body text-sm">
+          <MapPin className="w-4 h-4 text-tropical-gold" aria-hidden /> Sincelejo, Sucre, Colombia
+        </p>
       </div>
       <div>
         <h4 className="font-display font-semibold text-primary-foreground mb-3">Enlaces</h4>
         <div className="space-y-2 font-body text-sm">
-          <Link
-            href="/sucre-natural"
-            className="block hover:text-tropical-gold cursor-pointer transition-colors outline-none focus-visible:ring-2 focus-visible:ring-tropical-gold"
-          >
+          <Link href="/" className={siteLinkClass}>
+            Inicio
+          </Link>
+          <Link href="/sucre-natural" className={siteLinkClass}>
             Sucre Natural
           </Link>
-          <p className="hover:text-tropical-gold cursor-pointer transition-colors">
+          <a
+            href="https://www.sucre.gov.co/"
+            className={siteLinkClass}
+            target="_blank"
+            rel="noreferrer"
+          >
             Gobernación de Sucre
-          </p>
-          <p className="hover:text-tropical-gold cursor-pointer transition-colors">ProColombia</p>
-          <p className="hover:text-tropical-gold cursor-pointer transition-colors">
-            Ministerio de Cultura
-          </p>
+          </a>
         </div>
       </div>
     </div>
     <div className="max-w-7xl mx-auto mt-8 pt-6 border-t border-primary-foreground/10 text-center font-body text-xs text-primary-foreground/40">
-      © 2026 Sucre Turístico. Todos los derechos reservados.
+      © 2026 Sucre Vivo. Todos los derechos reservados.
     </div>
   </footer>
 );

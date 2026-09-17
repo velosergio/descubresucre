@@ -46,10 +46,13 @@ test("sucre natural: portada → Playas → El Francés", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Sucre Natural" })).toBeVisible();
   await expect(page.getByText(/Juana Valentina Patiño Moncada/)).toBeVisible();
 
-  const playas = page.getByRole("link", { name: /Playas de Sucre/ }).first();
+  // El announcer solo existe tras hidratar el App Router; Enter en un Link antes es no-op.
+  await expect(page.locator("next-route-announcer")).toBeAttached();
+
+  const playas = page.getByRole("link", { name: /Playas de Sucre/ });
   await playas.focus();
   await expect(playas).toBeFocused();
-  await page.keyboard.press("Enter");
+  await playas.press("Enter");
   await expect(page).toHaveURL(/\/sucre-natural\/playas/);
   await expect(page.getByRole("heading", { name: "Playas de Sucre" })).toBeVisible();
 

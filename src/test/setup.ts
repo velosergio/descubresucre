@@ -22,6 +22,7 @@ Element.prototype.getAnimations = () => [];
 class IntersectionObserverStub implements IntersectionObserver {
   readonly root: Element | Document | null = null;
   readonly rootMargin = "";
+  readonly scrollMargin = "";
   readonly thresholds: readonly number[] = [];
   disconnect() {}
   observe() {}

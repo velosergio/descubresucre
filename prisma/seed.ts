@@ -38,34 +38,38 @@ export async function seedSucreNatural(db: typeof prisma = prisma) {
   let skippedManaged = 0;
   let itemErrors = 0;
 
-  for (const hub of SEED_HUBS) {
-    await db.sucreNaturalHub.upsert({
-      where: { id: hub.id },
-      create: {
-        id: hub.id,
-        title: hub.title,
-        tagline: hub.tagline,
-        introMarkdown: hub.introMarkdown,
-        sortOrder: hub.sortOrder,
-      },
-      update: {
-        title: hub.title,
-        tagline: hub.tagline,
-        introMarkdown: hub.introMarkdown,
-        sortOrder: hub.sortOrder,
-      },
-    });
-  }
+  await Promise.all(
+    SEED_HUBS.map((hub) =>
+      db.sucreNaturalHub.upsert({
+        where: { id: hub.id },
+        create: {
+          id: hub.id,
+          title: hub.title,
+          tagline: hub.tagline,
+          introMarkdown: hub.introMarkdown,
+          sortOrder: hub.sortOrder,
+        },
+        update: {
+          title: hub.title,
+          tagline: hub.tagline,
+          introMarkdown: hub.introMarkdown,
+          sortOrder: hub.sortOrder,
+        },
+      }),
+    ),
+  );
 
   const sourceIdBySlug = new Map<string, string>();
-  for (const src of SEED_SOURCES) {
-    const row = await db.contentSource.upsert({
-      where: { slug: src.slug },
-      create: src,
-      update: { name: src.name, url: src.url, note: src.note },
-    });
-    sourceIdBySlug.set(src.slug, row.id);
-  }
+  await Promise.all(
+    SEED_SOURCES.map(async (src) => {
+      const row = await db.contentSource.upsert({
+        where: { slug: src.slug },
+        create: src,
+        update: { name: src.name, url: src.url, note: src.note },
+      });
+      sourceIdBySlug.set(src.slug, row.id);
+    }),
+  );
 
   async function connectDestJoins(destinationId: string, hubIds: string[], sourceSlugs: string[]) {
     const existingHubs = await db.imperdibleDestinationHub.findMany({
@@ -340,9 +344,11 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
       });
       categoryId = cat.id;
       updated += 1;
-    } else {
-      categoryId = existingCat?.id;
+    } else if (existingCat) {
+      categoryId = existingCat.id;
       skippedManaged += 1;
+    } else {
+      continue;
     }
 
     const existingAct = await db.queHacerActivity.findUnique({ where: { slug: item.slug } });
@@ -384,9 +390,11 @@ export async function seedQueHacer(db: typeof prisma = prisma) {
         });
       }
       updated += 1;
-    } else {
-      activityId = existingAct?.id;
+    } else if (existingAct) {
+      activityId = existingAct.id;
       skippedManaged += 1;
+    } else {
+      continue;
     }
 
     const existingJoins = await db.queHacerActivityOnCategory.findMany({

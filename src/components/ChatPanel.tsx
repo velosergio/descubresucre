@@ -37,7 +37,8 @@ async function pollJob(jobId: string): Promise<{ reply: string } | { error: stri
 }
 
 export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
-  const sessionKeyRef = useRef(crypto.randomUUID());
+  const sessionKeyRef = useRef<string | null>(null);
+  if (sessionKeyRef.current === null) sessionKeyRef.current = crypto.randomUUID();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -129,14 +130,13 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
       setIsLoading(true);
 
       const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: trimmed };
-      setMessages((prev) => {
-        const next = [...prev, userMsg];
-        const payload = next.map((m) => ({ role: m.role, content: m.content }));
-        void sendMessagesToApi(payload);
-        return next;
-      });
+      const next = [...messages, userMsg];
+      setMessages(next);
+
+      const payload = next.map((m) => ({ role: m.role, content: m.content }));
+      void sendMessagesToApi(payload);
     },
-    [isLoading, sendMessagesToApi],
+    [isLoading, messages, sendMessagesToApi],
   );
 
   useEffect(() => {
