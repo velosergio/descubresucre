@@ -1,4 +1,4 @@
-import { Binoculars, Compass, ImageIcon, Images, Leaf, MapPin } from "lucide-react";
+import { Binoculars, Calendar, Compass, ImageIcon, Images, Leaf, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -84,6 +84,25 @@ export default function AdminPersonalizarPage() {
                 <CardTitle className="text-lg">Destinos imperdibles</CardTitle>
                 <CardDescription>
                   Tarjetas de la portada, detalle en Markdown y ubicación en Google Maps.
+                </CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link
+          href="/admin/personalizar/eventos"
+          className="block transition-opacity hover:opacity-90"
+        >
+          <Card className="border-border/80">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+                <Calendar className="size-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-lg">Eventos</CardTitle>
+                <CardDescription>
+                  Próximos eventos y agenda cultural: fecha, lugar, categoría e imagen opcional.
                 </CardDescription>
               </div>
             </CardHeader>

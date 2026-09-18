@@ -2,40 +2,79 @@
 
 import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
-import { MessageCircle } from "lucide-react";
-import { useState } from "react";
+import { ArrowDown, MessageCircle, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import ActivitiesSection from "@/components/ActivitiesSection";
 import { ChatPanel } from "@/components/ChatPanel";
 import ConvocatoriasSection from "@/components/ConvocatoriasSection";
-import CulturalAgenda from "@/components/CulturalAgenda";
-import EventsSection from "@/components/EventsSection";
+import CulturalEventsSection from "@/components/CulturalEventsSection";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import ImperdiblesSection from "@/components/ImperdiblesSection";
 import MapSection from "@/components/MapSection";
+import type { CulturalEventsHomePayload } from "@/lib/get-cultural-events-home";
 import type { QueHacerHomePayload } from "@/lib/get-que-hacer-home";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
+
+const CHAT_INTRO_SEEN_KEY = "sucre-vivo:chat-intro-seen";
+const CHAT_INTRO_SHOW_DELAY_MS = 2200;
+const CHAT_INTRO_AUTO_HIDE_MS = 6000;
 
 export default function HomePage({
   heroConfig,
   imperdiblesPayload,
   queHacerPayload,
+  culturalEventsPayload,
   mapsApiKey,
 }: {
   heroConfig: ResolvedHeroConfig;
   imperdiblesPayload: ImperdiblesHomePayload;
   queHacerPayload: QueHacerHomePayload;
+  culturalEventsPayload: CulturalEventsHomePayload;
   mapsApiKey: string | null;
 }) {
   const [view, setView] = useState<"landing" | "chat">("landing");
   const [chatKey, setChatKey] = useState(0);
   const [initialMessage, setInitialMessage] = useState<string | undefined>();
+  const [showChatIntro, setShowChatIntro] = useState(false);
+
+  const dismissChatIntro = () => {
+    setShowChatIntro(false);
+    try {
+      localStorage.setItem(CHAT_INTRO_SEEN_KEY, "1");
+    } catch {
+      // almacenamiento no disponible (modo privado, cookies bloqueadas): no es crítico
+    }
+  };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: dismissChatIntro is stable across renders
+  useEffect(() => {
+    if (view !== "landing") return;
+    let alreadySeen = true;
+    try {
+      alreadySeen = localStorage.getItem(CHAT_INTRO_SEEN_KEY) === "1";
+    } catch {
+      alreadySeen = true;
+    }
+    if (alreadySeen) return;
+
+    const showId = window.setTimeout(() => setShowChatIntro(true), CHAT_INTRO_SHOW_DELAY_MS);
+    const hideId = window.setTimeout(
+      dismissChatIntro,
+      CHAT_INTRO_SHOW_DELAY_MS + CHAT_INTRO_AUTO_HIDE_MS,
+    );
+    return () => {
+      window.clearTimeout(showId);
+      window.clearTimeout(hideId);
+    };
+  }, [view]);
 
   const openChat = (msg?: string) => {
     setChatKey((k) => k + 1);
     setInitialMessage(msg);
     setView("chat");
+    dismissChatIntro();
   };
 
   const closeChat = () => {
@@ -56,8 +95,7 @@ export default function HomePage({
             <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
             <ImperdiblesSection payload={imperdiblesPayload} />
             <ActivitiesSection payload={queHacerPayload} />
-            <EventsSection />
-            <CulturalAgenda />
+            <CulturalEventsSection payload={culturalEventsPayload} />
             <MapSection mapsApiKey={mapsApiKey} />
             <ConvocatoriasSection />
             <Footer />
@@ -69,6 +107,37 @@ export default function HomePage({
         {view === "chat" ? (
           <ChatPanel key={chatKey} onClose={closeChat} initialMessage={initialMessage} />
         ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {view === "landing" && showChatIntro && (
+          <m.div
+            key="chat-intro"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            role="status"
+            className="fixed right-4 bottom-24 z-40 max-w-56 rounded-2xl bg-foreground px-4 py-3 text-primary-foreground shadow-xl"
+          >
+            <button
+              type="button"
+              onClick={dismissChatIntro}
+              aria-label="Cerrar sugerencia"
+              className="absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full bg-background text-foreground shadow ring-1 ring-border transition-colors hover:bg-muted"
+            >
+              <X className="size-3.5" />
+            </button>
+            <p className="font-body text-sm">
+              ¿Buscas algo? Pregúntale a nuestro guía{" "}
+              <ArrowDown className="inline size-3.5 shrink-0 align-[-2px]" aria-hidden />
+            </p>
+            <div
+              aria-hidden
+              className="absolute right-8 -bottom-1.5 size-3 rotate-45 bg-foreground"
+            />
+          </m.div>
+        )}
       </AnimatePresence>
 
       {view === "landing" && (

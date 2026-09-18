@@ -408,3 +408,23 @@ model QueHacerActivityOnDestination {
   @@id([activityId, destinationId])
   @@index([destinationId])
 }
+
+/// Evento puntual o de agenda cultural (módulo unificado de la home).
+model CulturalEvent {
+  id          String    @id @default(cuid())
+  title       String    @db.VarChar(200)
+  description String    @db.Text
+  category    String    @db.VarChar(80)
+  location    String    @db.VarChar(300)
+  startsAt    DateTime
+  endsAt      DateTime?
+  allDay      Boolean   @default(true)
+  imageUrl    String?   @db.VarChar(2048)
+  mapLat      Decimal?  @db.Decimal(10, 7)
+  mapLng      Decimal?  @db.Decimal(10, 7)
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published, startsAt])
+}

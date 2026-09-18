@@ -2,6 +2,7 @@
 
 import {
   Binoculars,
+  Calendar,
   Compass,
   ImageIcon,
   Images,
@@ -52,6 +53,7 @@ const personalizarNav: {
   { href: "/admin/personalizar/banner", label: "Banner principal", icon: ImageIcon },
   { href: "/admin/personalizar/destinos-imperdibles", label: "Destinos imperdibles", icon: MapPin },
   { href: "/admin/personalizar/que-hacer", label: "Qué hacer", icon: Compass },
+  { href: "/admin/personalizar/eventos", label: "Eventos", icon: Calendar },
   { href: "/admin/personalizar/biodiversidad", label: "Biodiversidad", icon: Leaf },
   {
     href: "/admin/personalizar/experiencias-naturaleza",
