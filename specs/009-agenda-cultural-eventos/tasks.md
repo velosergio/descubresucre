@@ -125,8 +125,8 @@ Next.js App Router en la raíz del repo: `src/`, `prisma/`, `e2e/` (ver `plan.md
 
 - [X] T035 [P] Actualizar `ROADMAP.md`: marcar el ítem 4 ("Eventos + Agenda cultural") como `✅ Hecho — 009` tanto en la lista "Contenido CMS" como en la sección "Fase 1 — Oferta pública", igual que los ítems 1–3 ya marcados
 - [X] T036 Ejecutar `npx biome check --write` sobre todos los archivos tocados
-- [ ] T037 Correr la suite focal y confirmar verde: `npx vitest run src/lib/month-range.test.ts src/lib/calendar-links.test.ts src/lib/ics.test.ts src/lib/cultural-event-schema.test.ts`, `node --env-file=.env.test ./node_modules/vitest/vitest.mjs run --maxWorkers=1 src/test/integration/cultural-events-admin.integration.test.ts src/test/integration/cultural-events-api.integration.test.ts`, `npx vitest run src/test/components/cultural-events-section.component.test.tsx src/test/components/cultural-events-admin.component.test.tsx`, `node --env-file=.env.test ./node_modules/@playwright/test/cli.js test e2e/critical-flows.spec.ts -g "eventos|agenda cultural|calendario"`
-- [ ] T038 Recorrer manualmente el criterio de listo de `specs/009-agenda-cultural-eventos/quickstart.md`
+- [X] T037 Correr la suite focal y confirmar verde: `npx vitest run src/lib/month-range.test.ts src/lib/calendar-links.test.ts src/lib/ics.test.ts src/lib/cultural-event-schema.test.ts`, `node --env-file=.env.test ./node_modules/vitest/vitest.mjs run --maxWorkers=1 src/test/integration/cultural-events-admin.integration.test.ts src/test/integration/cultural-events-api.integration.test.ts`, `npx vitest run src/test/components/cultural-events-section.component.test.tsx src/test/components/cultural-events-admin.component.test.tsx`, `node --env-file=.env.test ./node_modules/@playwright/test/cli.js test e2e/critical-flows.spec.ts -g "eventos|agenda cultural|calendario"`
+- [X] T038 Recorrer manualmente el criterio de listo de `specs/009-agenda-cultural-eventos/quickstart.md`
 
 ---
 

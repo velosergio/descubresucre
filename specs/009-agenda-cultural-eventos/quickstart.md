@@ -41,10 +41,10 @@ Ajustar nombres de archivos/tests a lo que implemente `/speckit-tasks`.
 
 ## Criterio de listo
 
-- [ ] `EventsSection.tsx` y `CulturalAgenda.tsx` eliminados; `HomePage.tsx` monta un solo `CulturalEventsSection`
-- [ ] Cero eventos definidos de forma fija en el código
-- [ ] Navegación por mes funcionando en ambas direcciones, con estado vacío
-- [ ] CRUD admin completo (crear/editar/eliminar) restringido a staff
-- [ ] "Agregar a calendario" genera un enlace de Google Calendar válido y un `.ics` descargable e importable
-- [ ] Evento de varios días respeta el rango completo en la exportación
-- [ ] Suites unit/integration/component/e2e relevantes en verde
+- [x] `EventsSection.tsx` y `CulturalAgenda.tsx` eliminados; `HomePage.tsx` monta un solo `CulturalEventsSection`
+- [x] Cero eventos definidos de forma fija en el código
+- [x] Navegación por mes funcionando en ambas direcciones, con estado vacío
+- [x] CRUD admin completo (crear/editar/eliminar) restringido a staff
+- [x] "Agregar a calendario" genera un enlace de Google Calendar válido y un `.ics` descargable e importable
+- [x] Evento de varios días respeta el rango completo en la exportación
+- [x] Suites unit/integration/component/e2e relevantes en verde
