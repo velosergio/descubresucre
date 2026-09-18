@@ -97,6 +97,62 @@ test("sucre natural admin: destacar y despublicar (opcional)", async ({ page }) 
   expect(publicRes?.status()).toBe(404);
 });
 
+test("eventos y agenda cultural: módulo unificado con navegación por mes", async ({ page }) => {
+  await page.goto("/");
+  const heading = page.getByRole("heading", { name: /Próximos Eventos y Agenda Cultural/ });
+  await expect(heading).toBeVisible();
+
+  const monthLabel = page.getByText(/\s+de\s+\d{4}$/);
+  const initialLabel = await monthLabel.textContent();
+
+  await page.getByRole("button", { name: "Mes siguiente" }).click();
+  await expect.poll(async () => monthLabel.textContent()).not.toBe(initialLabel);
+
+  await expect(page.getByRole("button", { name: "Mes anterior" })).toBeVisible();
+});
+
+test("eventos: admin crea evento y aparece con acción de calendario (opcional)", async ({
+  page,
+}) => {
+  const email = process.env.E2E_ADMIN_EMAIL;
+  const password = process.env.E2E_ADMIN_PASSWORD;
+  if (!email || !password) {
+    test.skip(true, "Sin E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD");
+    return;
+  }
+
+  await page.goto("/login");
+  await page.getByLabel("Correo").fill(email);
+  await page.getByLabel("Contraseña").fill(password);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/admin/);
+
+  await page.goto("/admin/personalizar/eventos");
+  await expect(page.getByRole("heading", { name: "Eventos y agenda cultural" })).toBeVisible();
+  await page.getByRole("button", { name: "Nuevo" }).click();
+
+  const isoDate = new Date().toISOString().slice(0, 10);
+  await page.getByLabel("Título").fill("E2E Evento Calendario");
+  await page.getByLabel("Lugar").fill("Sincelejo");
+  await page.getByLabel("Categoría").fill("Prueba");
+  await page.getByLabel("Descripción").fill("Evento de prueba e2e");
+  await page.getByLabel("Fecha de inicio").fill(isoDate);
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await expect(page.getByText("E2E Evento Calendario")).toBeVisible({ timeout: 15_000 });
+
+  await page.goto("/");
+  await expect(page.getByText("E2E Evento Calendario")).toBeVisible();
+  await expect(page.getByText("Agregar a calendario:")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Google Calendar" })).toHaveAttribute(
+    "href",
+    /calendar\.google\.com/,
+  );
+  await expect(page.getByRole("link", { name: "Descargar .ics" })).toHaveAttribute(
+    "href",
+    /\/api\/cultural-events\/.+\/ics/,
+  );
+});
+
 test("que hacer: portada muestra heading y Playas abre ficha", async ({ page }) => {
   await page.goto("/");
   const section = page.locator("#que-hacer");

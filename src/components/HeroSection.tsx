@@ -12,6 +12,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Label } from "@/components/ui/label";
+import { CHAT_SUGGESTIONS } from "@/lib/chat-suggestions";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import { toServedMediaUrl } from "@/lib/media-url";
 import { cn } from "@/lib/utils";
@@ -132,12 +133,6 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
     setInput("");
   };
 
-  const suggestions = [
-    "¿Qué playas visitar en Sucre?",
-    "Festivales culturales este mes",
-    "¿Dónde comer en Tolú?",
-  ];
-
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -203,7 +198,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-wrap justify-center gap-2"
         >
-          {suggestions.map((s) => (
+          {CHAT_SUGGESTIONS.map((s) => (
             <button
               key={s}
               type="button"

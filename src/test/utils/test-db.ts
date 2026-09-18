@@ -24,6 +24,7 @@ export async function ensureQueHacerTestPhoto() {
 }
 
 export async function resetTestDatabase(prisma: PrismaClient) {
+  await prisma.culturalEvent.deleteMany();
   await prisma.queHacerActivityOnDestination.deleteMany();
   await prisma.queHacerDestinationOnCategory.deleteMany();
   await prisma.queHacerActivityOnCategory.deleteMany();

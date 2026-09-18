@@ -5,7 +5,7 @@ Huecos respecto al [Anexo 2](docs/Anexo%202%20Investigación%20en%20curso-%20Ser
 ## Contenido CMS (hoy mock → admin)
 
 - **[✅ Hecho — 008]** Actividades (“Qué hacer”): unifican los antiguos hubs temáticos; cada tarjeta es un tema con modo de listado; admin desde Actividades; URL canónica `/que-hacer/[slug]` (+ redirect desde `/sucre-natural/[hub]`)
-- **Eventos + Agenda cultural**: unificar; CRUD; listado por mes con navegación; “Agregar a calendario” (Google / iOS)
+- **[✅ Hecho — 009]** Eventos + Agenda cultural: unificados en `CulturalEvent`; CRUD admin; home con listado por mes y navegación prev/next; “Agregar a calendario” (Google Calendar / .ics)
 - **[✅ Hecho] Destinos turísticos (Imperdibles)**: CRUD admin, tarjetas en home, detalle Markdown y coords. Pendiente: MapSection unificado (aún mock)
 - **[✅ Hecho] Fichas de destino (Sucre Natural)**: páginas interactivas. Los hubs públicos se absorben en Actividades (008); se deja de llamar «micrositios»
 - **[✅ Hecho — 008]** Temas / Qué hacer (ex-hubs): ver Actividades arriba
@@ -62,7 +62,7 @@ Copiar tras `/speckit-specify`, **en este orden** (cada uno asume los anteriores
 
 3. **[✅ Hecho]** Reemplazar el mock de ActivitiesSection por un CMS de actividades “Qué hacer en Sucre”. Admin CRUD de actividades y de categorías (relación M-N: una categoría varios destinos/actividades y viceversa). Cada actividad: título, descripción, 1+ fotos en carrusel, icono Lucide desde un catálogo. En la home: icono + título + descripción; si hay más de 5, carrusel con flechas y autoplay; fondo con imágenes en autoplay. Enlazar a destinos/fichas del prompt 2 cuando aplique.
 
-4. Fusionar EventsSection y CulturalAgenda en un solo módulo de próximos eventos / agenda cultural. Admin CRUD (fecha, lugar, categoría, imagen, descripción, coords opcionales). Home: listado por mes con navegación prev/next. Botón “Agregar a calendario” (Google Calendar y equivalente iOS/.ics). Quitar datos hardcodeados.
+4. **[✅ Hecho — 009]** Fusionar EventsSection y CulturalAgenda en un solo módulo de próximos eventos / agenda cultural. Admin CRUD (fecha, lugar, categoría, imagen, descripción, coords opcionales). Home: listado por mes con navegación prev/next. Botón “Agregar a calendario” (Google Calendar y equivalente iOS/.ics). Quitar datos hardcodeados.
 
 5. Convertir ConvocatoriasSection en CMS: CRUD admin (título, descripción, audiencia, tipo, fecha límite, enlace externo obligatorio). Home consume la BD; sin mock.
 

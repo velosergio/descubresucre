@@ -354,3 +354,19 @@ function Resolve-Template {
     return $null
 }
 
+# Resolve a template name to its file content using the same priority stack
+# as Resolve-Template. Returns $null if the template cannot be found.
+function Resolve-TemplateContent {
+    param(
+        [Parameter(Mandatory=$true)][string]$TemplateName,
+        [Parameter(Mandatory=$true)][string]$RepoRoot
+    )
+
+    $templatePath = Resolve-Template -TemplateName $TemplateName -RepoRoot $RepoRoot
+    if (-not $templatePath -or -not (Test-Path -LiteralPath $templatePath -PathType Leaf)) {
+        return $null
+    }
+
+    return Get-Content -LiteralPath $templatePath -Raw
+}
+

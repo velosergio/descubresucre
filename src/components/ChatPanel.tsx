@@ -1,15 +1,50 @@
 "use client";
 
 import * as m from "framer-motion/m";
-import { Bot, Send, User, X } from "lucide-react";
+import { AlertTriangle, Bot, Send, User, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Label } from "@/components/ui/label";
+import { CHAT_SUGGESTIONS, CHAT_THINKING_PHRASES } from "@/lib/chat-suggestions";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  variant?: "error";
+}
+
+function ThinkingIndicator() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setPhraseIndex((i) => (i + 1) % CHAT_THINKING_PHRASES.length);
+    }, 2200);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-3 rounded-2xl rounded-bl-md border border-border/60 bg-muted/50 px-4 py-3">
+      <div className="flex h-4 items-end gap-0.5" aria-hidden>
+        <span
+          className="w-1 h-full origin-bottom rounded-full bg-primary motion-safe:animate-chat-wave"
+          style={{ animationDelay: "0ms" }}
+        />
+        <span
+          className="w-1 h-full origin-bottom rounded-full bg-secondary motion-safe:animate-chat-wave"
+          style={{ animationDelay: "150ms" }}
+        />
+        <span
+          className="w-1 h-full origin-bottom rounded-full bg-tropical-gold motion-safe:animate-chat-wave"
+          style={{ animationDelay: "300ms" }}
+        />
+      </div>
+      <span className="font-body text-sm text-muted-foreground" role="status">
+        {CHAT_THINKING_PHRASES[phraseIndex]}
+      </span>
+    </div>
+  );
 }
 
 interface ChatPanelProps {
@@ -71,6 +106,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
             {
               id: crypto.randomUUID(),
               role: "assistant",
+              variant: "error",
               content:
                 errorData.error ||
                 "No se pudo enviar el mensaje. Comprueba la configuración del asistente.",
@@ -87,6 +123,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
             {
               id: crypto.randomUUID(),
               role: "assistant",
+              variant: "error",
               content:
                 data.error ||
                 "No se pudo enviar el mensaje. Comprueba la configuración del asistente.",
@@ -99,7 +136,12 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
         if ("error" in outcome) {
           setMessages((p) => [
             ...p,
-            { id: crypto.randomUUID(), role: "assistant", content: `⚠️ ${outcome.error}` },
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              variant: "error",
+              content: outcome.error,
+            },
           ]);
         } else {
           setMessages((p) => [
@@ -113,6 +155,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
           {
             id: crypto.randomUUID(),
             role: "assistant",
+            variant: "error",
             content: "Error de conexión. Vuelve a intentar en un momento.",
           },
         ]);
@@ -186,9 +229,26 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-6 md:px-8">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 pb-4">
           {messages.length === 0 && !isLoading && (
-            <div className="py-12 text-center text-muted-foreground">
+            <div className="py-12 text-center">
               <Bot className="mx-auto mb-4 size-14 text-primary/80" />
-              <p className="font-body text-base">¿Qué te gustaría descubrir sobre Sucre?</p>
+              <p className="font-display text-lg font-semibold text-foreground">
+                ¡Hola! Soy tu guía en Sucre
+              </p>
+              <p className="mx-auto mt-2 max-w-sm font-body text-sm text-muted-foreground">
+                Pregúntame por playas, festivales, gastronomía o lo que quieras descubrir.
+              </p>
+              <div className="mt-6 flex flex-wrap justify-center gap-2">
+                {CHAT_SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => handleSend(s)}
+                    className="font-body rounded-full border border-border/80 bg-muted/40 px-4 py-2 text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -198,15 +258,25 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
               className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.role === "assistant" && (
-                <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                  <Bot className="size-4 text-primary" />
+                <div
+                  className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full ${
+                    msg.variant === "error" ? "bg-tropical-coral/10" : "bg-primary/10"
+                  }`}
+                >
+                  {msg.variant === "error" ? (
+                    <AlertTriangle className="size-4 text-tropical-coral" />
+                  ) : (
+                    <Bot className="size-4 text-primary" />
+                  )}
                 </div>
               )}
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm md:max-w-[75%] md:text-base ${
                   msg.role === "user"
                     ? "rounded-br-md bg-primary text-primary-foreground"
-                    : "rounded-bl-md border border-border/60 bg-card text-card-foreground shadow-sm"
+                    : msg.variant === "error"
+                      ? "rounded-bl-md border border-tropical-coral/30 bg-tropical-coral/5 text-foreground shadow-sm"
+                      : "rounded-bl-md border border-border/60 bg-card text-card-foreground shadow-sm"
                 }`}
               >
                 {msg.role === "assistant" ? (
@@ -230,22 +300,7 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
               <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
                 <Bot className="size-4 text-primary" />
               </div>
-              <div className="rounded-2xl rounded-bl-md border border-border/60 bg-muted/50 px-4 py-3">
-                <div className="flex gap-1">
-                  <span
-                    className="size-2 rounded-full bg-muted-foreground/40 animate-bounce"
-                    style={{ animationDelay: "0ms" }}
-                  />
-                  <span
-                    className="size-2 rounded-full bg-muted-foreground/40 animate-bounce"
-                    style={{ animationDelay: "150ms" }}
-                  />
-                  <span
-                    className="size-2 rounded-full bg-muted-foreground/40 animate-bounce"
-                    style={{ animationDelay: "300ms" }}
-                  />
-                </div>
-              </div>
+              <ThinkingIndicator />
             </div>
           )}
         </div>
