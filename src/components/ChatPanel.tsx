@@ -50,6 +50,8 @@ function ThinkingIndicator() {
 interface ChatPanelProps {
   onClose: () => void;
   initialMessage?: string;
+  /** El morph hacia este panel ya lo anima la View Transitions API; se omite la entrada de framer-motion. */
+  viewTransition?: boolean;
 }
 
 const POLL_MAX_MS = 120_000;
@@ -72,7 +74,7 @@ async function pollJob(jobId: string): Promise<{ reply: string } | { error: stri
   return { error: "Tiempo de espera agotado. Intenta de nuevo." };
 }
 
-export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
+export function ChatPanel({ onClose, initialMessage, viewTransition = false }: ChatPanelProps) {
   const [sessionKey] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -196,12 +198,19 @@ export function ChatPanel({ onClose, initialMessage }: ChatPanelProps) {
     handleSend(t);
   };
 
+  const enterExitProps = viewTransition
+    ? {}
+    : {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 16 },
+        transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] as const },
+      };
+
   return (
     <m.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 16 }}
-      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      {...enterExitProps}
+      style={viewTransition ? { viewTransitionName: "chat-morph" } : undefined}
       className="fixed inset-0 z-50 flex flex-col bg-background"
     >
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border/80 px-4 py-3 md:px-6">

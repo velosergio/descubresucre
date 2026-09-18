@@ -12,8 +12,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useTiltCard } from "@/hooks/use-tilt-card";
 import type { QueHacerHomeCard, QueHacerHomePayload } from "@/lib/get-que-hacer-home";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { EXPO_OUT } from "@/lib/motion";
 import { QUE_HACER_AUTOPLAY_MS } from "@/lib/que-hacer-home";
 import { resolveQueHacerIcon } from "@/lib/que-hacer-icons";
 
@@ -21,10 +23,14 @@ function ActivityCard({ item }: { item: QueHacerHomeCard }) {
   const icon = resolveQueHacerIcon(item.iconKey);
   const Icon = icon.Icon;
   const src = toServedMediaUrl(item.coverUrl);
+  const tilt = useTiltCard<HTMLAnchorElement>();
   return (
     <Link
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
       href={`/que-hacer/${item.slug}`}
-      className="group relative block aspect-square overflow-hidden rounded-2xl bg-card card-hover"
+      className="group tilt-card relative block aspect-square overflow-hidden rounded-2xl bg-card"
     >
       <Image
         src={src}
@@ -93,9 +99,10 @@ export default function ActivitiesSection({ payload }: { payload: QueHacerHomePa
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <m.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: EXPO_OUT }}
           className="mb-12 text-center"
         >
           <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-5xl">
@@ -132,10 +139,10 @@ export default function ActivitiesSection({ payload }: { payload: QueHacerHomePa
             {items.map((item, i) => (
               <m.div
                 key={item.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: EXPO_OUT }}
               >
                 <ActivityCard item={item} />
               </m.div>

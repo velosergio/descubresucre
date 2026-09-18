@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(0.16, 1.4, 0.3, 1)",
+        "createdAt": "2026-09-18T03:29:53.663Z",
+        "reason": "Overshoot deliberado para el retorno tipo resorte del tilt magnetico de tarjetas, direccion 'Postal interactiva' elegida por el usuario via AskUserQuestion (tilt 3D + spring); sustituto ligero de fisica de resorte, usado solo en ese contexto puntual."
+      }
+    ]
+  }
+}

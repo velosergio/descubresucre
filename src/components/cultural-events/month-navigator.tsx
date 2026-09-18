@@ -1,5 +1,6 @@
 "use client";
 
+import * as m from "framer-motion/m";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useTransition } from "react";
 import { AddToCalendarButton } from "@/components/cultural-events/add-to-calendar-button";
@@ -7,6 +8,7 @@ import { EventCard } from "@/components/cultural-events/event-card";
 import { Button } from "@/components/ui/button";
 import type { CulturalEventsHomePayload } from "@/lib/get-cultural-events-home";
 import { formatMonthLabel } from "@/lib/month-range";
+import { EXPO_OUT } from "@/lib/motion";
 
 function addMonths(year: number, month: number, delta: number) {
   const zeroBased = month - 1 + delta;
@@ -69,12 +71,16 @@ export function MonthNavigator({ initialPayload }: { initialPayload: CulturalEve
         </p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
-          {payload.events.map((event) => (
-            <EventCard
+          {payload.events.map((event, i) => (
+            <m.div
               key={event.id}
-              event={event}
-              actions={<AddToCalendarButton event={event} />}
-            />
+              initial={{ opacity: 0, x: i % 2 === 0 ? -24 : 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: (i % 4) * 0.08, ease: EXPO_OUT }}
+            >
+              <EventCard event={event} actions={<AddToCalendarButton event={event} />} />
+            </m.div>
           ))}
         </div>
       )}

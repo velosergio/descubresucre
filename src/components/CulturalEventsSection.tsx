@@ -3,15 +3,17 @@
 import * as m from "framer-motion/m";
 import { MonthNavigator } from "@/components/cultural-events/month-navigator";
 import type { CulturalEventsHomePayload } from "@/lib/get-cultural-events-home";
+import { EXPO_OUT } from "@/lib/motion";
 
 export default function CulturalEventsSection({ payload }: { payload: CulturalEventsHomePayload }) {
   return (
-    <section className="section-padding bg-background">
+    <section id="agenda-cultural" className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
         <m.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: EXPO_OUT }}
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">

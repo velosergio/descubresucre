@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import * as m from "framer-motion/m";
 import { ArrowDown, MessageCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import ActivitiesSection from "@/components/ActivitiesSection";
 import { ChatPanel } from "@/components/ChatPanel";
 import ConvocatoriasSection from "@/components/ConvocatoriasSection";
@@ -12,6 +13,7 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import ImperdiblesSection from "@/components/ImperdiblesSection";
 import MapSection from "@/components/MapSection";
+import ScrollProgressRail from "@/components/ScrollProgressRail";
 import type { CulturalEventsHomePayload } from "@/lib/get-cultural-events-home";
 import type { QueHacerHomePayload } from "@/lib/get-que-hacer-home";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
@@ -38,6 +40,16 @@ export default function HomePage({
   const [chatKey, setChatKey] = useState(0);
   const [initialMessage, setInitialMessage] = useState<string | undefined>();
   const [showChatIntro, setShowChatIntro] = useState(false);
+  const [morphEnabled, setMorphEnabled] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === "undefined" || !("startViewTransition" in document)) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setMorphEnabled(!mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const dismissChatIntro = () => {
     setShowChatIntro(false);
@@ -70,44 +82,81 @@ export default function HomePage({
     };
   }, [view]);
 
+  const runStateChange = (applyState: () => void) => {
+    if (!morphEnabled) {
+      applyState();
+      return;
+    }
+    // El navegador puede rechazar la transición (p. ej. pestaña oculta); el cambio de estado ya ocurrió vía flushSync.
+    document.startViewTransition(() => flushSync(applyState)).ready.catch(() => {});
+  };
+
   const openChat = (msg?: string) => {
-    setChatKey((k) => k + 1);
-    setInitialMessage(msg);
-    setView("chat");
-    dismissChatIntro();
+    runStateChange(() => {
+      setChatKey((k) => k + 1);
+      setInitialMessage(msg);
+      setView("chat");
+      dismissChatIntro();
+    });
   };
 
   const closeChat = () => {
-    setView("landing");
-    setInitialMessage(undefined);
+    runStateChange(() => {
+      setView("landing");
+      setInitialMessage(undefined);
+    });
   };
+
+  const landingContent = (
+    <>
+      <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
+      <ImperdiblesSection payload={imperdiblesPayload} />
+      <ActivitiesSection payload={queHacerPayload} />
+      <CulturalEventsSection payload={culturalEventsPayload} />
+      <MapSection mapsApiKey={mapsApiKey} />
+      <ConvocatoriasSection />
+      <Footer />
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background">
-      <AnimatePresence mode="wait">
-        {view === "landing" ? (
-          <m.div
-            key="landing"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-          >
-            <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
-            <ImperdiblesSection payload={imperdiblesPayload} />
-            <ActivitiesSection payload={queHacerPayload} />
-            <CulturalEventsSection payload={culturalEventsPayload} />
-            <MapSection mapsApiKey={mapsApiKey} />
-            <ConvocatoriasSection />
-            <Footer />
-          </m.div>
-        ) : null}
-      </AnimatePresence>
+      {view === "landing" && <ScrollProgressRail />}
 
-      <AnimatePresence>
-        {view === "chat" ? (
-          <ChatPanel key={chatKey} onClose={closeChat} initialMessage={initialMessage} />
-        ) : null}
-      </AnimatePresence>
+      {morphEnabled ? (
+        <>
+          {view === "landing" ? <div>{landingContent}</div> : null}
+          {view === "chat" ? (
+            <ChatPanel
+              key={chatKey}
+              onClose={closeChat}
+              initialMessage={initialMessage}
+              viewTransition
+            />
+          ) : null}
+        </>
+      ) : (
+        <>
+          <AnimatePresence mode="wait">
+            {view === "landing" ? (
+              <m.div
+                key="landing"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              >
+                {landingContent}
+              </m.div>
+            ) : null}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {view === "chat" ? (
+              <ChatPanel key={chatKey} onClose={closeChat} initialMessage={initialMessage} />
+            ) : null}
+          </AnimatePresence>
+        </>
+      )}
 
       <AnimatePresence>
         {view === "landing" && showChatIntro && (

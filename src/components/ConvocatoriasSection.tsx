@@ -1,5 +1,7 @@
 import * as m from "framer-motion/m";
 import { ArrowRight, Clock, Megaphone, Users } from "lucide-react";
+import { useTiltCard } from "@/hooks/use-tilt-card";
+import { EXPO_OUT } from "@/lib/motion";
 
 const convocatorias = [
   {
@@ -41,9 +43,61 @@ const typeColors: Record<string, string> = {
   Música: "bg-tropical-coral/10 text-tropical-coral border-tropical-coral/20",
 };
 
+function ConvocatoriaCard({
+  conv,
+  index,
+}: {
+  conv: (typeof convocatorias)[number];
+  index: number;
+}) {
+  const tilt = useTiltCard<HTMLDivElement>();
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 26, rotate: index % 2 === 0 ? -1.5 : 1.5 }}
+      whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.65, delay: index * 0.1, ease: EXPO_OUT }}
+    >
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: mousemove/mouseleave solo animan un tilt decorativo, no gatillan ninguna acción */}
+      <div
+        ref={tilt.ref}
+        onMouseMove={tilt.onMouseMove}
+        onMouseLeave={tilt.onMouseLeave}
+        className="tilt-card group cursor-pointer rounded-2xl border border-border bg-card p-6"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <span
+            className={`text-xs font-body font-medium rounded-full px-3 py-1 border ${typeColors[conv.type]}`}
+          >
+            {conv.type}
+          </span>
+        </div>
+        <h3 className="font-display font-bold text-lg text-foreground mb-2">{conv.title}</h3>
+        <p className="text-muted-foreground font-body text-sm mb-4">{conv.description}</p>
+        <div className="flex items-center gap-4 text-sm font-body">
+          <span className="flex items-center gap-1.5 text-tropical-coral">
+            <Clock className="w-3.5 h-3.5" />
+            {conv.deadline}
+          </span>
+          <span className="flex items-center gap-1.5 text-muted-foreground">
+            <Users className="w-3.5 h-3.5" />
+            {conv.audience}
+          </span>
+        </div>
+        <div className="mt-4 pt-4 border-t border-border">
+          <span className="inline-flex items-center gap-2 text-primary text-sm font-body font-medium">
+            Más información{" "}
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </div>
+      </div>
+    </m.div>
+  );
+}
+
 const ConvocatoriasSection = () => {
   return (
-    <section className="section-padding bg-background">
+    <section id="convocatorias" className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
         <m.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,40 +121,7 @@ const ConvocatoriasSection = () => {
 
         <div className="grid md:grid-cols-2 gap-6">
           {convocatorias.map((conv, i) => (
-            <m.div
-              key={conv.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-card rounded-2xl p-6 border border-border card-hover cursor-pointer group"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <span
-                  className={`text-xs font-body font-medium rounded-full px-3 py-1 border ${typeColors[conv.type]}`}
-                >
-                  {conv.type}
-                </span>
-              </div>
-              <h3 className="font-display font-bold text-lg text-foreground mb-2">{conv.title}</h3>
-              <p className="text-muted-foreground font-body text-sm mb-4">{conv.description}</p>
-              <div className="flex items-center gap-4 text-sm font-body">
-                <span className="flex items-center gap-1.5 text-tropical-coral">
-                  <Clock className="w-3.5 h-3.5" />
-                  {conv.deadline}
-                </span>
-                <span className="flex items-center gap-1.5 text-muted-foreground">
-                  <Users className="w-3.5 h-3.5" />
-                  {conv.audience}
-                </span>
-              </div>
-              <div className="mt-4 pt-4 border-t border-border">
-                <span className="inline-flex items-center gap-2 text-primary text-sm font-body font-medium">
-                  Más información{" "}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </div>
-            </m.div>
+            <ConvocatoriaCard key={conv.title} conv={conv} index={i} />
           ))}
         </div>
       </div>

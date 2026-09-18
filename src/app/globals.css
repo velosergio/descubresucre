@@ -137,14 +137,51 @@
     border: 1px solid hsla(0, 0%, 100%, 0.25);
   }
 
-  .card-hover {
-    transition-property: all;
-    transition-duration: 500ms;
-    transition-timing-function: ease-out;
+  .tilt-card {
+    --tilt-rx: 0deg;
+    --tilt-ry: 0deg;
+    --tilt-tz: 0px;
+    --tilt-shadow-x: 0px;
+    --tilt-shadow-y: 14px;
+    --tilt-transition: 650ms cubic-bezier(0.16, 1.4, 0.3, 1);
+    transform: perspective(900px) rotateX(var(--tilt-rx)) rotateY(var(--tilt-ry))
+      translateZ(var(--tilt-tz));
+    transition:
+      transform var(--tilt-transition),
+      box-shadow var(--tilt-transition);
+    box-shadow: var(--tilt-shadow-x) var(--tilt-shadow-y) 32px -14px hsla(210, 25%, 12%, 0.3);
+    will-change: transform;
   }
+}
 
-  .card-hover:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px -15px hsla(174, 62%, 35%, 0.25);
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Morph del buscador del hero hacia el panel de chat (View Transitions API, same-document). */
+::view-transition-group(chat-morph) {
+  animation-duration: 550ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(chat-morph),
+::view-transition-new(chat-morph) {
+  animation-duration: 550ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
   }
 }

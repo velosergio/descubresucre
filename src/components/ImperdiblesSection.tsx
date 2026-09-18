@@ -13,8 +13,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useTiltCard } from "@/hooks/use-tilt-card";
 import type { ImperdiblesHomePayload } from "@/lib/imperdibles-public";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { EXPO_OUT } from "@/lib/motion";
 
 type Props = {
   payload: ImperdiblesHomePayload;
@@ -32,10 +34,14 @@ function DestinationCard({
   cardImageUrl: string | null;
 }) {
   const cardSrc = cardImageUrl ? toServedMediaUrl(cardImageUrl) : null;
+  const tilt = useTiltCard<HTMLAnchorElement>();
   return (
     <Link
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
       href={`/imperdibles/${slug}`}
-      className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl card-hover"
+      className="group tilt-card relative block aspect-[3/4] w-full overflow-hidden rounded-2xl"
     >
       {cardSrc ? (
         <Image
@@ -85,9 +91,10 @@ export default function ImperdiblesSection({ payload }: Props) {
     <section id="imperdibles" className="section-padding bg-background">
       <div className="mx-auto max-w-7xl">
         <m.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: EXPO_OUT }}
           className="mb-12 text-center"
         >
           <h2 className="mb-4 font-display text-3xl font-bold text-foreground md:text-5xl">
@@ -116,10 +123,10 @@ export default function ImperdiblesSection({ payload }: Props) {
             {items.map((dest, i) => (
               <m.div
                 key={dest.slug}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 36, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
+                transition={{ duration: 0.7, delay: i * 0.12, ease: EXPO_OUT }}
                 className="cursor-pointer"
               >
                 <DestinationCard {...dest} />

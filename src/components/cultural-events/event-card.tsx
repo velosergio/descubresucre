@@ -1,5 +1,6 @@
 import { Calendar, MapPin } from "lucide-react";
 import Image from "next/image";
+import { useTiltCard } from "@/hooks/use-tilt-card";
 import type { CulturalEventPublic } from "@/lib/get-cultural-events-home";
 import { toServedMediaUrl } from "@/lib/media-url";
 
@@ -56,9 +57,16 @@ export function EventCard({
   actions?: React.ReactNode;
 }) {
   const imgSrc = event.imageUrl ? toServedMediaUrl(event.imageUrl) : null;
+  const tilt = useTiltCard<HTMLDivElement>();
 
   return (
-    <div className="bg-card rounded-2xl overflow-hidden shadow-sm card-hover flex flex-col sm:flex-row">
+    // biome-ignore lint/a11y/noStaticElementInteractions: mousemove/mouseleave solo animan un tilt decorativo, no gatillan ninguna acción
+    <div
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      className="tilt-card flex flex-col overflow-hidden rounded-2xl bg-card shadow-sm sm:flex-row"
+    >
       <div className="relative h-48 w-full shrink-0 overflow-hidden bg-muted sm:h-auto sm:w-48 sm:min-h-[12rem] sm:self-stretch">
         {imgSrc ? (
           <Image

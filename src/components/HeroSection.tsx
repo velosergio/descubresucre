@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { CHAT_SUGGESTIONS } from "@/lib/chat-suggestions";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
 import { toServedMediaUrl } from "@/lib/media-url";
+import { EXPO_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 interface HeroSectionProps {
@@ -134,7 +135,10 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
   };
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section
+      id="hero"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden"
+    >
       <div className="absolute inset-0 z-0">
         <HeroBackground config={heroConfig} />
       </div>
@@ -144,7 +148,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
         <m.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.9, ease: EXPO_OUT }}
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary/20 px-4 py-2 backdrop-blur-sm">
             <MapPin className="h-4 w-4 text-tropical-gold" />
@@ -167,10 +171,13 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
           onSubmit={handleSubmit}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.9, delay: 0.25, ease: EXPO_OUT }}
           className="relative mx-auto mb-6 max-w-2xl"
         >
-          <div className="glass-input flex items-center gap-2 rounded-2xl p-2">
+          <div
+            className="glass-input flex items-center gap-2 rounded-2xl p-2"
+            style={{ viewTransitionName: "chat-morph" }}
+          >
             <Sparkles className="ml-3 h-5 w-5 shrink-0 text-tropical-gold" />
             <Label htmlFor="hero-search-input" className="sr-only">
               ¿Qué te gustaría descubrir sobre Sucre?
@@ -195,7 +202,7 @@ const HeroSection = ({ onChatMessage, heroConfig }: HeroSectionProps) => {
         <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.55, ease: EXPO_OUT }}
           className="flex flex-wrap justify-center gap-2"
         >
           {CHAT_SUGGESTIONS.map((s) => (
