@@ -1,7 +1,11 @@
+const FALLBACK_ORIGIN = "http://localhost:3000";
+
 /** Origen público del sitio (sin path). Debe coincidir con `metadataBase` en `layout.tsx`. */
 export function getSiteOrigin(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  return new URL(raw).origin;
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? FALLBACK_ORIGIN;
+  if (URL.canParse(raw)) return new URL(raw).origin;
+  console.error("getSiteOrigin", `NEXT_PUBLIC_SITE_URL inválida: "${raw}"`);
+  return FALLBACK_ORIGIN;
 }
 
 /**

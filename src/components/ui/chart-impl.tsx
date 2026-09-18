@@ -56,6 +56,7 @@ const ChartContainer = React.forwardRef<
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
   const [mod, setMod] = React.useState<RechartsMod | null>(null);
+  const chartContextValue = React.useMemo(() => ({ config }), [config]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -83,7 +84,7 @@ const ChartContainer = React.forwardRef<
   }
 
   return (
-    <ChartContext.Provider value={{ config }}>
+    <ChartContext.Provider value={chartContextValue}>
       <RechartsModuleContext.Provider value={mod}>
         <div
           data-chart={chartId}
@@ -350,13 +351,13 @@ const ChartLegendContent = React.forwardRef<
         className,
       )}
     >
-      {payload.map((item, index) => {
+      {payload.map((item) => {
         const key = `${nameKey || item.dataKey || "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
         return (
           <div
-            key={String(item.value ?? item.dataKey ?? index)}
+            key={String(item.value ?? item.dataKey ?? key)}
             className={cn(
               "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
             )}
