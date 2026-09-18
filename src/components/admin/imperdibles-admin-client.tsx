@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import {
   type ImperdibleAdminRow,
   ImperdiblesDestinationDialog,
 } from "@/components/admin/imperdibles-destination-dialog";
+import { TableRowActions } from "@/components/admin/table-row-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -231,26 +232,10 @@ export function ImperdiblesAdminClient({
                   <td className="p-3">{d.published ? "Sí" : "No"}</td>
                   <td className="p-3">{d.sortOrder}</td>
                   <td className="p-3">
-                    <div className="flex gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEdit(d)}
-                        aria-label="Editar"
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeleteId(d.id)}
-                        aria-label="Eliminar"
-                      >
-                        <Trash2 className="size-4 text-destructive" />
-                      </Button>
-                    </div>
+                    <TableRowActions
+                      onEdit={() => openEdit(d)}
+                      onDelete={() => setDeleteId(d.id)}
+                    />
                   </td>
                 </tr>
               ))

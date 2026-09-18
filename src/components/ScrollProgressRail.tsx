@@ -39,10 +39,7 @@ export default function ScrollProgressRail() {
   }, []);
 
   return (
-    <div
-      className="pointer-events-none fixed inset-y-0 left-5 z-30 hidden items-center lg:flex"
-      aria-hidden="true"
-    >
+    <div className="pointer-events-none fixed inset-y-0 left-5 z-30 hidden items-center lg:flex">
       <div className="relative flex h-[38vh] flex-col justify-between">
         <div className="absolute inset-y-0 left-[3px] w-px bg-foreground/10" />
         <m.div

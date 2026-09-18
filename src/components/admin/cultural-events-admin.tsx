@@ -1,12 +1,13 @@
 "use client";
 
-import { ImageIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import { ImageIcon, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/admin/confirm-delete-dialog";
 import { GalleryPickerDialog } from "@/components/admin/gallery-picker-dialog";
+import { TableRowActions } from "@/components/admin/table-row-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -464,26 +465,10 @@ export function CulturalEventsAdmin({ initialEvents }: { initialEvents: Cultural
                   <td className="p-3">{ev.location}</td>
                   <td className="p-3">{ev.published ? "Sí" : "No"}</td>
                   <td className="p-3">
-                    <div className="flex gap-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openEdit(ev)}
-                        aria-label="Editar"
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setDeleteId(ev.id)}
-                        aria-label="Eliminar"
-                      >
-                        <Trash2 className="size-4 text-destructive" />
-                      </Button>
-                    </div>
+                    <TableRowActions
+                      onEdit={() => openEdit(ev)}
+                      onDelete={() => setDeleteId(ev.id)}
+                    />
                   </td>
                 </tr>
               ))

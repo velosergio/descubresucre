@@ -123,40 +123,33 @@ export default function HomePage({
     <div className="min-h-screen bg-background">
       {view === "landing" && <ScrollProgressRail />}
 
-      {morphEnabled ? (
-        <>
-          {view === "landing" ? <div>{landingContent}</div> : null}
-          {view === "chat" ? (
-            <ChatPanel
-              key={chatKey}
-              onClose={closeChat}
-              initialMessage={initialMessage}
-              viewTransition
-            />
-          ) : null}
-        </>
-      ) : (
-        <>
-          <AnimatePresence mode="wait">
-            {view === "landing" ? (
-              <m.div
-                key="landing"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-              >
-                {landingContent}
-              </m.div>
-            ) : null}
-          </AnimatePresence>
+      <AnimatePresence mode="wait">
+        {view === "landing" ? (
+          <m.div
+            key="landing"
+            {...(morphEnabled
+              ? {}
+              : {
+                  initial: { opacity: 1 },
+                  exit: { opacity: 0, y: -12 },
+                  transition: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
+                })}
+          >
+            {landingContent}
+          </m.div>
+        ) : null}
+      </AnimatePresence>
 
-          <AnimatePresence>
-            {view === "chat" ? (
-              <ChatPanel key={chatKey} onClose={closeChat} initialMessage={initialMessage} />
-            ) : null}
-          </AnimatePresence>
-        </>
-      )}
+      <AnimatePresence>
+        {view === "chat" ? (
+          <ChatPanel
+            key={chatKey}
+            onClose={closeChat}
+            initialMessage={initialMessage}
+            viewTransition={morphEnabled}
+          />
+        ) : null}
+      </AnimatePresence>
 
       <AnimatePresence>
         {view === "landing" && showChatIntro && (
