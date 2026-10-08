@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import MapSection from "@/components/MapSection";
@@ -53,13 +53,50 @@ const mapsMock = vi.hoisted(() => {
   };
 });
 
+const loaderMock = vi.hoisted(() => ({
+  authListener: null as null | (() => void),
+}));
+
 vi.mock("@/lib/load-google-maps", () => ({
   loadGoogleMapsApi: vi.fn(async () => {
     mapsMock.install();
   }),
+  onGoogleMapsAuthFailure: vi.fn((cb: () => void) => {
+    loaderMock.authListener = cb;
+    return () => {
+      loaderMock.authListener = null;
+    };
+  }),
+  resetGoogleMapsLoader: vi.fn(),
 }));
 
 describe("MapSection", () => {
+  it("si Google rechaza la clave muestra un estado propio sin Reintentar y deja la lista", async () => {
+    render(<MapSection mapsApiKey="test-key" />);
+    await waitFor(() => expect(loaderMock.authListener).not.toBeNull());
+
+    act(() => loaderMock.authListener?.());
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/No pudimos cargar el mapa/);
+    expect(screen.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Abrir en Google Maps/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Coveñas/ })).toBeInTheDocument();
+  });
+
+  it("si la carga falla ofrece Reintentar y vuelve a montar el mapa", async () => {
+    const user = userEvent.setup();
+    const { loadGoogleMapsApi } = await import("@/lib/load-google-maps");
+    vi.mocked(loadGoogleMapsApi).mockRejectedValueOnce(new Error("sin red"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    render(<MapSection mapsApiKey="test-key" />);
+
+    await user.click(await screen.findByRole("button", { name: "Reintentar" }));
+
+    expect(await screen.findByRole("application", { name: "Mapa de Sucre" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("con API key muestra el mapa JS y recentra al elegir un destino", async () => {
     const user = userEvent.setup();
     render(<MapSection mapsApiKey="test-key" />);

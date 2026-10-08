@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { loadGoogleMapsApi } from "@/lib/load-google-maps";
+import { loadGoogleMapsApi, onGoogleMapsAuthFailure } from "@/lib/load-google-maps";
 
 export type MapPin = {
   id: number;
@@ -14,26 +14,35 @@ export type MapPin = {
 
 const DEFAULT_CENTER = { lat: 9.45, lng: -75.5 };
 
+/** `auth`: clave rechazada o sin facturación (reintentar no sirve); `load`: red o script bloqueado. */
+export type MapErrorReason = "auth" | "load";
+
 export function GoogleDestinationsMap({
   apiKey,
   destinations,
   selectedId,
   onSelect,
+  onError,
 }: {
   apiKey: string;
   destinations: MapPin[];
   selectedId: number | null;
   onSelect: (id: number) => void;
+  onError: (reason: MapErrorReason) => void;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<number, google.maps.Marker>>(new Map());
   const onSelectRef = useRef(onSelect);
+  const onErrorRef = useRef(onError);
   const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
-  }, [onSelect]);
+    onErrorRef.current = onError;
+  }, [onSelect, onError]);
+
+  useEffect(() => onGoogleMapsAuthFailure(() => onErrorRef.current("auth")), []);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -41,17 +50,22 @@ export function GoogleDestinationsMap({
     let cancelled = false;
 
     async function init() {
-      await loadGoogleMapsApi(apiKey);
-      if (cancelled || !host) return;
-      mapRef.current = new google.maps.Map(host, {
-        center: DEFAULT_CENTER,
-        zoom: 9,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: true,
-        gestureHandling: "cooperative",
-      });
-      setMapReady(true);
+      try {
+        await loadGoogleMapsApi(apiKey);
+        if (cancelled || !host) return;
+        mapRef.current = new google.maps.Map(host, {
+          center: DEFAULT_CENTER,
+          zoom: 9,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+          gestureHandling: "cooperative",
+        });
+        setMapReady(true);
+      } catch (error) {
+        console.error("[mapa] No se pudo iniciar Google Maps", error);
+        if (!cancelled) onErrorRef.current("load");
+      }
     }
 
     void init();
