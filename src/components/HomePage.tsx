@@ -14,6 +14,7 @@ import HeroSection from "@/components/HeroSection";
 import ImperdiblesSection from "@/components/ImperdiblesSection";
 import MapSection from "@/components/MapSection";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
+import type { ConvocatoriasHomePayload } from "@/lib/get-convocatorias-home";
 import type { CulturalEventsHomePayload } from "@/lib/get-cultural-events-home";
 import type { QueHacerHomePayload } from "@/lib/get-que-hacer-home";
 import type { ResolvedHeroConfig } from "@/lib/hero-appearance";
@@ -28,12 +29,14 @@ export default function HomePage({
   imperdiblesPayload,
   queHacerPayload,
   culturalEventsPayload,
+  convocatoriasPayload,
   mapsApiKey,
 }: {
   heroConfig: ResolvedHeroConfig;
   imperdiblesPayload: ImperdiblesHomePayload;
   queHacerPayload: QueHacerHomePayload;
   culturalEventsPayload: CulturalEventsHomePayload;
+  convocatoriasPayload: ConvocatoriasHomePayload;
   mapsApiKey: string | null;
 }) {
   const [view, setView] = useState<"landing" | "chat">("landing");
@@ -114,7 +117,7 @@ export default function HomePage({
       <ActivitiesSection payload={queHacerPayload} />
       <CulturalEventsSection payload={culturalEventsPayload} />
       <MapSection mapsApiKey={mapsApiKey} />
-      <ConvocatoriasSection />
+      <ConvocatoriasSection convocatoriasPayload={convocatoriasPayload} />
       <Footer />
     </>
   );

@@ -11,6 +11,7 @@ import {
   Leaf,
   LogOut,
   MapPin,
+  Megaphone,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -54,6 +55,7 @@ const personalizarNav: {
   { href: "/admin/personalizar/destinos-imperdibles", label: "Destinos imperdibles", icon: MapPin },
   { href: "/admin/personalizar/que-hacer", label: "Qué hacer", icon: Compass },
   { href: "/admin/personalizar/eventos", label: "Eventos", icon: Calendar },
+  { href: "/admin/personalizar/convocatorias", label: "Convocatorias", icon: Megaphone },
   { href: "/admin/personalizar/biodiversidad", label: "Biodiversidad", icon: Leaf },
   {
     href: "/admin/personalizar/experiencias-naturaleza",

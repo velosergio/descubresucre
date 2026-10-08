@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
+import { getConvocatoriasForHome } from "@/lib/get-convocatorias-home";
 import { getCulturalEventsForMonth } from "@/lib/get-cultural-events-home";
 import { getImperdiblesForHome } from "@/lib/get-imperdibles-home";
 import { getQueHacerForHome } from "@/lib/get-que-hacer-home";
@@ -62,19 +63,26 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const now = new Date();
-  const [heroConfig, imperdiblesPayload, queHacerPayload, culturalEventsPayload] =
-    await Promise.all([
-      getResolvedHeroConfig(),
-      getImperdiblesForHome(),
-      getQueHacerForHome(),
-      getCulturalEventsForMonth({ year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 }),
-    ]);
+  const [
+    heroConfig,
+    imperdiblesPayload,
+    queHacerPayload,
+    culturalEventsPayload,
+    convocatoriasPayload,
+  ] = await Promise.all([
+    getResolvedHeroConfig(),
+    getImperdiblesForHome(),
+    getQueHacerForHome(),
+    getCulturalEventsForMonth({ year: now.getUTCFullYear(), month: now.getUTCMonth() + 1 }),
+    getConvocatoriasForHome(now),
+  ]);
   return (
     <HomePage
       heroConfig={heroConfig}
       imperdiblesPayload={imperdiblesPayload}
       queHacerPayload={queHacerPayload}
       culturalEventsPayload={culturalEventsPayload}
+      convocatoriasPayload={convocatoriasPayload}
       mapsApiKey={getGoogleMapsApiKey()}
     />
   );

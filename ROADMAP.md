@@ -10,7 +10,7 @@ Huecos respecto al [Anexo 2](docs/Anexo%202%20Investigación%20en%20curso-%20Ser
 - **[✅ Hecho] Fichas de destino (Sucre Natural)**: páginas interactivas. Los hubs públicos se absorben en Actividades (008); se deja de llamar «micrositios»
 - **[✅ Hecho — 008]** Temas / Qué hacer (ex-hubs): ver Actividades arriba
 - **Mapa interactivo**: una sola fuente CMS (destinos + fichas + actores + eventos) con geolocalización; sin mocks
-- **Convocatorias**: CRUD con enlaces externos
+- **[✅ Hecho — 010]** Convocatorias: CRUD admin con enlace externo obligatorio; home sin mock
 - **Footer**: quitar datos mock de la Gobernación / teléfonos
 
 ## Patrimonio y articulación
@@ -64,7 +64,7 @@ Copiar tras `/speckit-specify`, **en este orden** (cada uno asume los anteriores
 
 4. **[✅ Hecho — 009]** Fusionar EventsSection y CulturalAgenda en un solo módulo de próximos eventos / agenda cultural. Admin CRUD (fecha, lugar, categoría, imagen, descripción, coords opcionales). Home: listado por mes con navegación prev/next. Botón “Agregar a calendario” (Google Calendar y equivalente iOS/.ics). Quitar datos hardcodeados.
 
-5. Convertir ConvocatoriasSection en CMS: CRUD admin (título, descripción, audiencia, tipo, fecha límite, enlace externo obligatorio). Home consume la BD; sin mock.
+5. **[✅ Hecho — 010]** Convertir ConvocatoriasSection en CMS: CRUD admin (título, descripción, audiencia, tipo, fecha límite, enlace externo obligatorio). Home consume la BD; sin mock.
 
 6. Actualizar Footer: eliminar datos mock de turismo de la Gobernación de Sucre y números de teléfono; dejar solo contenido real/configurable o mínimo institucional.
 

@@ -10,5 +10,6 @@
         "reason": "Overshoot deliberado para el retorno tipo resorte del tilt magnetico de tarjetas, direccion 'Postal interactiva' elegida por el usuario via AskUserQuestion (tilt 3D + spring); sustituto ligero de fisica de resorte, usado solo en ese contexto puntual."
       }
     ]
-  }
+  },
+  "buildPath": "comp"
 }

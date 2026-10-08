@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-07T00:00:00.000Z",
+  "title": "Design System: Sucre Vivo",
+  "extensions": {
+    "colorMeta": {
+      "teal-caribe": {
+        "role": "primary",
+        "displayName": "Teal Caribe",
+        "canonical": "hsl(174, 62%, 35%)",
+        "tonalRamp": ["hsl(174,62%,15%)", "hsl(174,62%,22%)", "hsl(174,62%,29%)", "hsl(174,62%,35%)", "hsl(174,55%,48%)", "hsl(174,50%,65%)", "hsl(174,50%,82%)", "hsl(174,50%,94%)"]
+      },
+      "naranja-atardecer": {
+        "role": "secondary",
+        "displayName": "Naranja Atardecer",
+        "canonical": "hsl(28, 85%, 55%)",
+        "tonalRamp": ["hsl(28,85%,18%)", "hsl(28,85%,28%)", "hsl(28,85%,40%)", "hsl(28,85%,55%)", "hsl(28,85%,65%)", "hsl(28,85%,75%)", "hsl(28,85%,87%)", "hsl(28,85%,95%)"]
+      },
+      "oro-sol": {
+        "role": "secondary",
+        "displayName": "Oro Sol",
+        "canonical": "hsl(45, 93%, 58%)",
+        "tonalRamp": ["hsl(45,93%,18%)", "hsl(45,93%,28%)", "hsl(45,93%,40%)", "hsl(45,93%,58%)", "hsl(45,93%,66%)", "hsl(45,93%,76%)", "hsl(45,93%,88%)", "hsl(45,93%,95%)"]
+      },
+      "coral-fiesta": {
+        "role": "tertiary",
+        "displayName": "Coral Fiesta",
+        "canonical": "hsl(5, 72%, 60%)",
+        "tonalRamp": ["hsl(5,72%,18%)", "hsl(5,72%,28%)", "hsl(5,72%,42%)", "hsl(5,72%,60%)", "hsl(5,72%,68%)", "hsl(5,72%,78%)", "hsl(5,72%,89%)", "hsl(5,72%,96%)"]
+      },
+      "arena-crema": {
+        "role": "neutral",
+        "displayName": "Arena Crema",
+        "canonical": "hsl(40, 33%, 97%)",
+        "tonalRamp": ["hsl(40,33%,15%)", "hsl(40,25%,28%)", "hsl(40,20%,42%)", "hsl(40,18%,58%)", "hsl(40,20%,74%)", "hsl(40,22%,86%)", "hsl(40,28%,93%)", "hsl(40,33%,97%)"]
+      },
+      "tinta-profunda": {
+        "role": "neutral",
+        "displayName": "Tinta Profunda",
+        "canonical": "hsl(210, 25%, 12%)",
+        "tonalRamp": ["hsl(210,25%,12%)", "hsl(210,22%,22%)", "hsl(210,18%,32%)", "hsl(210,12%,45%)", "hsl(210,10%,60%)", "hsl(210,12%,76%)", "hsl(210,15%,88%)", "hsl(210,20%,96%)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "H1 del hero; una palabra clave resaltada en oro." },
+      "headline": { "displayName": "Headline", "purpose": "H2 de sección, con una palabra clave en color." },
+      "title": { "displayName": "Title", "purpose": "Título de tarjetas." },
+      "body": { "displayName": "Body", "purpose": "Párrafos y subtítulos de sección." },
+      "label": { "displayName": "Label", "purpose": "Chips, píldoras y enlaces de acción." }
+    },
+    "shadows": [
+      { "name": "tilt-card", "value": "0 14px 32px -14px hsla(210, 25%, 12%, 0.3)", "purpose": "Sombra difusa de las tarjetas con tilt; se desplaza con el puntero." }
+    ],
+    "motion": [
+      { "name": "expo-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entradas de sección y morph del chat." },
+      { "name": "tilt-spring", "value": "cubic-bezier(0.16, 1.4, 0.3, 1)", "purpose": "Retorno elástico de las tarjetas con tilt." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón enviar (hero)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botón cuadrado teal con icono de enviar dentro del campo de vidrio del hero.",
+      "html": "<button class=\"ds-btn-primary\" aria-label=\"Enviar búsqueda\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 2-7 20-4-9-9-4Z\"/><path d=\"M22 2 11 13\"/></svg></button>",
+      "css": ".ds-btn-primary { display:inline-flex; background: hsl(174 62% 35%); color:#fff; padding:12px; border:none; border-radius:12px; cursor:pointer; transition: background .2s; } .ds-btn-primary:hover { background: hsl(174 62% 35% / .9); } .ds-btn-primary:focus-visible { outline:2px solid hsl(174 62% 35%); outline-offset:2px; }"
+    },
+    {
+      "name": "Píldora de sugerencia",
+      "kind": "chip",
+      "refersTo": "suggestion-pill",
+      "description": "Sugerencia de pregunta para el chat, sobre la foto del hero.",
+      "html": "<button class=\"ds-pill\">¿Qué playas visitar?</button>",
+      "css": ".ds-pill { background: hsla(0,0%,100%,.1); color: hsla(0,0%,100%,.7); padding:8px 16px; border:none; border-radius:9999px; font-size:14px; backdrop-filter: blur(4px); cursor:pointer; transition: background .2s, color .2s; } .ds-pill:hover { background: hsla(0,0%,100%,.2); color:#fff; } .ds-pill:focus-visible { outline:2px solid #fff; outline-offset:2px; }"
+    },
+    {
+      "name": "Chip de tipo",
+      "kind": "chip",
+      "refersTo": "chip-tipo",
+      "description": "Etiqueta de categoría con color de acento derivado del texto.",
+      "html": "<span class=\"ds-chip\">Convocatoria cultural</span>",
+      "css": ".ds-chip { display:inline-block; background: hsl(28 85% 55% / .1); color: hsl(28 85% 55%); border:1px solid hsl(28 85% 55% / .2); border-radius:9999px; padding:4px 12px; font-size:12px; font-weight:500; }"
+    },
+    {
+      "name": "Tarjeta de convocatoria",
+      "kind": "card",
+      "refersTo": "card-convocatoria",
+      "description": "Tarjeta blanca con chip de tipo, fecha límite en coral y enlace teal; inclina en 3D.",
+      "html": "<div class=\"ds-card\"><span class=\"ds-card-tag\">Cultura</span><h3 class=\"ds-card-title\">Convocatoria de ejemplo</h3><p class=\"ds-card-text\">Participa en las oportunidades del departamento.</p><a class=\"ds-card-link\" href=\"#\">Más información →</a></div>",
+      "css": ".ds-card { background:#fff; border:1px solid hsl(40 15% 88%); border-radius:16px; padding:24px; box-shadow: 0 14px 32px -14px hsla(210,25%,12%,.3); transition: transform .65s cubic-bezier(.16,1.4,.3,1); } .ds-card:hover { transform: perspective(900px) rotateX(-2deg) rotateY(3deg); } .ds-card-tag { display:inline-block; background: hsl(174 62% 35% / .1); color: hsl(174 62% 35%); border:1px solid hsl(174 62% 35% / .2); border-radius:9999px; padding:4px 12px; font-size:12px; font-weight:500; } .ds-card-title { font-family: 'Playfair Display', Georgia, serif; font-size:18px; font-weight:700; color: hsl(210 25% 12%); margin:12px 0 8px; } .ds-card-text { font-size:14px; color: hsl(210 10% 45%); margin:0 0 16px; } .ds-card-link { font-size:14px; font-weight:500; color: hsl(174 62% 35%); text-decoration:none; } .ds-card-link:hover { text-decoration:underline; } .ds-card-link:focus-visible { outline:2px solid hsl(174 62% 35%); outline-offset:2px; }"
+    },
+    {
+      "name": "Tarjeta de actividad",
+      "kind": "card",
+      "refersTo": "card-actividad",
+      "description": "Tarjeta cuadrada con foto, velo oscuro, icono, título serif y descripción.",
+      "html": "<a class=\"ds-act\" href=\"#\"><div class=\"ds-act-veil\"></div><div class=\"ds-act-body\"><svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 12h20\"/><path d=\"M12 2a15 15 0 0 1 0 20\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg><h3>Playas</h3><p>Sol y mar</p></div></a>",
+      "css": ".ds-act { position:relative; display:block; aspect-ratio:1; border-radius:16px; overflow:hidden; background: linear-gradient(135deg, hsl(174 62% 35%), hsl(28 85% 55%)); color:#fff; box-shadow: 0 14px 32px -14px hsla(210,25%,12%,.3); text-decoration:none; } .ds-act-veil { position:absolute; inset:0; background: hsl(210 25% 12% / .55); transition: background .3s; } .ds-act:hover .ds-act-veil { background: hsl(210 25% 12% / .65); } .ds-act-body { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 16px; text-align:center; } .ds-act-body h3 { font-family:'Playfair Display',Georgia,serif; font-size:18px; font-weight:700; margin:12px 0 4px; } .ds-act-body p { font-size:12px; margin:0; opacity:.85; } .ds-act:focus-visible { outline:2px solid hsl(45 93% 58%); outline-offset:2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La postal viva",
+    "overview": "Sucre Vivo es una postal del Caribe colombiano que cobra vida. La fotografía aérea de la costa abre la página con luz cálida; debajo, una paleta de teal, naranja y oro sobre papel crema mantiene el tono luminoso, y las tarjetas se inclinan en 3D con retorno elástico al pasar el cursor. El ánimo es cálido, luminoso y juguetón: el movimiento es parte de la personalidad, no un adorno.",
+    "keyCharacteristics": [
+      "Fotografía a pantalla completa como protagonista del primer pliegue.",
+      "Papel crema como lienzo, no blanco puro.",
+      "Titulares serif con una palabra clave resaltada en color.",
+      "Elevación y rotación 3D solo al interactuar.",
+      "Vidrio esmerilado únicamente sobre fotografía.",
+      "Movimiento con curvas expo-out y retorno elástico puntual en las tarjetas."
+    ],
+    "rules": [
+      { "name": "The Tinted Sand Rule", "body": "El fondo nunca es blanco puro ni gris frío: es arena crema. El blanco puro queda para tarjetas elevadas.", "section": "colors" },
+      { "name": "The Sun Only On Photo Rule", "body": "El oro se usa sobre fotografía u oscuro; sobre crema no tiene contraste suficiente para texto.", "section": "colors" },
+      { "name": "The Hub Accent Rule", "body": "Las fichas de Sucre Natural usan un acento propio por tema (data-hub) sobre el papel sn-paper y la tinta sn-ink.", "section": "colors" },
+      { "name": "The One Colored Word Rule", "body": "Un titular lleva como máximo una palabra resaltada en color.", "section": "typography" },
+      { "name": "The Flat Until Touched Rule", "body": "En reposo no hay inclinación ni elevación extra; el tilt solo responde al puntero y se desactiva con prefers-reduced-motion.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar el Teal Caribe para acciones primarias y foco.",
+      "Do mantener Arena Crema como lienzo y reservar el blanco para tarjetas.",
+      "Do resaltar una sola palabra clave en cada titular serif.",
+      "Do respetar prefers-reduced-motion en tilt, autoplay y transiciones.",
+      "Do usar los tokens (primary, secondary, tropical-*) en lugar de colores literales."
+    ],
+    "donts": [
+      "Don't usar texto en oro sobre fondo crema: no alcanza contraste.",
+      "Don't añadir sombras en reposo a las tarjetas: la elevación responde a la interacción.",
+      "Don't usar blanco puro ni gris frío como fondo de página.",
+      "Don't mezclar más de un acento de color en un mismo titular.",
+      "Don't reformatear a mano src/components/ui (shadcn)."
+    ]
+  }
+}

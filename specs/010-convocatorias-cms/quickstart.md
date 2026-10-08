@@ -39,10 +39,10 @@ Ajustar nombres de archivos/tests a lo que implemente `/speckit-tasks`.
 
 ## Criterio de listo
 
-- [ ] Array mock eliminado de `ConvocatoriasSection.tsx`; payload viene de BD
-- [ ] Cero convocatorias definidas de forma fija en el código
-- [ ] Estado vacío cuando no hay vigentes
-- [ ] CRUD admin completo restringido a staff
-- [ ] Enlace externo http/https obligatorio y accionable en home
-- [ ] Publicadas vencidas / borradores no visibles en home
-- [ ] Suites unit/integration/component/e2e relevantes en verde
+- [x] Array mock eliminado de `ConvocatoriasSection.tsx`; payload viene de BD
+- [x] Cero convocatorias definidas de forma fija en el código
+- [x] Estado vacío cuando no hay vigentes
+- [x] CRUD admin completo restringido a staff
+- [x] Enlace externo http/https obligatorio y accionable en home
+- [x] Publicadas vencidas / borradores no visibles en home
+- [x] Suites unit/integration/component en verde (e2e: `critical-flows` escenarios convocatorias)
