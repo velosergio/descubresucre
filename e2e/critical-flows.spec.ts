@@ -99,7 +99,7 @@ test("sucre natural admin: destacar y despublicar (opcional)", async ({ page }) 
 
 test("eventos y agenda cultural: módulo unificado con navegación por mes", async ({ page }) => {
   await page.goto("/");
-  const heading = page.getByRole("heading", { name: /Próximos Eventos y Agenda Cultural/ });
+  const heading = page.getByRole("heading", { name: /Próximos eventos y agenda cultural/ });
   await expect(heading).toBeVisible();
 
   const monthLabel = page.getByText(/\s+de\s+\d{4}$/);

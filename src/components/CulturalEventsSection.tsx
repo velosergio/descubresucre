@@ -17,7 +17,7 @@ export default function CulturalEventsSection({ payload }: { payload: CulturalEv
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4">
-            Próximos <span className="text-tropical-coral">Eventos</span> y Agenda Cultural
+            Próximos <span className="text-tropical-coral">eventos</span> y agenda cultural
           </h2>
           <p className="text-muted-foreground font-body max-w-xl mx-auto">
             Descubre los eventos y actividades culturales de Sucre y agrégalos a tu calendario

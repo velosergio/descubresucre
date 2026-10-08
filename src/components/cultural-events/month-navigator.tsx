@@ -20,16 +20,26 @@ function addMonths(year: number, month: number, delta: number) {
 export function MonthNavigator({ initialPayload }: { initialPayload: CulturalEventsHomePayload }) {
   const [payload, setPayload] = useState(initialPayload);
   const [pending, startTransition] = useTransition();
+  const [loadError, setLoadError] = useState(false);
 
   function goToMonth(year: number, month: number) {
     startTransition(async () => {
-      const mes = `${year}-${String(month).padStart(2, "0")}`;
-      const res = await fetch(`/api/cultural-events?mes=${mes}`);
-      if (!res.ok) return;
-      const data = (await res.json()) as CulturalEventsHomePayload;
-      setPayload(data);
+      setLoadError(false);
+      try {
+        const mes = `${year}-${String(month).padStart(2, "0")}`;
+        const res = await fetch(`/api/cultural-events?mes=${mes}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as CulturalEventsHomePayload;
+        setPayload(data);
+      } catch (error) {
+        console.error("[agenda] No se pudo cargar el mes", error);
+        setLoadError(true);
+      }
     });
   }
+
+  const nextMonth = addMonths(payload.year, payload.month, 1);
+  const monthLabel = formatMonthLabel(payload.year, payload.month);
 
   return (
     <div>
@@ -47,8 +57,11 @@ export function MonthNavigator({ initialPayload }: { initialPayload: CulturalEve
         >
           <ChevronLeft className="size-4" />
         </Button>
-        <span className="min-w-[10rem] text-center font-body text-lg font-semibold capitalize">
-          {formatMonthLabel(payload.year, payload.month)}
+        <span
+          aria-live="polite"
+          className="block min-w-[10rem] text-center font-body text-lg font-semibold first-letter:uppercase"
+        >
+          {monthLabel}
         </span>
         <Button
           type="button"
@@ -65,10 +78,26 @@ export function MonthNavigator({ initialPayload }: { initialPayload: CulturalEve
         </Button>
       </div>
 
-      {payload.events.length === 0 ? (
-        <p className="text-center font-body text-muted-foreground">
-          No hay eventos programados para este mes.
+      {loadError ? (
+        <p role="alert" className="mb-6 text-center font-body text-sm text-destructive">
+          No pudimos cargar ese mes. Revisa tu conexión e inténtalo de nuevo.
         </p>
+      ) : null}
+
+      {payload.events.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 text-center">
+          <p className="font-body text-muted-foreground">
+            Aún no hay eventos publicados en {monthLabel}.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={() => goToMonth(nextMonth.year, nextMonth.month)}
+          >
+            Ver {formatMonthLabel(nextMonth.year, nextMonth.month)}
+          </Button>
+        </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {payload.events.map((event, i) => (
