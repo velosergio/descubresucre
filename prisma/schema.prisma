@@ -428,3 +428,19 @@ model CulturalEvent {
 
   @@index([published, startsAt])
 }
+
+/// Convocatoria pública (oportunidad cultural/turística con enlace externo).
+model Convocatoria {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(200)
+  description String   @db.Text
+  audience    String   @db.VarChar(200)
+  type        String   @db.VarChar(80)
+  deadline    DateTime
+  externalUrl String   @db.VarChar(2048)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published, deadline])
+}

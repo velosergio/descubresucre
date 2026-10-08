@@ -153,6 +153,59 @@ test("eventos: admin crea evento y aparece con acción de calendario (opcional)"
   );
 });
 
+test("convocatorias: sección en home (lista o estado vacío)", async ({ page }) => {
+  await page.goto("/");
+  const section = page.locator("#convocatorias");
+  await expect(section.getByRole("heading", { name: "Convocatorias" })).toBeVisible();
+  const empty = section.getByText(/No hay oportunidades abiertas/i);
+  const moreInfo = section.getByRole("link", { name: /Más información/i });
+  const emptyVisible = await empty.isVisible().catch(() => false);
+  if (emptyVisible) {
+    await expect(empty).toBeVisible();
+  } else {
+    await expect(moreInfo.first()).toHaveAttribute("href", /^https?:\/\//);
+  }
+});
+
+test("convocatorias: admin crea y aparece en home (opcional)", async ({ page }) => {
+  const email = process.env.E2E_ADMIN_EMAIL;
+  const password = process.env.E2E_ADMIN_PASSWORD;
+  if (!email || !password) {
+    test.skip(true, "Sin E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD");
+    return;
+  }
+
+  await page.goto("/login");
+  await page.getByLabel("Correo").fill(email);
+  await page.getByLabel("Contraseña").fill(password);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/admin/);
+
+  await page.goto("/admin/personalizar/convocatorias");
+  await expect(page.getByRole("heading", { name: "Convocatorias" })).toBeVisible();
+  await page.getByRole("button", { name: "Nuevo" }).click();
+
+  const isoDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const title = `E2E Convocatoria ${Date.now()}`;
+  const externalUrl = "https://ejemplo.gov.co/e2e-convocatoria";
+  await page.getByLabel("Título").fill(title);
+  await page.getByLabel("Descripción").fill("Convocatoria de prueba e2e");
+  await page.getByLabel("Audiencia").fill("Público general");
+  await page.getByLabel("Tipo").fill("Prueba");
+  await page.getByLabel("Fecha límite").fill(isoDate);
+  await page.getByLabel("Enlace externo").fill(externalUrl);
+  await page.getByRole("button", { name: "Guardar" }).click();
+  await expect(page.getByText(title)).toBeVisible({ timeout: 15_000 });
+
+  await page.goto("/");
+  const section = page.locator("#convocatorias");
+  await expect(section.getByText(title)).toBeVisible();
+  await expect(section.getByRole("link", { name: /Más información/i }).first()).toHaveAttribute(
+    "href",
+    externalUrl,
+  );
+});
+
 test("que hacer: portada muestra heading y Playas abre ficha", async ({ page }) => {
   await page.goto("/");
   const section = page.locator("#que-hacer");

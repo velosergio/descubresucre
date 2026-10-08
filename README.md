@@ -46,6 +46,9 @@
   | `/admin/personalizar/galeria` | Biblioteca de imágenes y vídeos reutilizables (**admin**) |
   | `/admin/personalizar/banner` | Configuración del hero: imagen, vídeo o carrusel (**admin**) |
   | `/admin/personalizar/destinos-imperdibles` | Gestión de tarjetas, detalle Markdown y mapa (**admin**) |
+  | `/admin/personalizar/eventos` | Eventos y agenda cultural de la home (**admin**) |
+  | `/admin/personalizar/convocatorias` | Convocatorias / oportunidades con enlace externo (**admin**) |
+  | `/admin/personalizar/que-hacer` | Actividades «Qué hacer» de la portada (**admin**) |
   | `/admin/users`         | Usuarios: aprobar/rechazar, roles, edición (**admin**) |
   | `/admin/roles`         | CRUD de roles (**admin**)                              |
   | `/admin/configuracion` | URL del webhook n8n del chatbot (**admin**)            |

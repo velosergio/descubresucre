@@ -11,8 +11,9 @@ import {
   Waves,
 } from "lucide-react";
 import { useState } from "react";
-import { GoogleDestinationsMap } from "@/components/GoogleDestinationsMap";
+import { GoogleDestinationsMap, type MapErrorReason } from "@/components/GoogleDestinationsMap";
 import { buildGoogleMapsSearchUrl } from "@/lib/google-maps-embed";
+import { resetGoogleMapsLoader } from "@/lib/load-google-maps";
 
 type Category = "all" | "playas" | "cultura" | "naturaleza" | "gastronomía";
 
@@ -130,6 +131,14 @@ const categories: { key: Category; label: string; icon: React.ReactNode }[] = [
 const MapSection = ({ mapsApiKey }: { mapsApiKey: string | null }) => {
   const [activeCategory, setActiveCategory] = useState<Category>("all");
   const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
+  const [mapError, setMapError] = useState<MapErrorReason | null>(null);
+  const [mapAttempt, setMapAttempt] = useState(0);
+
+  const retryMap = () => {
+    resetGoogleMapsLoader();
+    setMapError(null);
+    setMapAttempt((n) => n + 1);
+  };
 
   const filtered =
     activeCategory === "all"
@@ -186,8 +195,9 @@ const MapSection = ({ mapsApiKey }: { mapsApiKey: string | null }) => {
             className="lg:col-span-2 rounded-2xl overflow-hidden shadow-lg border border-border"
             style={{ height: 500 }}
           >
-            {mapsApiKey ? (
+            {mapsApiKey && !mapError ? (
               <GoogleDestinationsMap
+                key={mapAttempt}
                 apiKey={mapsApiKey}
                 destinations={filtered}
                 selectedId={selectedDest?.id ?? null}
@@ -195,12 +205,27 @@ const MapSection = ({ mapsApiKey }: { mapsApiKey: string | null }) => {
                   const dest = destinations.find((d) => d.id === id);
                   if (dest) setSelectedDest(dest);
                 }}
+                onError={setMapError}
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-3 bg-card px-6 text-center">
+              <div
+                role={mapError ? "alert" : undefined}
+                className="flex h-full flex-col items-center justify-center gap-3 bg-card px-6 text-center"
+              >
                 <p className="font-body text-sm text-muted-foreground">
-                  Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps.
+                  {mapError
+                    ? "No pudimos cargar el mapa en este momento. Los destinos siguen en la lista y puedes abrir la ubicación en Google Maps."
+                    : "Mapa embebido no configurado. Puedes abrir la ubicación en Google Maps."}
                 </p>
+                {mapError === "load" ? (
+                  <button
+                    type="button"
+                    onClick={retryMap}
+                    className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-body font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    Reintentar
+                  </button>
+                ) : null}
                 <a
                   href={externalMapsUrl}
                   target="_blank"
