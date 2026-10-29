@@ -484,8 +484,9 @@ export function TechnologySection() {
                   Todo el proyecto está en <span className="text-tropical-gold">GitHub</span>
                 </h3>
                 <p className="mb-6 max-w-xl font-body text-primary-foreground/80">
-                  El código, las especificaciones, las skills y las pruebas son públicos. Cualquier
-                  persona puede revisarlos, reutilizarlos o proponer mejoras.
+                  El código, las especificaciones, las skills y las pruebas son públicos bajo
+                  licencia MIT: cualquier persona puede revisarlos, reutilizarlos o proponer
+                  mejoras.
                 </p>
                 <a
                   href={REPOSITORY_URL}

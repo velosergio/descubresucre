@@ -194,3 +194,15 @@
   ```
 
   En producción, define `NEXT_PUBLIC_SITE_URL` con el dominio público para que los callbacks de n8n apunten a `/api/chat/n8n-callback`.
+
+  ## Código abierto y licencia
+
+  Sucre Vivo es un proyecto de código abierto bajo la **licencia MIT** (ver [`LICENSE`](LICENSE)): puedes usar, copiar, modificar y redistribuir el código, también con fines comerciales, siempre que conserves el aviso de copyright y la licencia. El software se entrega «tal cual», sin garantías.
+
+  La licencia cubre el **código fuente** del repositorio. Quedan fuera:
+
+  - **Marcas y logos de la CUN** (`public/brand/`): pertenecen a la Corporación Unificada Nacional de Educación Superior y se usan para identificar a la institución que respalda el proyecto.
+  - **Logos de tecnologías** (`src/components/investigacion/tech-icons.ts`): los trazos provienen de [Simple Icons](https://simpleicons.org) (CC0 1.0); las marcas pertenecen a sus dueños.
+  - **Contenido turístico y medios** cargados desde el panel (textos, fotos y videos en `public/uploads/`): son de sus autores y no forman parte del repositorio.
+
+  Las contribuciones se reciben por pull request contra `main`; al contribuir aceptas publicarlas bajo la misma licencia MIT. Cada PR pasa por Biome, pruebas unitarias, de integración, de componentes y E2E (ver [Pruebas y calidad](#pruebas-y-calidad)).

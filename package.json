@@ -2,6 +2,7 @@
   "name": "sucre-vivo",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "next dev",
