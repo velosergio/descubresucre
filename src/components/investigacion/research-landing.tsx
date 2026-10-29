@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import CunLogo from "@/components/CunLogo";
 import Footer from "@/components/Footer";
+import TuteMascot from "@/components/TuteMascot";
 import {
   ACTOR_SECTORS,
   MUNICIPALITIES,
@@ -21,6 +22,7 @@ import {
   RESEARCH_SECTIONS,
   type ResearchSectionId,
   SPECIFIC_OBJECTIVES,
+  TUTE,
 } from "@/lib/investigacion-content";
 import { EXPO_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -85,6 +87,15 @@ function ResearchHero() {
             <CunLogo variant="logo" priority className="h-14 md:h-20" />
           </div>
         </div>
+
+        <m.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.2, ease: EXPO_OUT }}
+          className="pointer-events-none absolute top-36 right-16 hidden xl:block"
+        >
+          <TuteMascot variant="tute" priority className="h-[270px] drop-shadow-2xl" />
+        </m.div>
 
         <m.div
           initial={{ opacity: 0, y: 24 }}
@@ -273,10 +284,60 @@ function ResearchNav() {
   );
 }
 
+/** Presenta a Tute, la mascota y voz cercana de la plataforma. */
+function MeetTute() {
+  return (
+    <section aria-labelledby="tute-title" className="section-padding bg-muted/50">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-14">
+        <div className="relative mx-auto w-full max-w-[18rem] md:max-w-sm">
+          <TuteMascot variant="tute" className="mx-auto h-auto w-full" />
+          <p className="absolute -top-2 right-0 max-w-[13rem] rounded-2xl rounded-bl-sm bg-background px-4 py-3 font-body text-sm font-semibold text-foreground shadow-lg md:-right-6">
+            «{TUTE.phrases[0]}»
+          </p>
+        </div>
+        <div>
+          <p className="mb-3 font-body text-sm font-semibold tracking-widest text-secondary uppercase">
+            La mascota
+          </p>
+          <h2 id="tute-title" className="mb-4 font-display text-3xl font-bold md:text-5xl">
+            Conoce a <span className="text-primary">{TUTE.name}</span>
+          </h2>
+          <p className="mb-2 font-body text-lg text-muted-foreground">{TUTE.summary}</p>
+          <p className="mb-6 font-body text-sm text-muted-foreground italic">{TUTE.species}</p>
+          <ul aria-label="Personalidad de Tute" className="mb-6 flex flex-wrap gap-2">
+            {TUTE.traits.map((t) => (
+              <li
+                key={t}
+                className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 font-body text-sm font-medium text-primary"
+              >
+                {t}
+              </li>
+            ))}
+          </ul>
+          <blockquote className="rounded-2xl border-l-4 border-secondary bg-background p-5 font-body text-foreground shadow-sm">
+            <p className="mb-1 text-xs font-semibold tracking-widest text-secondary uppercase">
+              Su misión
+            </p>
+            {TUTE.mission}
+          </blockquote>
+          <ul aria-label="Frases de Tute" className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
+            {TUTE.phrases.slice(1).map((f) => (
+              <li key={f} className="font-display text-lg text-foreground/80 italic">
+                «{f}»
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ClosingCta() {
   return (
     <section className="section-padding bg-background">
       <div className="mx-auto max-w-5xl rounded-3xl bg-primary p-8 text-center text-primary-foreground md:p-14">
+        <TuteMascot variant="logo-white" className="mx-auto mb-6 h-24 md:h-32" />
         <h2 className="mb-4 font-display text-3xl font-bold md:text-5xl">
           Sucre <span className="text-tropical-gold">Vivo</span> ya se puede recorrer
         </h2>
@@ -324,6 +385,7 @@ export default function ResearchLanding() {
         <BenefitsSection />
         <ProjectionSection />
         <TechnologySection />
+        <MeetTute />
         <ClosingCta />
       </main>
       <Footer />
