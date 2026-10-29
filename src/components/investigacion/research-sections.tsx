@@ -80,7 +80,7 @@ import { CountUp, Gauge, GrowBar, RankDots } from "./research-infographics";
 /* ---------- Piezas compartidas ---------- */
 
 /** Crecimiento horizontal disparado por el contenedor (un hijo en scaleX 0 no tiene área visible). */
-export const GROW_X = { hidden: { scaleX: 0 }, shown: { scaleX: 1 } };
+const GROW_X = { hidden: { scaleX: 0 }, shown: { scaleX: 1 } };
 
 export function Reveal({
   children,
