@@ -955,3 +955,40 @@ export const TEST_LAYERS = [
   "Pruebas de componentes",
   "Pruebas de punta a punta (E2E)",
 ] as const;
+
+/* ---------- Mascota ---------- */
+
+/**
+ * Tute, la mascota de Sucre Vivo (guía de personaje del equipo). Las frases son una propuesta
+ * creativa: cualquier dato biológico o cultural que se publique en su nombre debe verificarse.
+ */
+export const TUTE = {
+  name: "Tute",
+  species: "Mono cabeziblanco de los Montes de María",
+  summary:
+    "Tute es la mascota de Sucre Vivo y la voz cercana de la plataforma: un compañero para descubrir, valorar y cuidar la biodiversidad y las tradiciones de Sucre.",
+  mission:
+    "Motivar a las personas a conocer, apreciar y proteger la riqueza natural y cultural de Sucre, especialmente la de los Montes de María.",
+  traits: [
+    "Curioso",
+    "Alegre y juguetón",
+    "Amigable",
+    "Ingenioso",
+    "Orgulloso de su territorio",
+    "Protector de la naturaleza",
+    "Respetuoso",
+  ],
+  phrases: [
+    "¡Vamos a descubrir algo nuevo de Sucre!",
+    "Explorar es más divertido cuando también cuidamos.",
+    "¡Cada rincón de nuestra tierra tiene una historia!",
+  ],
+  values: [
+    "Curiosidad",
+    "Cuidado ambiental",
+    "Identidad territorial",
+    "Alegría",
+    "Respeto",
+    "Aprendizaje",
+  ],
+} as const;

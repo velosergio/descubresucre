@@ -60,6 +60,16 @@ describe("ResearchLanding", () => {
     );
   });
 
+  it("presenta a Tute, la mascota, con su personalidad", () => {
+    render(<ResearchLanding />);
+    expect(screen.getByRole("heading", { name: /Conoce a Tute/ })).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("img", { name: /Tute, mascota de Sucre Vivo/ }).length,
+    ).toBeGreaterThan(0);
+    const traits = screen.getByRole("list", { name: /Personalidad de Tute/ });
+    expect(within(traits).getByText("Protector de la naturaleza")).toBeInTheDocument();
+  });
+
   it("filtra el stack tecnológico por categoría", async () => {
     const user = userEvent.setup();
     render(<ResearchLanding />);
