@@ -1,21 +1,11 @@
 "use client";
 
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { animate, useInView, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import * as m from "framer-motion/m";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { formatNumber } from "@/lib/format-number";
 import { EXPO_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
-const nf = (decimals: number) =>
-  new Intl.NumberFormat("es-CO", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-
-/** Formatea con separadores colombianos (13.300, 42,9). */
-export function formatNumber(value: number, decimals = 0): string {
-  return nf(decimals).format(value);
-}
 
 /**
  * Cifra que cuenta desde 0 al entrar en pantalla. El valor final siempre está en el DOM
@@ -37,30 +27,24 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-10% 0px" });
   const reduce = useReducedMotion();
-  const [shown, setShown] = useState(reduce ? value : 0);
+  // Valor animado fuera de React: el texto se actualiza sin re-renderizar el componente.
+  const count = useMotionValue(reduce ? value : 0);
+  const text = useTransform(count, (v) => `${prefix}${formatNumber(v, decimals)}${suffix}`);
 
   useEffect(() => {
     if (!inView) return;
     if (reduce) {
-      setShown(value);
+      count.set(value);
       return;
     }
-    const controls = animate(0, value, {
-      duration: 1.4,
-      ease: EXPO_OUT,
-      onUpdate: (v) => setShown(v),
-    });
+    const controls = animate(count, value, { duration: 1.4, ease: EXPO_OUT });
     return () => controls.stop();
-  }, [inView, reduce, value]);
+  }, [count, inView, reduce, value]);
 
   const final = `${prefix}${formatNumber(value, decimals)}${suffix}`;
   return (
     <span ref={ref} className={cn("tabular-nums", className)}>
-      <span aria-hidden>
-        {prefix}
-        {formatNumber(shown, decimals)}
-        {suffix}
-      </span>
+      <m.span aria-hidden>{text}</m.span>
       <span className="sr-only">{final}</span>
     </span>
   );

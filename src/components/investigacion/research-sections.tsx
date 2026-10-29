@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTiltCard } from "@/hooks/use-tilt-card";
+import { formatNumber } from "@/lib/format-number";
 import {
   ACTOR_SECTORS,
   BENEFITS,
@@ -74,9 +75,12 @@ import {
 } from "@/lib/investigacion-content";
 import { EXPO_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { CountUp, formatNumber, Gauge, GrowBar, RankDots } from "./research-infographics";
+import { CountUp, Gauge, GrowBar, RankDots } from "./research-infographics";
 
 /* ---------- Piezas compartidas ---------- */
+
+/** Crecimiento horizontal disparado por el contenedor (un hijo en scaleX 0 no tiene área visible). */
+const GROW_X = { hidden: { scaleX: 0 }, shown: { scaleX: 1 } };
 
 function Reveal({
   children,
@@ -310,20 +314,22 @@ export function ContextSection() {
           <Reveal delay={0.16}>
             <Card className="h-full">
               <CardLabel icon={Users}>Turismo interno ({s.internalTourism.year})</CardLabel>
-              <div
+              <m.div
+                initial="hidden"
+                whileInView="shown"
+                viewport={{ once: true }}
                 className="mb-4 flex h-10 overflow-hidden rounded-xl"
                 role="img"
                 aria-label={`${formatNumber(s.internalTourism.overnight)} viajeros con pernoctación frente a ${formatNumber(s.internalTourism.sameDay)} excursionistas`}
               >
                 <m.div
-                  className="h-full bg-primary"
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${overnightPct}%` }}
-                  viewport={{ once: true }}
+                  className="h-full origin-left bg-primary"
+                  style={{ width: `${overnightPct}%` }}
+                  variants={GROW_X}
                   transition={{ duration: 1.1, ease: EXPO_OUT }}
                 />
                 <div className="h-full flex-1 bg-secondary" />
-              </div>
+              </m.div>
               <dl className="grid grid-cols-2 gap-4 font-body">
                 <div>
                   <dt className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -521,11 +527,10 @@ export function ObjectivesSection() {
                   <AnimatePresence initial={false}>
                     {isOpen ? (
                       <m.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
+                        initial={{ opacity: 0, y: -6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
                         transition={{ duration: 0.3, ease: EXPO_OUT }}
-                        className="overflow-hidden"
                       >
                         <p className="mt-4 rounded-xl bg-muted p-3 font-body text-sm text-foreground">
                           <span className="font-semibold">Avance: </span>
@@ -884,7 +889,6 @@ export function FindingsSection() {
                   {indicators.map((ind) => (
                     <m.li
                       key={ind.label}
-                      layout
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -1236,7 +1240,10 @@ export function ProjectionSection() {
                 ]}
               />
             </div>
-            <div
+            <m.div
+              initial="hidden"
+              whileInView="shown"
+              viewport={{ once: true }}
               className="mb-3 flex h-4 overflow-hidden rounded-full"
               role="img"
               aria-label={counts
@@ -1246,14 +1253,13 @@ export function ProjectionSection() {
               {counts.map((c, i) => (
                 <m.div
                   key={c.status}
-                  className={cn("h-full", REQ_STATUS[c.status].bar)}
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${(c.count / total) * 100}%` }}
-                  viewport={{ once: true }}
+                  className={cn("h-full origin-left", REQ_STATUS[c.status].bar)}
+                  style={{ width: `${(c.count / total) * 100}%` }}
+                  variants={GROW_X}
                   transition={{ duration: 0.9, delay: i * 0.2, ease: EXPO_OUT }}
                 />
               ))}
-            </div>
+            </m.div>
             <div className="mb-6 flex flex-wrap gap-5 font-body text-sm">
               {counts.map((c) => (
                 <span key={c.status} className="flex items-center gap-2 text-muted-foreground">
@@ -1268,7 +1274,6 @@ export function ProjectionSection() {
                 {visible.map((r) => (
                   <m.li
                     key={r.feature}
-                    layout
                     initial={{ opacity: 0, scale: 0.97 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.97 }}
