@@ -16,6 +16,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 1,
   };
 
+  const investigacionEntry = {
+    url: `${base}/investigacion`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  };
+
   try {
     const imperdibles = await prisma.imperdibleDestination.findMany({
       where: { published: true },
@@ -23,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     return [
       homeEntry,
+      investigacionEntry,
       ...imperdibles.map((d) => ({
         url: `${base}/imperdibles/${d.slug}`,
         lastModified: d.updatedAt,
@@ -31,6 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
     ];
   } catch {
-    return [homeEntry];
+    return [homeEntry, investigacionEntry];
   }
 }

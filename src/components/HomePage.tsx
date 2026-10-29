@@ -12,6 +12,7 @@ import CulturalEventsSection from "@/components/CulturalEventsSection";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import ImperdiblesSection from "@/components/ImperdiblesSection";
+import InvestigacionBanner from "@/components/InvestigacionBanner";
 import MapSection from "@/components/MapSection";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
 import type { ConvocatoriasHomePayload } from "@/lib/get-convocatorias-home";
@@ -114,6 +115,7 @@ export default function HomePage({
     <>
       <HeroSection onChatMessage={(msg) => openChat(msg)} heroConfig={heroConfig} />
       <ImperdiblesSection payload={imperdiblesPayload} />
+      <InvestigacionBanner />
       <ActivitiesSection payload={queHacerPayload} />
       <CulturalEventsSection payload={culturalEventsPayload} />
       <MapSection mapsApiKey={mapsApiKey} />
