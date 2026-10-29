@@ -30,6 +30,9 @@ const Footer = () => (
           <Link href="/sucre-natural" className={siteLinkClass}>
             Sucre Natural
           </Link>
+          <Link href="/investigacion" className={siteLinkClass}>
+            Investigación
+          </Link>
           <a
             href="https://www.sucre.gov.co/"
             className={siteLinkClass}
