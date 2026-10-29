@@ -33,6 +33,7 @@ import {
   ObjectivesSection,
   ProjectionSection,
 } from "./research-sections";
+import { TechnologySection } from "./research-tech";
 
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -322,6 +323,7 @@ export default function ResearchLanding() {
         <FindingsSection />
         <BenefitsSection />
         <ProjectionSection />
+        <TechnologySection />
         <ClosingCta />
       </main>
       <Footer />
