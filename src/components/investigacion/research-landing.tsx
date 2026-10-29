@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import CunLogo from "@/components/CunLogo";
 import Footer from "@/components/Footer";
 import {
   ACTOR_SECTORS,
@@ -71,13 +72,18 @@ function ResearchHero() {
       </svg>
 
       <div className="relative mx-auto max-w-7xl px-4 pt-6 pb-20 md:px-8 lg:px-16 lg:pb-28">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 font-body text-sm text-primary-foreground/70 underline-offset-4 outline-none hover:text-primary-foreground hover:underline focus-visible:ring-2 focus-visible:ring-tropical-gold"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          Volver a Sucre Vivo
-        </Link>
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 font-body text-sm text-primary-foreground/70 underline-offset-4 outline-none hover:text-primary-foreground hover:underline focus-visible:ring-2 focus-visible:ring-tropical-gold"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden />
+            Volver a Sucre Vivo
+          </Link>
+          <div className="rounded-2xl bg-background px-4 py-2.5 shadow-lg">
+            <CunLogo variant="logo" priority className="h-14 md:h-20" />
+          </div>
+        </div>
 
         <m.div
           initial={{ opacity: 0, y: 24 }}
@@ -292,8 +298,12 @@ function ClosingCta() {
             Hablar con el asistente
           </Link>
         </div>
-        <p className="mt-10 font-body text-xs text-primary-foreground/60">
-          {RESEARCH_META.seedbed} · {RESEARCH_META.program} · {RESEARCH_META.institution}
+      </div>
+      <div className="mx-auto mt-12 flex max-w-5xl flex-col items-center gap-4 text-center">
+        <p className="font-body text-sm text-muted-foreground">Un proyecto de investigación de</p>
+        <CunLogo variant="logo" className="h-28 md:h-36" />
+        <p className="font-body text-xs text-muted-foreground">
+          {RESEARCH_META.seedbed} · {RESEARCH_META.program}
         </p>
       </div>
     </section>
