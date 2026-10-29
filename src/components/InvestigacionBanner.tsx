@@ -3,6 +3,7 @@
 import * as m from "framer-motion/m";
 import { ArrowRight, FlaskConical } from "lucide-react";
 import Link from "next/link";
+import CunLogo from "@/components/CunLogo";
 import { EXPO_OUT } from "@/lib/motion";
 
 const BANNER_STATS = [
@@ -35,10 +36,13 @@ export default function InvestigacionBanner() {
         />
         <div className="relative grid gap-8 p-8 md:p-12 lg:grid-cols-[1.3fr_1fr] lg:items-center">
           <div>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 font-body text-sm font-medium text-primary-foreground/85">
-              <FlaskConical className="h-4 w-4 text-tropical-gold" aria-hidden />
-              Investigación en curso · Semillero CUN
-            </p>
+            <div className="mb-5 flex flex-wrap items-center gap-4">
+              <CunLogo variant="isotipo-white" className="h-9 md:h-10" />
+              <p className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 font-body text-sm font-medium text-primary-foreground/85">
+                <FlaskConical className="h-4 w-4 text-tropical-gold" aria-hidden />
+                Investigación en curso · Semillero CUN
+              </p>
+            </div>
             <h2
               id="investigacion-banner-title"
               className="mb-4 font-display text-3xl font-bold md:text-4xl"
