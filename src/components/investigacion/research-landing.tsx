@@ -287,7 +287,7 @@ function ResearchNav() {
 /** Presenta a Tute, la mascota y voz cercana de la plataforma. */
 function MeetTute() {
   return (
-    <section aria-labelledby="tute-title" className="section-padding bg-muted/50">
+    <section id="tute" aria-labelledby="tute-title" className="section-padding bg-muted/50">
       <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-14">
         <div className="relative mx-auto w-full max-w-[18rem] md:max-w-sm">
           <TuteMascot variant="tute" className="mx-auto h-auto w-full" />
