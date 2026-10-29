@@ -17,7 +17,7 @@ describe("InvestigacionBanner", () => {
 });
 
 describe("ResearchLanding", () => {
-  it("cubre las seis preguntas de la guía del póster con su índice", () => {
+  it("cubre las preguntas de la guía del póster y las tecnologías con su índice", () => {
     render(<ResearchLanding />);
     const nav = screen.getByRole("navigation", { name: /Secciones de la investigación/i });
     for (const s of RESEARCH_SECTIONS) {
@@ -47,5 +47,25 @@ describe("ResearchLanding", () => {
     expect(
       screen.queryByText(/Participa en la recopilación del patrimonio/),
     ).not.toBeInTheDocument();
+  });
+
+  it("explica la arquitectura y enlaza el repositorio de código abierto", async () => {
+    const user = userEvent.setup();
+    render(<ResearchLanding />);
+    await user.click(screen.getByRole("button", { name: /Orquestador del asistente/ }));
+    expect(screen.getByText(/su URL vive en el servidor/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /velosergio\/descubresucre/ })).toHaveAttribute(
+      "href",
+      "https://github.com/velosergio/descubresucre",
+    );
+  });
+
+  it("filtra el stack tecnológico por categoría", async () => {
+    const user = userEvent.setup();
+    render(<ResearchLanding />);
+    expect(screen.getByText("Docker")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Inteligencia artificial" }));
+    expect(screen.getByText("Agente LangChain")).toBeInTheDocument();
+    expect(screen.queryByText("Docker")).not.toBeInTheDocument();
   });
 });

@@ -32,6 +32,7 @@ export const RESEARCH_SECTIONS = [
   { id: "hallazgos", label: "Hallazgos", number: "04" },
   { id: "beneficios", label: "Beneficios", number: "05" },
   { id: "proyeccion", label: "Proyección", number: "06" },
+  { id: "tecnologias", label: "Tecnologías", number: "07" },
 ] as const;
 
 export type ResearchSectionId = (typeof RESEARCH_SECTIONS)[number]["id"];
@@ -505,4 +506,452 @@ export const EVALUATION_INDICATORS = [
   { title: "Satisfacción", text: "Percepción de ciudadanos, visitantes y actores." },
   { title: "Apropiación", text: "Actores que publican, validan y actualizan su oferta." },
   { title: "Visibilidad", text: "Alcance de destinos, eventos y saberes del territorio." },
+] as const;
+
+/* ---------- 07 · Tecnologías ---------- */
+
+export const REPOSITORY_URL = "https://github.com/velosergio/descubresucre";
+
+export type TechCategory = "frontend" | "backend" | "ia" | "calidad" | "infraestructura";
+
+export const TECH_CATEGORIES: { value: TechCategory; label: string }[] = [
+  { value: "frontend", label: "Interfaz" },
+  { value: "backend", label: "Servidor y datos" },
+  { value: "ia", label: "Inteligencia artificial" },
+  { value: "calidad", label: "Calidad" },
+  { value: "infraestructura", label: "Infraestructura" },
+];
+
+/**
+ * `icon` es la clave de un logo de marca (tech-icons.ts); las tecnologías sin logo
+ * disponible usan un icono genérico que resuelve el componente por `id`.
+ */
+export const TECH_STACK: {
+  id: string;
+  name: string;
+  category: TechCategory;
+  role: string;
+  icon: string | null;
+}[] = [
+  {
+    id: "nextjs",
+    name: "Next.js 16",
+    category: "frontend",
+    role: "App Router con Server Components: páginas públicas y panel en un mismo proyecto.",
+    icon: "nextjs",
+  },
+  {
+    id: "react",
+    name: "React 19",
+    category: "frontend",
+    role: "Componentes de la interfaz, del asistente y del panel de administración.",
+    icon: "react",
+  },
+  {
+    id: "typescript",
+    name: "TypeScript",
+    category: "frontend",
+    role: "Tipado de punta a punta, del esquema de datos a los componentes.",
+    icon: "typescript",
+  },
+  {
+    id: "tailwind",
+    name: "Tailwind CSS 4",
+    category: "frontend",
+    role: "Sistema visual con tokens de color y tipografía propios de Sucre Vivo.",
+    icon: "tailwind",
+  },
+  {
+    id: "shadcn",
+    name: "shadcn/ui + Radix",
+    category: "frontend",
+    role: "Primitivas accesibles: diálogos, pestañas, acordeones y formularios.",
+    icon: "shadcn",
+  },
+  {
+    id: "motion",
+    name: "Framer Motion",
+    category: "frontend",
+    role: "Animaciones de entrada e infografías como las de esta página.",
+    icon: null,
+  },
+  {
+    id: "googlemaps",
+    name: "Google Maps",
+    category: "frontend",
+    role: "Mapa interactivo de destinos del departamento.",
+    icon: "googlemaps",
+  },
+  {
+    id: "nodejs",
+    name: "Node.js",
+    category: "backend",
+    role: "Entorno de ejecución del servidor Next.js.",
+    icon: "nodejs",
+  },
+  {
+    id: "prisma",
+    name: "Prisma 7",
+    category: "backend",
+    role: "ORM tipado y migraciones versionadas del modelo de datos.",
+    icon: "prisma",
+  },
+  {
+    id: "mariadb",
+    name: "MariaDB / MySQL",
+    category: "backend",
+    role: "Base de datos relacional de contenidos, usuarios y conversaciones.",
+    icon: "mariadb",
+  },
+  {
+    id: "authjs",
+    name: "Auth.js",
+    category: "backend",
+    role: "Sesiones con correo o Google; roles admin y editor con aprobación previa.",
+    icon: null,
+  },
+  {
+    id: "zod",
+    name: "Zod",
+    category: "backend",
+    role: "Validación de toda entrada externa: formularios, API y webhooks.",
+    icon: "zod",
+  },
+  {
+    id: "sharp",
+    name: "sharp",
+    category: "backend",
+    role: "Optimiza las imágenes subidas y las convierte a WebP.",
+    icon: "sharp",
+  },
+  {
+    id: "n8n",
+    name: "n8n",
+    category: "ia",
+    role: "Orquesta el asistente: recibe la conversación y devuelve la respuesta.",
+    icon: "n8n",
+  },
+  {
+    id: "langchain",
+    name: "Agente LangChain",
+    category: "ia",
+    role: "Nodo AI Agent de n8n que arma el contexto y conversa con el modelo.",
+    icon: "langchain",
+  },
+  {
+    id: "gemini",
+    name: "Google Gemini",
+    category: "ia",
+    role: "Modelo de lenguaje que redacta las respuestas del asistente.",
+    icon: "gemini",
+  },
+  {
+    id: "vitest",
+    name: "Vitest",
+    category: "calidad",
+    role: "Pruebas unitarias, de integración (con base de datos real) y de componentes.",
+    icon: "vitest",
+  },
+  {
+    id: "testinglibrary",
+    name: "Testing Library",
+    category: "calidad",
+    role: "Prueba la interfaz como la usa una persona: por roles y textos.",
+    icon: "testinglibrary",
+  },
+  {
+    id: "playwright",
+    name: "Playwright",
+    category: "calidad",
+    role: "Pruebas de punta a punta de los flujos críticos en un navegador real.",
+    icon: null,
+  },
+  {
+    id: "biome",
+    name: "Biome",
+    category: "calidad",
+    role: "Lint y formato en un solo paso, verificado en cada cambio.",
+    icon: "biome",
+  },
+  {
+    id: "docker",
+    name: "Docker",
+    category: "infraestructura",
+    role: "Imagen multi-etapa con salida standalone de Next.js.",
+    icon: "docker",
+  },
+  {
+    id: "easypanel",
+    name: "EasyPanel",
+    category: "infraestructura",
+    role: "Despliegue del contenedor en producción.",
+    icon: null,
+  },
+  {
+    id: "githubactions",
+    name: "GitHub Actions",
+    category: "infraestructura",
+    role: "Integración continua: lint, pruebas y E2E en cada pull request.",
+    icon: "githubactions",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    category: "infraestructura",
+    role: "Repositorio público, revisiones y control de versiones.",
+    icon: "github",
+  },
+];
+
+export type ArchitectureNodeId =
+  | "navegador"
+  | "next"
+  | "auth"
+  | "datos"
+  | "medios"
+  | "n8n"
+  | "gemini";
+
+export const ARCHITECTURE_LAYERS: {
+  label: string;
+  nodes: { id: ArchitectureNodeId; title: string; tech: string; detail: string[] }[];
+}[] = [
+  {
+    label: "Cliente",
+    nodes: [
+      {
+        id: "navegador",
+        title: "Visitantes y equipo",
+        tech: "Navegador",
+        detail: [
+          "Las páginas públicas llegan ya renderizadas desde el servidor: cargan rápido y se indexan bien.",
+          "El panel /admin permite al equipo editar el hero, la galería, destinos, actividades, eventos y convocatorias sin tocar código.",
+          "El asistente conversacional consulta el estado de cada respuesta hasta que está lista.",
+        ],
+      },
+    ],
+  },
+  {
+    label: "Servidor",
+    nodes: [
+      {
+        id: "next",
+        title: "Aplicación Next.js",
+        tech: "Next.js · React · TypeScript",
+        detail: [
+          "Server Components para leer datos y server actions para guardarlos, con un contrato { ok, error } que nunca lanza excepciones al cliente.",
+          "Rutas API para el asistente (/api/chat) y para servir medios (/api/media).",
+          "Toda entrada se valida con Zod antes de llegar a la base de datos.",
+        ],
+      },
+      {
+        id: "auth",
+        title: "Autenticación y roles",
+        tech: "Auth.js",
+        detail: [
+          "Tres puertas: un filtro de sesión en el proxy, la autorización real en los layouts y una verificación explícita en cada server action.",
+          "Roles admin y editor; toda cuenta nueva, incluso con Google, queda pendiente hasta que un administrador la aprueba.",
+        ],
+      },
+    ],
+  },
+  {
+    label: "Datos y servicios",
+    nodes: [
+      {
+        id: "datos",
+        title: "Base de datos",
+        tech: "Prisma · MariaDB",
+        detail: [
+          "Modelo relacional con migraciones versionadas en el repositorio.",
+          "La configuración editable (hero, destinos imperdibles, asistente) vive en filas únicas que se actualizan sin despliegues.",
+          "Cada pregunta al asistente queda registrada como un trabajo con su estado.",
+        ],
+      },
+      {
+        id: "medios",
+        title: "Medios",
+        tech: "Disco local · sharp",
+        detail: [
+          "Las imágenes subidas se transcodifican a WebP y los videos se guardan tal cual.",
+          "Cada ruta de archivo se valida contra un prefijo esperado y se rechaza cualquier intento de salir de la carpeta.",
+        ],
+      },
+      {
+        id: "n8n",
+        title: "Orquestador del asistente",
+        tech: "n8n · agente LangChain",
+        detail: [
+          "Recibe la conversación por webhook; su URL vive en el servidor y nunca llega al navegador.",
+          "Responde de inmediato y entrega la respuesta después por un callback autenticado con un secreto compartido.",
+        ],
+      },
+      {
+        id: "gemini",
+        title: "Modelo de lenguaje",
+        tech: "Google Gemini",
+        detail: [
+          "Redacta las respuestas del asistente a partir de la conversación y del contexto turístico de Sucre.",
+        ],
+      },
+    ],
+  },
+];
+
+export const CHAT_FLOW_STEPS = [
+  { actor: "Navegador", text: "Envía la conversación a /api/chat." },
+  { actor: "Servidor", text: "Valida, registra el trabajo como pendiente y avisa a n8n." },
+  { actor: "n8n", text: "Responde al instante y le pasa la pregunta a Gemini." },
+  { actor: "n8n", text: "Devuelve la respuesta al servidor con un secreto compartido." },
+  { actor: "Navegador", text: "Consulta el trabajo hasta que está listo y muestra la respuesta." },
+] as const;
+
+export const AI_TOOLS = [
+  {
+    id: "cursor",
+    name: "Cursor",
+    icon: "cursor",
+    text: "Editor con agentes de IA. El proyecto versiona su configuración: skills, subagentes de diseño, un hook que se ejecuta antes de cada edición y el servidor MCP de Next.js.",
+  },
+  {
+    id: "claude",
+    name: "Claude",
+    icon: "claude",
+    text: "Claude Code trabaja sobre el repositorio guiado por CLAUDE.md: implementa, ejecuta las pruebas, corrige el CI y abre pull requests. Esta misma página se construyó así.",
+  },
+] as const;
+
+export const SDD_PHASES = [
+  {
+    id: "constitucion",
+    title: "Constitución",
+    artifact: "constitution.md",
+    text: "Principios que no se negocian: pruebas proporcionales al riesgo, validación en todos los límites, secretos solo en variables de entorno y logs con contexto en las rutas críticas.",
+  },
+  {
+    id: "especificar",
+    title: "Especificar",
+    artifact: "spec.md",
+    text: "Qué se construye y por qué: historias de usuario, requisitos y criterios de aceptación, sin decidir todavía cómo.",
+  },
+  {
+    id: "planificar",
+    title: "Planificar",
+    artifact: "plan.md · data-model.md",
+    text: "Cómo se construye: decisiones técnicas, modelo de datos, contratos de API y verificación contra la constitución.",
+  },
+  {
+    id: "tareas",
+    title: "Tareas",
+    artifact: "tasks.md",
+    text: "El plan se divide en tareas pequeñas, ordenadas y comprobables, con sus pruebas.",
+  },
+  {
+    id: "implementar",
+    title: "Implementar",
+    artifact: "código + pruebas",
+    text: "El agente ejecuta las tareas una a una; cada cambio pasa por lint, pruebas y revisión antes de llegar a main.",
+  },
+] as const;
+
+/** Funcionalidades documentadas en specs/NNN-nombre con el flujo de Spec Kit. */
+export const SDD_SPECS = [
+  "Asistente conversacional de turismo",
+  "Altas y aprobación de cuentas staff",
+  "Personalizar el banner del hero",
+  "Galería de medios",
+  "Destinos imperdibles (CMS)",
+  "Fichas de destino Sucre Natural",
+  "Actividades «Qué hacer en Sucre»",
+  "Hubs temáticos de actividades",
+  "Eventos y agenda cultural",
+  "Convocatorias (CMS)",
+] as const;
+
+export type SkillGroup = "sdd" | "git" | "diseno" | "codigo" | "pruebas" | "integraciones";
+
+export const SKILL_GROUPS: { value: SkillGroup; label: string }[] = [
+  { value: "sdd", label: "Flujo SDD" },
+  { value: "git", label: "Git" },
+  { value: "diseno", label: "Diseño" },
+  { value: "codigo", label: "Código" },
+  { value: "pruebas", label: "Pruebas" },
+  { value: "integraciones", label: "Integraciones" },
+];
+
+/** Skills versionadas en .claude/skills, .agents/skills y .cursor/skills. */
+export const AGENT_SKILLS: { name: string; group: SkillGroup; text: string }[] = [
+  {
+    name: "speckit-constitution",
+    group: "sdd",
+    text: "Define y actualiza los principios del proyecto.",
+  },
+  {
+    name: "speckit-specify",
+    group: "sdd",
+    text: "Redacta la especificación de una funcionalidad.",
+  },
+  {
+    name: "speckit-clarify",
+    group: "sdd",
+    text: "Detecta ambigüedades y las resuelve con preguntas.",
+  },
+  { name: "speckit-plan", group: "sdd", text: "Genera el plan técnico y el modelo de datos." },
+  { name: "speckit-tasks", group: "sdd", text: "Divide el plan en tareas ordenadas." },
+  {
+    name: "speckit-analyze",
+    group: "sdd",
+    text: "Revisa la coherencia entre spec, plan y tareas.",
+  },
+  { name: "speckit-checklist", group: "sdd", text: "Crea listas de verificación de calidad." },
+  { name: "speckit-implement", group: "sdd", text: "Ejecuta las tareas de la implementación." },
+  { name: "speckit-converge", group: "sdd", text: "Reconcilia el código con la especificación." },
+  {
+    name: "speckit-taskstoissues",
+    group: "sdd",
+    text: "Convierte las tareas en issues de GitHub.",
+  },
+  {
+    name: "speckit-git-feature",
+    group: "git",
+    text: "Crea la rama numerada de cada funcionalidad.",
+  },
+  {
+    name: "speckit-git-commit",
+    group: "git",
+    text: "Hace commit al terminar cada paso del flujo.",
+  },
+  { name: "speckit-git-validate", group: "git", text: "Valida el nombre de la rama de trabajo." },
+  { name: "speckit-git-remote", group: "git", text: "Detecta el remoto de GitHub." },
+  { name: "speckit-git-initialize", group: "git", text: "Inicializa el repositorio." },
+  { name: "impeccable", group: "diseno", text: "Diseña, critica y pule la interfaz." },
+  { name: "shadcn-ui", group: "diseno", text: "Instala y adapta componentes shadcn/ui." },
+  {
+    name: "tailwind-theme-builder",
+    group: "diseno",
+    text: "Construye el tema con tokens de Tailwind.",
+  },
+  {
+    name: "nextjs-react-typescript",
+    group: "codigo",
+    text: "Buenas prácticas de Next.js, React y TypeScript.",
+  },
+  {
+    name: "vercel-react-best-practices",
+    group: "codigo",
+    text: "Guías de rendimiento de React y Next.js.",
+  },
+  { name: "vitest", group: "pruebas", text: "Configura y escribe pruebas con Vitest." },
+  {
+    name: "n8n",
+    group: "integraciones",
+    text: "Documentación de n8n para el flujo del asistente.",
+  },
+];
+
+export const TEST_LAYERS = [
+  "Pruebas unitarias",
+  "Pruebas de integración con base de datos real",
+  "Pruebas de componentes",
+  "Pruebas de punta a punta (E2E)",
 ] as const;

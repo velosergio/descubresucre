@@ -82,7 +82,7 @@ import { CountUp, Gauge, GrowBar, RankDots } from "./research-infographics";
 /** Crecimiento horizontal disparado por el contenedor (un hijo en scaleX 0 no tiene área visible). */
 const GROW_X = { hidden: { scaleX: 0 }, shown: { scaleX: 1 } };
 
-function Reveal({
+export function Reveal({
   children,
   delay = 0,
   className,
@@ -104,7 +104,7 @@ function Reveal({
   );
 }
 
-function RevealLi({
+export function RevealLi({
   children,
   delay = 0,
   className,
@@ -126,7 +126,7 @@ function RevealLi({
   );
 }
 
-function SectionHeader({
+export function SectionHeader({
   id,
   title,
   highlight,
@@ -154,13 +154,13 @@ function SectionHeader({
   );
 }
 
-function Card({ children, className }: { children: ReactNode; className?: string }) {
+export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div className={cn("rounded-2xl border border-border bg-card p-6", className)}>{children}</div>
   );
 }
 
-function CardLabel({ icon: Icon, children }: { icon: typeof Target; children: ReactNode }) {
+export function CardLabel({ icon: Icon, children }: { icon: typeof Target; children: ReactNode }) {
   return (
     <p className="mb-4 flex items-center gap-2 font-body text-sm font-semibold text-muted-foreground">
       <Icon className="h-4 w-4 text-primary" aria-hidden />
@@ -203,7 +203,7 @@ function StatusChip({ status }: { status: ObjectiveStatus }) {
 }
 
 /** Control segmentado accesible (botones con aria-pressed). */
-function Segmented<T extends string>({
+export function Segmented<T extends string>({
   label,
   options,
   value,
@@ -215,7 +215,7 @@ function Segmented<T extends string>({
   onChange: (v: NoInfer<T>) => void;
 }) {
   return (
-    <fieldset className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-muted p-1">
+    <fieldset className="inline-flex flex-wrap gap-1 rounded-2xl border border-border bg-muted p-1">
       <legend className="sr-only">{label}</legend>
       {options.map((o) => (
         <button
